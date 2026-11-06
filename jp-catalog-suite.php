@@ -34,6 +34,10 @@ if ( is_readable( __DIR__ . '/vendor/autoload.php' ) ) {
 }
 
 require_once __DIR__ . '/includes/class-updates.php';
+
+require_once __DIR__ . '/includes/class-inquiries.php';
+require_once __DIR__ . '/includes/class-inquiry-intake.php';
+require_once __DIR__ . '/includes/class-quote-mode.php';
 require_once __DIR__ . '/includes/class-plugin.php';
 
 register_activation_hook( PLUGIN_FILE, [ Plugin::class, 'activate' ] );

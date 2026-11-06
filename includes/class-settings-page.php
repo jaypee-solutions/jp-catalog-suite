@@ -38,9 +38,10 @@ final class Settings_Page extends \WC_Settings_Page {
                 'id'    => 'jps_cs_general',
             ],
         ];
-        foreach ( [ 'quote' => __( 'Quote mode', 'jp-catalog-suite' ), 'tabs' => __( 'Product tabs', 'jp-catalog-suite' ), 'length' => __( 'Variable length', 'jp-catalog-suite' ) ] as $id => $label ) {
+        $labels = [ 'quote' => __( 'Quote mode', 'jp-catalog-suite' ), 'tabs' => __( 'Product tabs', 'jp-catalog-suite' ), 'length' => __( 'Variable length', 'jp-catalog-suite' ) ];
+        foreach ( Plugin::MODULES as $id => $class ) {
             $settings[] = [
-                'title'   => $label,
+                'title'   => $labels[ $id ],
                 'id'      => "jps_cs_module_{$id}",
                 'type'    => 'checkbox',
                 'default' => 'no',

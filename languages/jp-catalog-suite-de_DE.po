@@ -30,3 +30,18 @@ msgstr "Tabs, geschützte Dateien und das Download-Protokoll beim Löschen des P
 
 msgid "JayPee Solutions Catalog Suite for WooCommerce requires WooCommerce."
 msgstr "JayPee Solutions Catalog Suite für WooCommerce setzt WooCommerce voraus."
+
+msgctxt "Order status"
+msgid "Inquiry"
+msgstr "Anfrage"
+
+msgid "Inquiry <span class=\"count\">(%s)</span>"
+msgid_plural "Inquiries <span class=\"count\">(%s)</span>"
+msgstr[0] "Anfrage <span class=\"count\">(%s)</span>"
+msgstr[1] "Anfragen <span class=\"count\">(%s)</span>"
+
+msgid "Inquiries"
+msgstr "Anfragen"
+
+msgid "Inquiry received."
+msgstr "Ihre Anfrage ist eingegangen."

@@ -13,6 +13,10 @@ Quote mode, extended product tabs with access levels and protected files, and cu
 
 Open **WooCommerce → Settings → Catalog Suite**. General contains a toggle for each installed module and the optional deletion setting. WooCommerce stores the `jps_cs_module_*` and `jps_cs_uninstall_delete_data` options.
 
+## Quote mode
+
+Enable **Quote mode** in the Catalog Suite settings to let customers submit inquiries without payment, shipping, taxes, or coupons. Price-less simple products and variations remain purchasable; WooCommerce stock and backorder rules are unchanged. Inquiry status, Analytics exclusion, and existing inquiry visibility remain active when Quote mode is off. Inquiries use the `jps-inquiry` status and `_jps_cs_inquiry` order metadata. The `jps_cs_quote_mode_active` and `jps_cs_quote_mode_applies_to_product` filters control activation and per-product applicability; `jps_cs_inquiry_created` fires after an Inquiry is created. Prices on products with a price remain present in Store API data and therefore hidden prices are not confidential. Quote mode handles inquiry intake only.
+
 ## Uninstall
 
 Plugin options, the `jp_catalog_suite_github_token` update credential, and the `jps_cs_purge_download_log` scheduled hook are always removed. When the uninstall deletion option is enabled, Catalog Suite tabs, protected files and the download log are also removed. Orders are never deleted. Uninstall is single-site only; network-wide uninstall is not handled. Inquiries retain their status and become unavailable in order lists after plugin removal. Bulk-change inquiry statuses before deleting the plugin to preserve their visibility.
