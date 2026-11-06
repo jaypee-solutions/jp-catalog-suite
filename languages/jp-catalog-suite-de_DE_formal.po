@@ -399,3 +399,41 @@ msgstr "Dateiliste"
 msgctxt "block description"
 msgid "Display downloadable files."
 msgstr "Herunterladbare Dateien anzeigen."
+msgid "Protected files"
+msgstr "Geschützte Dateien"
+
+msgid "Allowed file MIME types"
+msgstr "Zulässige MIME-Typen für Dateien"
+
+msgid "Automatically protect extensions"
+msgstr "Dateiendungen automatisch schützen"
+
+msgid "File delivery method"
+msgstr "Methode zur Dateibereitstellung"
+
+msgid "Automatic"
+msgstr "Automatisch"
+
+msgid "File not found."
+msgstr "Datei nicht gefunden."
+
+msgid "You do not have permission to download this file."
+msgstr "Sie sind nicht berechtigt, diese Datei herunterzuladen."
+
+msgid "Protected files directory access"
+msgstr "Zugriff auf das Verzeichnis geschützter Dateien"
+
+msgid "Protected files are denied by the web server."
+msgstr "Der Webserver verweigert den Zugriff auf geschützte Dateien."
+
+msgid "Protected files may be publicly accessible."
+msgstr "Geschützte Dateien könnten öffentlich zugänglich sein."
+
+msgid "Security"
+msgstr "Sicherheit"
+
+msgid "The protected uploads directory should return HTTP 403."
+msgstr "Das Verzeichnis geschützter Uploads sollte den HTTP-Status 403 zurückgeben."
+
+msgid "Sorry, you are not allowed to view this attachment."
+msgstr "Sie sind nicht berechtigt, diesen Anhang anzusehen."

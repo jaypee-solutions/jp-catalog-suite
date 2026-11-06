@@ -7,7 +7,7 @@
 		icon: 'lock',
 		category: 'widgets',
 		attributes: {
-			mode: { type: 'string', default: 'only-with-access' },
+			audience: { type: 'string', default: 'authorized' },
 			showNotice: { type: 'boolean', default: true },
 		},
 		edit: function ( props ) {
@@ -16,12 +16,12 @@
 					el( components.PanelBody, { title: __( 'Access settings', 'jp-catalog-suite' ) },
 						el( components.SelectControl, {
 							label: __( 'Show content', 'jp-catalog-suite' ),
-							value: props.attributes.mode,
+							value: props.attributes.audience,
 							options: [
-								{ label: __( 'Only with access', 'jp-catalog-suite' ), value: 'only-with-access' },
-								{ label: __( 'Only without access', 'jp-catalog-suite' ), value: 'only-without-access' },
+								{ label: __( 'Only with access', 'jp-catalog-suite' ), value: 'authorized' },
+								{ label: __( 'Only without access', 'jp-catalog-suite' ), value: 'unauthorized' },
 							],
-							onChange: function ( mode ) { props.setAttributes( { mode: mode } ); },
+							onChange: function ( audience ) { props.setAttributes( { audience: audience } ); },
 						} ),
 						el( components.ToggleControl, {
 							label: __( 'Show login notice when hidden', 'jp-catalog-suite' ),

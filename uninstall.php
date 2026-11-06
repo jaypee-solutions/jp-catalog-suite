@@ -42,6 +42,8 @@ foreach ( $tab_ids as $tab_id ) {
     wp_delete_post( $tab_id, true );
 }
 
+// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- Remove the plugin-owned log table before deleting files.
+$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}jps_cs_download_log" );
 $attachment_ids = get_posts(
     [
         'post_type'        => 'attachment',
@@ -61,13 +63,10 @@ foreach ( [ '_jps_cs_hidden_tabs', '_jps_cs_length_enabled', '_jps_cs_length_uni
     delete_post_meta_by_key( $meta_key );
 }
 
+
 $protected_dir = wp_upload_dir()['basedir'] . '/jps-cs-protected';
 if ( is_dir( $protected_dir ) ) {
-    require_once ABSPATH . 'wp-admin/includes/file.php';
-    WP_Filesystem();
-    global $wp_filesystem;
-    $wp_filesystem->rmdir( $protected_dir, true );
+    require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
+    $filesystem = new WP_Filesystem_Direct( false );
+    $filesystem->rmdir( $protected_dir, true );
 }
-
-// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- Remove the plugin-owned log table when deletion is enabled.
-$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}jps_cs_download_log" );

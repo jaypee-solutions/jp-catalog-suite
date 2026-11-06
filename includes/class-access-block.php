@@ -29,34 +29,38 @@ final class Access_Block {
         add_filter( 'registration_redirect', [ self::class, 'registration_redirect' ] );
     }
 
-    public static function can_access( ?\WP_User $user, array $context = [] ): bool {
-        return (bool) apply_filters( 'jps_cs_can_access_protected', $user instanceof \WP_User && $user->exists(), $user, $context );
+    public static function can_access( int $user_id, array $context = [] ): bool {
+        $user = $user_id ? get_userdata( $user_id ) : false;
+        return (bool) apply_filters( 'jps_cs_can_access_protected', $user instanceof \WP_User && $user->exists(), $user_id, $context );
     }
 
     public static function render( array $attributes, string $content, \WP_Block $block ): string {
-        $user = wp_get_current_user();
         if ( is_user_logged_in() ) {
             self::mark_page_uncacheable();
         }
-        $product = $block->context['postId'] ?? get_the_ID();
-        $context = [ 'product' => wc_get_product( absint( $product ) ) ];
-        $allowed = self::can_access( $user, $context );
-        $mode = $attributes['mode'] ?? 'only-with-access';
-        if ( ! in_array( $mode, [ 'only-with-access', 'only-without-access' ], true ) ) {
-            $mode = 'only-with-access';
+        $product = wc_get_product( absint( $block->context['postId'] ?? get_the_ID() ) );
+        $product_id = $product instanceof \WC_Product ? $product->get_id() : 0;
+        $context = [ 'product_id' => $product_id ];
+        $allowed = function_exists( 'is_rest_request' ) && is_rest_request() && ! $product instanceof \WC_Product
+            ? false
+            : self::can_access( get_current_user_id(), $context );
+        $audience = $attributes['audience'] ?? 'authorized';
+        if ( ! in_array( $audience, [ 'authorized', 'unauthorized' ], true ) ) {
+            $audience = 'authorized';
         }
-        if ( ( 'only-with-access' === $mode ) === $allowed ) {
+        if ( ( 'authorized' === $audience && $allowed ) || ( 'unauthorized' === $audience && ! $allowed ) ) {
             return do_blocks( $content );
         }
-        if ( empty( $attributes['showNotice'] ) ) {
+        if ( 'authorized' !== $audience || empty( $attributes['showNotice'] ) ) {
             return '';
         }
-        return self::notice( is_user_logged_in(), $context['product'] instanceof \WC_Product ? $context['product'] : null );
+        return self::notice( is_user_logged_in(), $product instanceof \WC_Product ? $product : null, $context );
     }
 
-    public static function notice( bool $logged_in, ?\WC_Product $product ): string {
+    public static function notice( bool $logged_in, ?\WC_Product $product, array $context = [] ): string {
         if ( $logged_in ) {
-            return '<p class="jps-cs-protected-notice">' . esc_html__( 'You do not have permission to view this content.', 'jp-catalog-suite' ) . '</p>';
+            $html = '<p>' . esc_html__( 'You do not have permission to view this content.', 'jp-catalog-suite' ) . '</p>';
+            return '<div class="jps-cs-protected-notice">' . wp_kses_post( apply_filters( 'jps_cs_protected_notice_html', $html, $context ) ) . '</div>';
         }
         $url = $product ? get_permalink( $product->get_id() ) : '';
         if ( ! $url ) {
@@ -72,15 +76,18 @@ final class Access_Block {
             $register = '';
         }
         $register = $register ? wp_validate_redirect( $register, '' ) : '';
-        $template = (string) get_option( 'jps_cs_protected_notice', __( 'Please {login} or {register} to view this content.', 'jp-catalog-suite' ) );
+        $template = (string) get_option( 'jps_cs_protected_notice', '' );
+        if ( '' === trim( $template ) ) {
+            $template = __( 'Please {login} or {register} to view this content.', 'jp-catalog-suite' );
+        }
         if ( ! $register ) {
             $template = preg_replace( '/\s+\S+\s+\{register\}/u', '', $template ) ?? $template;
         }
         $login_url = wp_login_url( $url );
         $tokens = [ '{login}' => '<a href="' . esc_url( $login_url ) . '">' . esc_html__( 'log in', 'jp-catalog-suite' ) . '</a>', '{register}' => $register ? '<a href="' . esc_url( $register ) . '">' . esc_html__( 'register', 'jp-catalog-suite' ) . '</a>' : '' ];
         $html = strtr( $template, $tokens );
-        $html = apply_filters( 'jps_cs_protected_notice_html', $html, $product );
-        return '<p class="jps-cs-protected-notice">' . wp_kses( $html, [ 'a' => [ 'href' => [], 'rel' => [], 'class' => [] ] ] ) . '</p>';
+        $html = apply_filters( 'jps_cs_protected_notice_html', $html, $context );
+        return '<div class="jps-cs-protected-notice">' . wp_kses_post( $html ) . '</div>';
     }
 
     public static function registration_redirect( string $redirect ): string {
@@ -105,12 +112,8 @@ final class Access_Block {
     public static function settings(): array {
         return [
             [ 'title' => __( 'Protected notice', 'jp-catalog-suite' ), 'type' => 'title', 'id' => 'jps_cs_access_settings' ],
-            [ 'title' => __( 'Protected notice', 'jp-catalog-suite' ), 'id' => 'jps_cs_protected_notice', 'type' => 'textarea', 'default' => __( 'Please {login} or {register} to view this content.', 'jp-catalog-suite' ), 'desc' => __( 'Use {login} and {register} for links.', 'jp-catalog-suite' ), 'sanitize_callback' => [ self::class, 'sanitize_notice' ] ],
+            [ 'title' => __( 'Protected notice', 'jp-catalog-suite' ), 'id' => 'jps_cs_protected_notice', 'type' => 'textarea', 'default' => '', 'placeholder' => __( 'Please {login} or {register} to view this content.', 'jp-catalog-suite' ), 'desc' => __( 'Use {login} and {register} for links.', 'jp-catalog-suite' ) ],
             [ 'type' => 'sectionend', 'id' => 'jps_cs_access_settings' ],
         ];
-    }
-
-    public static function sanitize_notice( string $value ): string {
-        return wp_kses( $value, [] );
     }
 }

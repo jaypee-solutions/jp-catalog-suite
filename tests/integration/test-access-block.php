@@ -17,7 +17,7 @@ final class Test_Access_Block extends WP_UnitTestCase {
         $product_id = $this->create_product();
         $GLOBALS['post'] = get_post( $product_id );
         setup_postdata( $GLOBALS['post'] );
-        $block = '<!-- wp:jp-catalog-suite/access {"mode":"only-with-access"} --><p>Protected text</p><!-- /wp:jp-catalog-suite/access -->';
+        $block = '<!-- wp:jp-catalog-suite/access {"audience":"authorized"} --><p>Protected text</p><!-- /wp:jp-catalog-suite/access -->';
         wp_set_current_user( 0 );
         $guest = do_blocks( $block );
         $this->assertStringNotContainsString( 'Protected text', $guest );
@@ -29,11 +29,11 @@ final class Test_Access_Block extends WP_UnitTestCase {
         wp_set_current_user( $customer_id );
         $customer = do_blocks( $block );
         $this->assertStringContainsString( 'Protected text', $customer );
-        $this->assertTrue( defined( 'DONOTCACHEPAGE' ) );
+        $this->assertArrayHasKey( 'Cache-Control', wp_get_nocache_headers() );
 
         $filter_args = [];
-        $deny = static function ( $allowed, $user, $context ) use ( &$filter_args ): bool {
-            $filter_args = [ $user, $context ];
+        $deny = static function ( $allowed, $user_id, $context ) use ( &$filter_args ): bool {
+            $filter_args = [ $user_id, $context ];
             return false;
         };
         add_filter( 'jps_cs_can_access_protected', $deny, 10, 3 );
@@ -41,8 +41,7 @@ final class Test_Access_Block extends WP_UnitTestCase {
             $denied = do_blocks( $block );
             $this->assertStringNotContainsString( 'Protected text', $denied );
             $this->assertStringContainsString( 'You do not have permission to view this content.', $denied );
-            $this->assertSame( $customer_id, $filter_args[0]->ID );
-            $this->assertSame( $product_id, $filter_args[1]['product']->get_id() );
+            $this->assertSame( [ $customer_id, [ 'product_id' => $product_id ] ], $filter_args );
         } finally {
             remove_filter( 'jps_cs_can_access_protected', $deny, 10 );
         }
@@ -61,7 +60,7 @@ final class Test_Access_Block extends WP_UnitTestCase {
     }
 
     public function test_fallback_content_is_only_rendered_for_guest(): void {
-        $block = '<!-- wp:jp-catalog-suite/access {"mode":"only-without-access","showNotice":false} --><p>Fallback text</p><!-- /wp:jp-catalog-suite/access -->';
+        $block = '<!-- wp:jp-catalog-suite/access {"audience":"unauthorized","showNotice":false} --><p>Fallback text</p><!-- /wp:jp-catalog-suite/access -->';
         wp_set_current_user( 0 );
         $this->assertStringContainsString( 'Fallback text', do_blocks( $block ) );
         $customer_id = self::factory()->user->create( [ 'role' => 'customer' ] );
@@ -73,13 +72,15 @@ final class Test_Access_Block extends WP_UnitTestCase {
     public function test_notice_registration_link_returns_to_product(): void {
         $previous_registration = get_option( 'woocommerce_enable_myaccount_registration', null );
         $previous_account = get_option( 'woocommerce_myaccount_page_id', null );
+        $previous_notice = get_option( 'jps_cs_protected_notice', null );
+        update_option( 'jps_cs_protected_notice', '' );
         update_option( 'woocommerce_enable_myaccount_registration', 'yes' );
         $account_id = self::factory()->post->create( [ 'post_type' => 'page', 'post_status' => 'publish', 'post_title' => 'My account' ] );
         update_option( 'woocommerce_myaccount_page_id', $account_id );
         $product_id = $this->create_product();
         $GLOBALS['post'] = get_post( $product_id );
         setup_postdata( $GLOBALS['post'] );
-        $block = '<!-- wp:jp-catalog-suite/access {"mode":"only-with-access"} --><p>Protected text</p><!-- /wp:jp-catalog-suite/access -->';
+        $block = '<!-- wp:jp-catalog-suite/access {"audience":"authorized"} --><p>Protected text</p><!-- /wp:jp-catalog-suite/access -->';
         wp_set_current_user( 0 );
         $html = do_blocks( $block );
         $this->assertStringContainsString( 'redirect_to=', $html );
@@ -105,6 +106,11 @@ final class Test_Access_Block extends WP_UnitTestCase {
         } else {
             update_option( 'woocommerce_myaccount_page_id', $previous_account );
         }
+        if ( null === $previous_notice ) {
+            delete_option( 'jps_cs_protected_notice' );
+        } else {
+            update_option( 'jps_cs_protected_notice', $previous_notice );
+        }
     }
 
     public function test_protected_notice_filter_receives_rendered_html(): void {
@@ -112,17 +118,20 @@ final class Test_Access_Block extends WP_UnitTestCase {
         $GLOBALS['post'] = get_post( $product_id );
         setup_postdata( $GLOBALS['post'] );
         $seen_html = '';
-        $filter = static function ( $html, $product ) use ( &$seen_html ): string {
+        $seen_context = [];
+        $filter = static function ( $html, $context ) use ( &$seen_html, &$seen_context ): string {
             $seen_html = $html;
+            $seen_context = $context;
             return '<strong>Custom protected notice</strong>';
         };
         add_filter( 'jps_cs_protected_notice_html', $filter, 10, 2 );
         try {
             wp_set_current_user( 0 );
-            $block = '<!-- wp:jp-catalog-suite/access {"mode":"only-with-access"} --><p>Protected text</p><!-- /wp:jp-catalog-suite/access -->';
+            $block = '<!-- wp:jp-catalog-suite/access {"audience":"authorized"} --><p>Protected text</p><!-- /wp:jp-catalog-suite/access -->';
             $html = do_blocks( $block );
             $this->assertStringContainsString( '<a href=', $seen_html );
             $this->assertStringContainsString( 'Custom protected notice', $html );
+            $this->assertSame( [ 'product_id' => $product_id ], $seen_context );
         } finally {
             remove_filter( 'jps_cs_protected_notice_html', $filter, 10 );
             wp_reset_postdata();

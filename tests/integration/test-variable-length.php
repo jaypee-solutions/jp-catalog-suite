@@ -99,10 +99,12 @@ final class Test_Variable_Length extends WP_UnitTestCase {
         $this->assertCount( 2, WC()->cart->get_cart() );
         $item_data = apply_filters( 'woocommerce_get_item_data', [], reset( WC()->cart->get_cart() ) );
         $this->assertSame( '120 cm', $item_data[0]['display'] );
-        $_REQUEST['jps_cs_length'] = '5';
-        $_POST['jps_cs_length'] = '5';
-        $this->assertFalse( WC()->cart->add_to_cart( $product->get_id() ) );
-        $this->assertNotEmpty( wc_get_notices( 'error' ) );
+        foreach ( [ '5', '0', '-1' ] as $invalid ) {
+            $_REQUEST['jps_cs_length'] = $invalid;
+            $_POST['jps_cs_length'] = $invalid;
+            $this->assertFalse( WC()->cart->add_to_cart( $product->get_id() ) );
+            wc_clear_notices();
+        }
     }
 
     public function test_minimum_maximum_and_step_boundaries_are_validated_through_cart(): void {
@@ -272,6 +274,12 @@ final class Test_Variable_Length extends WP_UnitTestCase {
         $response = rest_get_server()->dispatch( $request );
         $this->assertGreaterThanOrEqual( 400, $response->get_status() );
         $this->assertCount( 1, WC()->cart->get_cart() );
+        $request = new WP_REST_Request( 'POST', '/wc/store/v1/cart/add-item' );
+        $request->add_header( 'Nonce', wp_create_nonce( 'wc_store_api' ) );
+        $request->set_body_params( [ 'id' => $product->get_id(), 'quantity' => 1 ] );
+        $response = rest_get_server()->dispatch( $request );
+        $this->assertGreaterThanOrEqual( 400, $response->get_status() );
+        $this->assertCount( 1, WC()->cart->get_cart() );
     }
 
     public function test_store_api_uses_variable_product_variation_length_limits(): void {
@@ -330,5 +338,21 @@ final class Test_Variable_Length extends WP_UnitTestCase {
         $this->assertSame( 120.0, $item['jps_cs_length'] );
         $this->assertSame( 240.0, (float) $item['data']->get_price() );
         update_option( 'jps_cs_length_pricing_enabled', 'no' );
+    }
+    public function test_non_form_reorder_addition_skips_length_requirement(): void {
+        $product = $this->product( [ 'max' => 300, 'step' => 1 ] );
+        $previous_request = $_REQUEST;
+        $previous_post = $_POST;
+        $_REQUEST = [];
+        $_POST = [];
+        WC()->cart->empty_cart();
+        try {
+            $this->assertNotFalse( WC()->cart->add_to_cart( $product->get_id() ) );
+            $item = reset( WC()->cart->get_cart() );
+            $this->assertArrayNotHasKey( 'jps_cs_length', $item );
+        } finally {
+            $_REQUEST = $previous_request;
+            $_POST = $previous_post;
+        }
     }
 }

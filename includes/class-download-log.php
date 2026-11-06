@@ -11,7 +11,7 @@ final class Download_Log {
         return $wpdb->prefix . 'jps_cs_download_log';
     }
 
-    public static function init(): void {
+    public static function init( bool $module_active = true ): void {
         global $wpdb;
         if ( '1' !== get_option( 'jps_cs_db_version' ) ) {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Check for a missing table only before initial installation.
@@ -22,8 +22,6 @@ final class Download_Log {
                 update_option( 'jps_cs_db_version', '1' );
             }
         }
-        add_action( 'jps_cs_before_file_delivery', [ self::class, 'record' ], 10, 3 );
-        add_action( 'admin_menu', [ self::class, 'admin_menu' ] );
         add_action( 'delete_user', [ self::class, 'delete_user' ] );
         add_filter( 'wp_privacy_personal_data_exporters', [ self::class, 'exporter' ] );
         add_filter( 'wp_privacy_personal_data_erasers', [ self::class, 'eraser' ] );
@@ -31,6 +29,10 @@ final class Download_Log {
         add_action( 'jps_cs_purge_download_log', [ self::class, 'purge' ] );
         if ( ! wp_next_scheduled( 'jps_cs_purge_download_log' ) ) {
             wp_schedule_event( time(), 'daily', 'jps_cs_purge_download_log' );
+        }
+        if ( $module_active ) {
+            add_action( 'jps_cs_before_file_delivery', [ self::class, 'record' ], PHP_INT_MAX, 3 );
+            add_action( 'admin_menu', [ self::class, 'admin_menu' ] );
         }
     }
 

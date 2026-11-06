@@ -16,6 +16,8 @@ final class Variable_Length {
     private const META = [ 'enabled' => '_jps_cs_length_enabled', 'unit' => '_jps_cs_length_unit', 'min' => '_jps_cs_length_min', 'max' => '_jps_cs_length_max', 'step' => '_jps_cs_length_step', 'default' => '_jps_cs_length_default', 'price_per_unit' => '_jps_cs_length_price_per_unit' ];
 
     public static function init(): void {
+        add_filter( 'woocommerce_admin_settings_sanitize_option_jps_cs_length_min', [ self::class, 'sanitize_min' ], 10, 3 );
+        add_filter( 'woocommerce_admin_settings_sanitize_option_jps_cs_length_max', [ self::class, 'sanitize_max' ], 10, 3 );
         add_action( 'woocommerce_product_options_general_product_data', [ self::class, 'product_fields' ] );
         add_action( 'woocommerce_admin_process_product_object', [ self::class, 'save_product_fields' ] );
         add_action( 'woocommerce_variation_options_pricing', [ self::class, 'variation_fields' ], 10, 3 );
@@ -42,11 +44,22 @@ final class Variable_Length {
             [ 'title' => __( 'Variable length defaults', 'jp-catalog-suite' ), 'type' => 'title', 'id' => 'jps_cs_length' ],
             [ 'title' => __( 'Price per length unit', 'jp-catalog-suite' ), 'id' => 'jps_cs_length_pricing_enabled', 'type' => 'checkbox', 'default' => 'no', 'desc' => __( 'Allows price per length unit on products; leave off in quote mode', 'jp-catalog-suite' ) ],
             [ 'title' => __( 'Unit', 'jp-catalog-suite' ), 'id' => 'jps_cs_length_unit', 'type' => 'select', 'default' => 'cm', 'options' => [ 'mm' => 'mm', 'cm' => 'cm', 'm' => 'm' ] ],
-            [ 'title' => __( 'Minimum length', 'jp-catalog-suite' ), 'id' => 'jps_cs_length_min', 'type' => 'number', 'default' => 1, 'custom_attributes' => [ 'min' => 0, 'step' => 'any' ] ],
-            [ 'title' => __( 'Maximum length', 'jp-catalog-suite' ), 'id' => 'jps_cs_length_max', 'type' => 'number', 'default' => 1000, 'custom_attributes' => [ 'min' => 0, 'step' => 'any' ] ],
+            [ 'title' => __( 'Minimum length', 'jp-catalog-suite' ), 'id' => 'jps_cs_length_min', 'type' => 'number', 'default' => 1, 'custom_attributes' => [ 'min' => 0.000001, 'step' => 'any' ] ],
+            [ 'title' => __( 'Maximum length', 'jp-catalog-suite' ), 'id' => 'jps_cs_length_max', 'type' => 'number', 'default' => 1000, 'custom_attributes' => [ 'min' => 0.000001, 'step' => 'any' ] ],
             [ 'title' => __( 'Length step', 'jp-catalog-suite' ), 'id' => 'jps_cs_length_step', 'type' => 'number', 'default' => 1, 'custom_attributes' => [ 'min' => 0, 'step' => 'any' ] ],
             [ 'type' => 'sectionend', 'id' => 'jps_cs_length' ],
         ];
+    }
+    public static function sanitize_min( $value ): float {
+        $min = is_numeric( $value ) ? (float) $value : 0.0;
+        $max = (float) get_option( 'jps_cs_length_max', 1000 );
+        return $min > 0 && $min <= $max ? $min : (float) get_option( 'jps_cs_length_min', 1 );
+    }
+
+    public static function sanitize_max( $value ): float {
+        $max = is_numeric( $value ) ? (float) $value : 0.0;
+        $min = (float) get_option( 'jps_cs_length_min', 1 );
+        return $max >= $min ? $max : (float) get_option( 'jps_cs_length_max', 1000 );
     }
 
     public static function config( \WC_Product $product ): array {
@@ -59,7 +72,8 @@ final class Variable_Length {
             'min' => (float) ( '' !== get_post_meta( $id, self::META['min'], true ) ? get_post_meta( $id, self::META['min'], true ) : get_option( 'jps_cs_length_min', 1 ) ),
             'max' => (float) ( '' !== get_post_meta( $id, self::META['max'], true ) ? get_post_meta( $id, self::META['max'], true ) : get_option( 'jps_cs_length_max', 1000 ) ),
             'step' => (float) ( '' !== get_post_meta( $id, self::META['step'], true ) ? get_post_meta( $id, self::META['step'], true ) : get_option( 'jps_cs_length_step', 1 ) ),
-            'default' => get_post_meta( $id, self::META['default'], true ),
+            'default' => '' !== get_post_meta( $id, self::META['default'], true ) ? get_post_meta( $id, self::META['default'], true ) : (float) ( '' !== get_post_meta( $id, self::META['min'], true ) ? get_post_meta( $id, self::META['min'], true ) : get_option( 'jps_cs_length_min', 1 ) ),
+            'price_per_unit' => 'yes' === get_post_meta( $id, self::META['price_per_unit'], true ),
         ];
         return apply_filters( 'jps_cs_length_config', $config, $product );
     }
@@ -98,7 +112,17 @@ final class Variable_Length {
     }
 
     public static function save_variation_fields( int $variation_id, int $loop ): void {
+        $parent = wc_get_product( wp_get_post_parent_id( $variation_id ) );
+        $parent_config = $parent instanceof \WC_Product ? self::config( $parent ) : [ 'min' => 1, 'max' => 1000 ];
+        $min_raw = isset( $_POST[ self::META['min'] ][ $loop ] ) ? sanitize_text_field( wp_unslash( $_POST[ self::META['min'] ][ $loop ] ) ) : '';
+        $max_raw = isset( $_POST[ self::META['max'] ][ $loop ] ) ? sanitize_text_field( wp_unslash( $_POST[ self::META['max'] ][ $loop ] ) ) : '';
+        $min_value = '' !== $min_raw ? (float) $min_raw : $parent_config['min'];
+        $max_value = '' !== $max_raw ? (float) $max_raw : $parent_config['max'];
+        $valid_bounds = $min_value > 0 && $max_value >= $min_value;
         foreach ( [ 'min', 'max', 'step', 'default' ] as $key ) {
+            if ( in_array( $key, [ 'min', 'max' ], true ) && ! $valid_bounds ) {
+                continue;
+            }
             $meta = self::META[ $key ];
             // WooCommerce verifies the variation editor nonce before this callback runs.
             // phpcs:ignore WordPress.Security.NonceVerification.Missing
@@ -126,7 +150,15 @@ final class Variable_Length {
         if ( ! $product instanceof \WC_Product_Simple && ! $product instanceof \WC_Product_Variable ) {
             return;
         }
+        $min_raw = isset( $_POST[ self::META['min'] ] ) ? sanitize_text_field( wp_unslash( $_POST[ self::META['min'] ] ) ) : '';
+        $max_raw = isset( $_POST[ self::META['max'] ] ) ? sanitize_text_field( wp_unslash( $_POST[ self::META['max'] ] ) ) : '';
+        $min_value = '' !== $min_raw ? (float) $min_raw : (float) get_option( 'jps_cs_length_min', 1 );
+        $max_value = '' !== $max_raw ? (float) $max_raw : (float) get_option( 'jps_cs_length_max', 1000 );
+        $valid_bounds = $min_value > 0 && $max_value >= $min_value;
         foreach ( self::META as $key => $meta ) {
+            if ( in_array( $key, [ 'min', 'max' ], true ) && ! $valid_bounds ) {
+                continue;
+            }
             // WooCommerce verifies the product editor nonce before this callback runs.
             // phpcs:ignore WordPress.Security.NonceVerification.Missing
             $value = isset( $_POST[ $meta ] ) ? sanitize_text_field( wp_unslash( $_POST[ $meta ] ) ) : '';
@@ -165,6 +197,10 @@ final class Variable_Length {
         if ( ( ! $product instanceof \WC_Product_Simple && ! $product instanceof \WC_Product_Variable ) || ! self::config( $product )['enabled'] ) {
             return $data;
         }
+        $message = self::validation_message( self::config( $product ), self::request_length() );
+        if ( null !== $message ) {
+            throw new \Exception( esc_html( $message ) );
+        }
         $data['cart_item_data']['jps_cs_length'] = (float) self::request_length();
         $data['cart_item_data']['jps_cs_length_unit'] = self::config( $product )['unit'];
         return $data;
@@ -198,6 +234,11 @@ final class Variable_Length {
         if ( ! $config['enabled'] ) {
             return $passed;
         }
+        $is_store_api = ( function_exists( 'is_rest_request' ) && is_rest_request() ) || ( defined( 'REST_REQUEST' ) && REST_REQUEST );
+        $is_product_form = isset( $_REQUEST['add-to-cart'] ) || isset( $_REQUEST['jps_cs_length'] );
+        if ( ! $is_store_api && ! $is_product_form ) {
+            return $passed;
+        }
         if ( 0 === $variation_id ) {
             // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- WooCommerce validates the variation request.
             $variation_id = isset( $_REQUEST['variation_id'] ) ? absint( $_REQUEST['variation_id'] ) : 0;
@@ -220,7 +261,7 @@ final class Variable_Length {
 
     private static function validation_message( array $config, string $value ): ?string {
         $length = is_numeric( $value ) ? (float) $value : NAN;
-        if ( ! is_finite( $length ) || $length < $config['min'] || $length > $config['max'] ) {
+        if ( ! is_finite( $length ) || $length <= 0 || $length < $config['min'] || $length > $config['max'] ) {
             // translators: %1$s and %2$s are the inclusive length bounds; %3$s is the unit.
             return sprintf( __( 'Please enter a length between %1$s and %2$s %3$s.', 'jp-catalog-suite' ), $config['min'], $config['max'], $config['unit'] );
         }
@@ -246,6 +287,9 @@ final class Variable_Length {
             if ( $variation instanceof \WC_Product_Variation && $variation->get_parent_id() === $product_id ) {
                 $config = self::variation_config( $product, $variation );
             }
+        }
+        if ( ! isset( $data['jps_cs_length'] ) && '' === self::request_length() ) {
+            return $data;
         }
         $value = isset( $data['jps_cs_length'] ) ? wc_format_decimal( (string) $data['jps_cs_length'] ) : self::request_length();
         $message = self::validation_message( $config, $value );
@@ -280,7 +324,7 @@ final class Variable_Length {
             $unit_price = isset( $cart_item['jps_cs_unit_price'] ) ? (float) $cart_item['jps_cs_unit_price'] : (float) $product->get_price( 'edit' );
             $cart->cart_contents[ $cart_item_key ]['jps_cs_unit_price'] = $unit_price;
             $price = $unit_price * (float) $cart_item['jps_cs_length'];
-            $price = apply_filters( 'jps_cs_length_item_price', $price, $product, $cart_item );
+            $price = apply_filters( 'jps_cs_length_item_price', $price, (float) $cart_item['jps_cs_length'], $cart_item );
             $product->set_price( $price );
         }
     }
@@ -339,8 +383,9 @@ final class Variable_Length {
 
     // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WooCommerce supplies loop arguments in its filter contract.
     public static function loop_button( string $html, \WC_Product $product, array $args ): string {
-        if ( $product instanceof \WC_Product_Simple && self::config( $product )['enabled'] ) {
-            return sprintf( '<a href="%s" class="button">%s</a>', esc_url( $product->get_permalink() ), esc_html__( 'Choose length', 'jp-catalog-suite' ) ); }
+        if ( ( $product instanceof \WC_Product_Simple || $product instanceof \WC_Product_Variable ) && self::config( $product )['enabled'] ) {
+            return sprintf( '<a href="%s" class="button">%s</a>', esc_url( $product->get_permalink() ), esc_html__( 'Choose length', 'jp-catalog-suite' ) );
+        }
         return $html;
     }
 

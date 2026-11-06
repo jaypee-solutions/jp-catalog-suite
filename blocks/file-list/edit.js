@@ -6,7 +6,7 @@
 		title: __( 'File list', 'jp-catalog-suite' ),
 		icon: 'media-document',
 		category: 'widgets',
-		attributes: { files: { type: 'array', default: [] } },
+		attributes: { ids: { type: 'array', default: [] } },
 		edit: function ( props ) {
 			return el( element.Fragment, {},
 				el( blockEditor.InspectorControls, {},
@@ -17,7 +17,7 @@
 								const frame = window.wp.media( { title: __( 'Select files', 'jp-catalog-suite' ), button: { text: __( 'Use selected files', 'jp-catalog-suite' ) }, multiple: true } );
 								frame.on( 'select', function () {
 									const ids = frame.state().get( 'selection' ).toJSON().map( function ( item ) { return item.id; } );
-									props.setAttributes( { files: ids } );
+									props.setAttributes( { ids: ids } );
 								} );
 								frame.open();
 							},

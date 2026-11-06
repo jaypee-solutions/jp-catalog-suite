@@ -17,7 +17,7 @@ final class Test_File_List_Block extends WP_UnitTestCase {
         update_attached_file( $attachment_id, $path );
         update_post_meta( $attachment_id, '_wp_attached_file', $path );
         update_post_meta( $attachment_id, '_jps_cs_protected', '1' );
-        $block = '<!-- wp:jp-catalog-suite/file-list {"files":[' . $attachment_id . ']} /-->';
+        $block = '<!-- wp:jp-catalog-suite/file-list {"ids":[' . $attachment_id . ']} /-->';
         $GLOBALS['post'] = get_post( $product_id );
         setup_postdata( $GLOBALS['post'] );
 

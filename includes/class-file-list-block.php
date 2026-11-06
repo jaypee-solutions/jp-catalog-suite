@@ -16,7 +16,8 @@ final class File_List_Block {
     }
 
     public static function register_block(): void {
-        wp_register_script( 'jps-cs-file-list-block', plugins_url( 'blocks/file-list/edit.js', PLUGIN_FILE ), [ 'wp-blocks', 'wp-element', 'wp-block-editor', 'wp-components', 'wp-i18n', 'wp-server-side-render', 'media-editor', 'media-views' ], VERSION, true );
+        $asset = require PLUGIN_DIR . 'blocks/file-list/index.asset.php';
+        wp_register_script( 'jps-cs-file-list-block', plugins_url( 'blocks/file-list/edit.js', PLUGIN_FILE ), $asset['dependencies'], $asset['version'], true );
         add_action( 'enqueue_block_editor_assets', 'wp_enqueue_media' );
         register_block_type(
             PLUGIN_DIR . 'blocks/file-list',
@@ -29,7 +30,7 @@ final class File_List_Block {
     }
 
     public static function render( array $attributes ): string {
-        $ids = array_unique( array_filter( array_map( 'absint', (array) ( $attributes['files'] ?? [] ) ) ) );
+        $ids = array_unique( array_filter( array_map( 'absint', (array) ( $attributes['ids'] ?? [] ) ) ) );
         if ( ! $ids ) {
             return '';
         }
@@ -61,7 +62,7 @@ final class File_List_Block {
                     }
                     nocache_headers();
                 }
-                if ( Access_Block::can_access( wp_get_current_user(), [ 'attachment_id' => $id ] ) ) {
+                if ( Access_Block::can_access( get_current_user_id(), [ 'attachment_id' => $id ] ) ) {
                     $url = add_query_arg( 'jps_cs_file', $id, home_url( '/' ) );
                     if ( $product_id ) {
                         $url = add_query_arg( 'product', $product_id, $url );

@@ -7,7 +7,7 @@
   "textdomain": "jp-catalog-suite",
   "description": "Show content according to visitor access.",
   "attributes": {
-    "mode": { "type": "string", "default": "only-with-access" },
+    "audience": { "type": "string", "default": "authorized" },
     "showNotice": { "type": "boolean", "default": true }
   },
   "usesContext": [ "postId" ],

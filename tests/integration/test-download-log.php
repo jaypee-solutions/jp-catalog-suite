@@ -11,13 +11,44 @@ final class Test_Download_Log extends WP_UnitTestCase {
 
     public function test_delivery_is_logged_only_when_enabled_and_privacy_tools_work(): void {
         $user = self::factory()->user->create( [ 'role' => 'customer' ] );
-        $file = self::factory()->post->create( [ 'post_type' => 'attachment', 'post_title' => 'Logged drawing' ] );
-        update_option( 'jps_cs_files_log_enabled', 'no' );
-        do_action( 'jps_cs_before_file_delivery', $file, $user, 42 );
-        $this->assertSame( 0, $this->rows( $user ) );
-        update_option( 'jps_cs_files_log_enabled', 'yes' );
-        do_action( 'jps_cs_before_file_delivery', $file, $user, 42 );
-        $this->assertSame( 1, $this->rows( $user ) );
+        $product = self::factory()->post->create( [ 'post_type' => 'product', 'post_status' => 'publish' ] );
+        $file = self::factory()->post->create( [ 'post_type' => 'attachment', 'post_title' => 'Logged drawing', 'post_status' => 'inherit' ] );
+        $path = wp_upload_dir()['basedir'] . '/jps-cs-protected/test-log-' . $file . '.step';
+        wp_mkdir_p( dirname( $path ) );
+        file_put_contents( $path, 'drawing' );
+        update_attached_file( $file, $path );
+        update_post_meta( $file, '_jps_cs_protected', '1' );
+        wp_set_current_user( $user );
+        set_query_var( 'jps_cs_file', $file );
+        $_GET['product'] = (string) $product;
+        $stop_delivery = static function (): string {
+            throw new RuntimeException( 'stream' );
+        };
+        add_filter( 'jps_cs_file_delivery_method', $stop_delivery );
+        try {
+            update_option( 'jps_cs_files_log_enabled', 'no' );
+            try {
+                do_action( 'template_redirect' );
+                $this->fail( 'Delivery should reach its configured method.' );
+            } catch ( RuntimeException $error ) {
+                $this->assertSame( 'stream', $error->getMessage() );
+            }
+            $this->assertSame( 0, $this->rows( $user ) );
+            update_option( 'jps_cs_files_log_enabled', 'yes' );
+            try {
+                do_action( 'template_redirect' );
+                $this->fail( 'Delivery should reach its configured method.' );
+            } catch ( RuntimeException $error ) {
+                $this->assertSame( 'stream', $error->getMessage() );
+            }
+            $this->assertSame( 1, $this->rows( $user ) );
+        } finally {
+            remove_filter( 'jps_cs_file_delivery_method', $stop_delivery );
+            unset( $_GET['product'] );
+            set_query_var( 'jps_cs_file', 0 );
+            wp_set_current_user( 0 );
+            wp_delete_file( $path );
+        }
         $exporters = apply_filters( 'wp_privacy_personal_data_exporters', [] );
         $export = $exporters['jp-catalog-suite-download-log']['callback'];
         $result = call_user_func( $export, get_userdata( $user )->user_email, 1 );
@@ -26,7 +57,6 @@ final class Test_Download_Log extends WP_UnitTestCase {
         $erase = $erasers['jp-catalog-suite-download-log']['callback'];
         call_user_func( $erase, get_userdata( $user )->user_email, 1 );
         $this->assertSame( 0, $this->rows( $user ) );
-        do_action( 'jps_cs_before_file_delivery', $file, $user, 0 );
         do_action( 'delete_user', $user );
         $this->assertSame( 0, $this->rows( $user ) );
     }

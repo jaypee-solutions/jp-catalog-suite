@@ -25,3 +25,4 @@ okf_version: "0.1"
 * [Protected files](decisions/0007-protected-files.md) - Denied uploads subdirectory, URL rewriting, and user/file-only endpoint authorization.
 * [Download log privacy](decisions/0019-download-log-privacy.md) - Minimal user/file/product records, configurable retention and privacy tools.
 * [Protected-file hosting requirements](references/hosting-requirements.md) - Upload limits, Traefik, X-Sendfile, nginx and Varnish deployment guidance.
+* [Security hardening](decisions/0020-security-hardening.md) - Protected-file routing, access policy, Download-log lifecycle and length validation boundaries.

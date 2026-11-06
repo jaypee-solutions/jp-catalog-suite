@@ -6,22 +6,33 @@ declare( strict_types = 1 );
 namespace JayPee\CatalogSuite;
 
 final class Protected_Files {
+    private static bool $automatic = false;
     private static bool $routing = false;
+    private static string $routing_component = '';
 
     public static function init(): void {
+        add_filter( 'woocommerce_admin_settings_sanitize_option_jps_cs_files_mimes', [ self::class, 'sanitize_mimes' ], 10, 3 );
         add_filter( 'upload_mimes', [ self::class, 'upload_mimes' ] );
         add_filter( 'wp_check_filetype_and_ext', [ self::class, 'filetype' ], 10, 5 );
         foreach ( [ 'wp_handle_upload_prefilter', 'wp_handle_sideload_prefilter' ] as $hook ) {
-            add_filter( $hook, [ self::class, 'route_upload' ] ); }
+            add_filter( $hook, [ self::class, 'route_upload' ] );
+        }
         foreach ( [ 'wp_handle_upload', 'wp_handle_sideload' ] as $hook ) {
-            add_filter( $hook, [ self::class, 'finish_upload' ] ); }
+            add_filter( $hook, [ self::class, 'finish_upload' ] );
+        }
+        add_filter( 'site_status_tests', [ self::class, 'site_health_test' ] );
         add_filter( 'upload_dir', [ self::class, 'upload_dir' ] );
+        add_action( 'shutdown', [ self::class, 'reset_routing' ] );
         add_action( 'add_attachment', [ self::class, 'mark_attachment' ] );
         add_filter( 'attachment_fields_to_edit', [ self::class, 'attachment_fields' ], 10, 2 );
         add_filter( 'attachment_fields_to_save', [ self::class, 'save_attachment_fields' ], 10, 2 );
         add_filter( 'intermediate_image_sizes_advanced', [ self::class, 'no_previews' ], 10, 3 );
         add_filter( 'fallback_intermediate_image_sizes', [ self::class, 'fallback_sizes' ], 10, 2 );
         add_filter( 'wp_get_attachment_url', [ self::class, 'attachment_url' ], 10, 2 );
+        add_filter( 'get_the_guid', [ self::class, 'attachment_guid' ], 10, 2 );
+        add_filter( 'rest_attachment_query', [ self::class, 'rest_query' ], 10, 2 );
+        add_filter( 'rest_prepare_attachment', [ self::class, 'rest_attachment' ], 10, 3 );
+        add_action( 'template_redirect', [ self::class, 'attachment_page' ], 0 );
         add_filter( 'query_vars', static function ( array $vars ): array {
             $vars[] = 'jps_cs_file';
             return $vars;
@@ -30,8 +41,39 @@ final class Protected_Files {
         add_action( 'template_redirect', [ self::class, 'deliver' ], 1 );
     }
 
+    public static function reset_routing(): void {
+        self::$routing = false;
+        self::$routing_component = '';
+    }
+    public static function site_health_test( array $tests ): array {
+        $tests['direct']['jps_cs_protected_directory'] = [
+            'label' => __( 'Protected files directory access', 'jp-catalog-suite' ),
+            'test' => [ self::class, 'site_health_check_directory' ],
+        ];
+        return $tests;
+    }
+
+    public static function site_health_check_directory(): array {
+        $url = trailingslashit( wp_upload_dir()['baseurl'] ) . 'jps-cs-protected/index.php';
+        $response = wp_remote_get( $url, [ 'timeout' => 10, 'redirection' => 0 ] );
+        $blocked = ! is_wp_error( $response ) && 403 === wp_remote_retrieve_response_code( $response );
+        return [
+            'label' => $blocked ? __( 'Protected files are denied by the web server.', 'jp-catalog-suite' ) : __( 'Protected files may be publicly accessible.', 'jp-catalog-suite' ),
+            'status' => $blocked ? 'good' : 'critical',
+            'badge' => [ 'label' => __( 'Security', 'jp-catalog-suite' ), 'color' => $blocked ? 'blue' : 'red' ],
+            'description' => '<p>' . esc_html__( 'The protected uploads directory should return HTTP 403.', 'jp-catalog-suite' ) . '</p>',
+            'actions' => '',
+            'test' => 'jps_cs_protected_directory',
+        ];
+    }
+
     public static function directory(): string {
-        return trailingslashit( wp_upload_dir()['basedir'] ) . 'jps-cs-protected'; }
+        $routing = self::$routing;
+        self::$routing = false;
+        $base = trailingslashit( wp_upload_dir()['basedir'] );
+        self::$routing = $routing;
+        return $base . 'jps-cs-protected';
+    }
     public static function ensure_directory(): void {
         $dir = self::directory();
         wp_mkdir_p( $dir );
@@ -48,47 +90,110 @@ final class Protected_Files {
     private static function mimes(): array {
         $rows = preg_split( '/\r?\n/', (string) get_option( 'jps_cs_files_mimes', "stp|step=application/step\ndxf=application/dxf" ) );
         $out = [];
+        $dangerous = array_merge( [ 'phtml', 'phar', 'pl', 'py', 'cgi', 'sh', 'html', 'htm', 'js', 'svg', 'htaccess', 'htpasswd', 'exe' ], wp_get_ext_types()['code'] ?? [] );
         foreach ( $rows as $row ) {
             if ( preg_match( '/^([a-z0-9|]+)=([a-z0-9.+-]+\/[a-z0-9.+-]+)$/i', trim( $row ), $m ) ) {
-                foreach ( explode( '|', $m[1] ) as $ext ) {
-                    $out[ strtolower( $ext ) ] = $m[2]; }
+                foreach ( explode( '|', strtolower( $m[1] ) ) as $ext ) {
+                    if ( preg_match( '/^php/i', $ext ) || in_array( $ext, $dangerous, true ) ) {
+                        continue;
+                    }
+                    $out[ $ext ] = $m[2];
+                }
             }
         }
         return $out;
     }
+
+    public static function sanitize_mimes( $value, $option = null, $raw_value = null ): string {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            return (string) get_option( 'jps_cs_files_mimes', "stp|step=application/step\ndxf=application/dxf" );
+        }
+        $safe = [];
+        foreach ( preg_split( '/\r?\n/', (string) $value ) as $row ) {
+            if ( preg_match( '/^([a-z0-9|]+)=([a-z0-9.+-]+\/[a-z0-9.+-]+)$/i', trim( $row ), $m ) ) {
+                $exts = array_filter( explode( '|', strtolower( $m[1] ) ), static function ( string $ext ): bool {
+                    $dangerous = array_merge( [ 'phtml', 'phar', 'pl', 'py', 'cgi', 'sh', 'html', 'htm', 'js', 'svg', 'htaccess', 'htpasswd', 'exe' ], wp_get_ext_types()['code'] ?? [] );
+                    return ! preg_match( '/^php/i', $ext ) && ! in_array( $ext, $dangerous, true );
+                } );
+                if ( $exts ) {
+                    $safe[] = implode( '|', $exts ) . '=' . $m[2];
+                }
+            }
+        }
+        return implode( "\n", $safe );
+    }
+
     public static function upload_mimes( array $mimes ): array {
         if ( current_user_can( 'upload_files' ) ) {
             return array_merge( $mimes, self::mimes() );
-        } return $mimes; }
+        }
+        return $mimes;
+    }
+
     // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WordPress filter signature includes all five parameters.
     // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WordPress filter signature includes all five parameters.
     public static function filetype( array $data, string $file, string $filename, $mimes, $real ): array {
+        if ( ! current_user_can( 'upload_files' ) || ! is_array( $mimes ) ) {
+            return $data;
+        }
         $ext = strtolower( (string) pathinfo( $filename, PATHINFO_EXTENSION ) );
         $configured = self::mimes();
-        if ( isset( $configured[ $ext ] ) ) {
+        if ( isset( $configured[ $ext ], $mimes[ $ext ] ) ) {
             return [ 'ext' => $ext, 'type' => $configured[ $ext ], 'proper_filename' => false ];
-        } return $data;
+        }
+        return $data;
     }
     public static function route_upload( array $file ): array {
         $exts = array_filter( array_map( 'trim', explode( ',', strtolower( (string) get_option( 'jps_cs_files_protected_exts', 'stp, step, dxf' ) ) ) ) );
         self::$routing = in_array( strtolower( (string) pathinfo( $file['name'] ?? '', PATHINFO_EXTENSION ) ), $exts, true );
+        self::$routing_component = self::$routing ? wp_generate_password( 20, false, false ) : '';
         if ( self::$routing ) {
             self::ensure_directory();
-        } return $file;
+            wp_upload_dir( null, false, true );
+        }
+        return $file;
     }
     public static function upload_dir( array $dirs ): array {
         if ( self::$routing ) {
-            $dirs['subdir'] = '/jps-cs-protected' . $dirs['subdir'];
+            $dirs['subdir'] = '/jps-cs-protected/' . self::$routing_component . $dirs['subdir'];
             $dirs['path'] = $dirs['basedir'] . $dirs['subdir'];
-            $dirs['url'] = $dirs['baseurl'] . $dirs['subdir']; }
+            $dirs['url'] = $dirs['baseurl'] . $dirs['subdir'];
+        }
+        if ( self::$routing ) {
+            self::reset_routing();
+        }
         return $dirs;
     }
     public static function finish_upload( array $file ): array {
-        self::$routing = false;
-        return $file; }
+        self::reset_routing();
+        return $file;
+    }
     public static function mark_attachment( int $id ): void {
-        if ( str_contains( wp_normalize_path( (string) get_attached_file( $id ) ), '/jps-cs-protected/' ) ) {
-            update_post_meta( $id, '_jps_cs_protected', '1' ); } }
+        $path = wp_normalize_path( (string) get_attached_file( $id ) );
+        if ( str_contains( $path, '/jps-cs-protected/' ) ) {
+            update_post_meta( $id, '_jps_cs_protected', '1' );
+            update_post_meta( $id, '_jps_cs_was_protected', '1' );
+            wp_update_post( [ 'ID' => $id, 'guid' => self::attachment_url( (string) get_the_guid( $id ), $id ) ] );
+            return;
+        }
+        $extensions = array_filter( array_map( 'trim', explode( ',', strtolower( (string) get_option( 'jps_cs_files_protected_exts', 'stp, step, dxf' ) ) ) ) );
+        if ( ! in_array( strtolower( pathinfo( $path, PATHINFO_EXTENSION ) ), $extensions, true ) ) {
+            return;
+        }
+        $previous = $_POST['attachments'][ $id ] ?? null;
+        $_POST['attachments'][ $id ]['jps_cs_protected'] = '1';
+        self::$automatic = true;
+        try {
+            self::save_attachment_fields( [ 'ID' => $id ], [] );
+        } finally {
+            self::$automatic = false;
+            if ( null === $previous ) {
+                unset( $_POST['attachments'][ $id ] );
+            } else {
+                $_POST['attachments'][ $id ] = $previous;
+            }
+        }
+    }
     public static function attachment_fields( array $fields, \WP_Post $post ): array {
         if ( wp_attachment_is_image( $post->ID ) || ! current_user_can( 'edit_post', $post->ID ) ) {
             return $fields;
@@ -105,7 +210,7 @@ final class Protected_Files {
     // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WordPress attachment save filter signature includes the attachment array.
     public static function save_attachment_fields( array $post, array $attachment ): array {
         $id = absint( $post['ID'] ?? 0 );
-        if ( ! $id || ! current_user_can( 'edit_post', $id ) ) {
+        if ( ! $id || ( ! self::$automatic && ! current_user_can( 'edit_post', $id ) ) ) {
             return $post;
         }
         // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WordPress attachment editor verifies its own nonce before this filter.
@@ -121,7 +226,7 @@ final class Protected_Files {
             return $post;
         }
         $relative = substr( $source, strlen( $base ) );
-        $relative = preg_replace( '#^jps-cs-protected/#', '', $relative );
+        $relative = preg_replace( '#^jps-cs-protected/[^/]+/#', '', $relative );
         if ( '' === $relative || str_contains( '/' . $relative . '/', '/../' ) || str_starts_with( $relative, '/' ) ) {
             $post['errors']['jps_cs_protected']['errors'][] = __( 'The file could not be moved.', 'jp-catalog-suite' );
             return $post;
@@ -130,34 +235,29 @@ final class Protected_Files {
         if ( $protected ) {
             self::ensure_directory();
         }
-        wp_mkdir_p( dirname( $target ) );
-        require_once ABSPATH . 'wp-admin/includes/file.php';
-        WP_Filesystem();
-        global $wp_filesystem;
+        $directory = $protected ? self::directory() . '/' . wp_generate_password( 20, false, false ) . '/' . dirname( $relative ) : dirname( $base . $relative );
+        wp_mkdir_p( $directory );
+        $target = trailingslashit( $directory ) . wp_unique_filename( $directory, basename( $relative ) );
         $metadata = wp_get_attachment_metadata( $id );
-        if ( ! $wp_filesystem->move( $source, $target, true ) ) {
+        if ( ! @rename( $source, $target ) ) {
             $post['errors']['jps_cs_protected']['errors'][] = __( 'The file could not be moved.', 'jp-catalog-suite' );
             return $post;
         }
         if ( is_array( $metadata ) ) {
             foreach ( $metadata['sizes'] ?? [] as $size ) {
-                if ( empty( $size['file'] ) ) {
-                    continue;
-                }
-                $size_path = dirname( $source ) . '/' . basename( $size['file'] );
-                if ( is_file( $size_path ) ) {
-                    $wp_filesystem->delete( $size_path );
+                if ( ! empty( $size['file'] ) ) {
+                    wp_delete_file( dirname( $source ) . '/' . basename( $size['file'] ) );
                 }
             }
-        }
-        if ( is_array( $metadata ) ) {
             $metadata['file'] = ltrim( str_replace( $base, '', wp_normalize_path( $target ) ), '/' );
             $metadata['sizes'] = [];
             wp_update_attachment_metadata( $id, $metadata );
         }
         update_attached_file( $id, $target );
+        wp_update_post( [ 'ID' => $id, 'guid' => self::attachment_url( (string) get_the_guid( $id ), $id ) ] );
         if ( $protected ) {
             update_post_meta( $id, '_jps_cs_protected', '1' );
+            update_post_meta( $id, '_jps_cs_was_protected', '1' );
         } else {
             delete_post_meta( $id, '_jps_cs_protected' );
         }
@@ -175,6 +275,46 @@ final class Protected_Files {
     public static function handle_file_request( bool $preempt, \WP_Query $query ): bool {
         return $preempt || (bool) $query->get( 'jps_cs_file' );
     }
+    public static function attachment_guid( string $guid, int $id ): string {
+        return '1' === get_post_meta( $id, '_jps_cs_protected', true ) ? self::attachment_url( $guid, $id ) : $guid;
+    }
+
+    public static function rest_query( array $args, \WP_REST_Request $request ): array {
+        if ( ! current_user_can( 'upload_files' ) ) {
+            $args['meta_query'] = $args['meta_query'] ?? [];
+            $args['meta_query'][] = [ 'key' => '_jps_cs_protected', 'compare' => 'NOT EXISTS' ];
+        }
+        return $args;
+    }
+
+    public static function rest_attachment( \WP_REST_Response $response, \WP_Post $post, \WP_REST_Request $request ) {
+        if ( '1' === get_post_meta( $post->ID, '_jps_cs_protected', true ) ) {
+            if ( ! current_user_can( 'upload_files' ) ) {
+                return new \WP_Error( 'rest_forbidden', __( 'Sorry, you are not allowed to view this attachment.', 'jp-catalog-suite' ), [ 'status' => 404 ] );
+            }
+            $data = $response->get_data();
+            $data['guid'] = '';
+            if ( isset( $data['media_details'] ) ) {
+                unset( $data['media_details']['file'] );
+            }
+            $response->set_data( $data );
+        }
+        return $response;
+    }
+
+    public static function attachment_page(): void {
+        if ( ! is_attachment() ) {
+            return;
+        }
+        $id = get_queried_object_id();
+        if ( '1' === get_post_meta( $id, '_jps_cs_protected', true ) ) {
+            header( 'X-Robots-Tag: noindex, nofollow', true );
+            if ( ! Access_Block::can_access( get_current_user_id(), [ 'attachment_id' => $id ] ) ) {
+                status_header( 404 );
+                exit;
+            }
+        }
+    }
     public static function deliver(): void {
         $id = absint( get_query_var( 'jps_cs_file' ) );
         if ( ! $id ) {
@@ -184,19 +324,29 @@ final class Protected_Files {
         if ( ! $attachment || 'attachment' !== $attachment->post_type ) {
             status_header( 404 );
             wp_die( esc_html__( 'File not found.', 'jp-catalog-suite' ), '', [ 'response' => 404 ] ); }
-        if ( '1' !== get_post_meta( $id, '_jps_cs_protected', true ) ) {
+        $protected = '1' === get_post_meta( $id, '_jps_cs_protected', true );
+        if ( ! $protected ) {
+            if ( ! current_user_can( 'read_post', $id ) && '1' !== get_post_meta( $id, '_jps_cs_was_protected', true ) ) {
+                status_header( 404 );
+                wp_die( esc_html__( 'File not found.', 'jp-catalog-suite' ), '', [ 'response' => 404 ] );
+            }
             wp_safe_redirect( wp_get_attachment_url( $id ), 302 );
-            exit; }
-        if ( ! is_user_logged_in() ) {
-            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- wp_safe_redirect validates the constructed same-site URL.
-            $request_uri = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '/';
-            wp_safe_redirect( wp_login_url( home_url( $request_uri ) ) );
             exit;
         }
-        if ( ! Access_Block::can_access( wp_get_current_user(), [ 'attachment_id' => $id ] ) ) {
-            wp_die( esc_html__( 'You do not have permission to download this file.', 'jp-catalog-suite' ), '', [ 'response' => 403 ] ); }
+        if ( ! is_user_logged_in() ) {
+            $endpoint = add_query_arg( 'jps_cs_file', $id, home_url( '/' ) );
+            wp_safe_redirect( wp_login_url( $endpoint ) );
+            exit;
+        }
+        if ( ! Access_Block::can_access( get_current_user_id(), [ 'attachment_id' => $id ] ) ) {
+            wp_die( esc_html__( 'You do not have permission to download this file.', 'jp-catalog-suite' ), '', [ 'response' => 403 ] );
+        }
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Product identifier is untrusted and used only for the download log/action.
         $product_id = isset( $_GET['product'] ) && is_scalar( $_GET['product'] ) ? absint( wp_unslash( $_GET['product'] ) ) : 0;
+        $linked_product = wc_get_product( $product_id );
+        if ( ! $linked_product instanceof \WC_Product || 'publish' !== $linked_product->get_status() ) {
+            $product_id = 0;
+        }
         $path = get_attached_file( $id );
         $protected_root = realpath( self::directory() );
         $real_path = realpath( (string) $path );
@@ -219,9 +369,11 @@ final class Protected_Files {
         if ( 'auto' === $method ) {
             $method = function_exists( 'apache_get_modules' ) && in_array( 'mod_xsendfile', apache_get_modules(), true ) ? 'xsendfile' : 'php'; }
         $method = (string) apply_filters( 'jps_cs_file_delivery_method', $method, $id );
-        if ( 'xsendfile' === $method ) {
+        $modules = function_exists( 'apache_get_modules' ) ? apache_get_modules() : [];
+        if ( 'xsendfile' === $method && in_array( 'mod_xsendfile', $modules, true ) ) {
             header( 'X-Sendfile: ' . $path );
-            exit; }
+            exit;
+        }
         header( 'Content-Length: ' . filesize( $path ) );
         while ( ob_get_level() ) {
             ob_end_clean();

@@ -22,4 +22,5 @@
 * **Price per length unit**: Added opt-in product pricing based on cart-item length, preserving Quote mode price hiding.
 * **Protected files**: Added ADR 0007 for denied uploads storage, access-controlled delivery, and host configuration requirements.
 * **Download log privacy**: Added opt-in file-download records with retention, personal-data tools, and account-deletion cleanup.
+* **Security hardening**: Recorded ADR 0020 for module-independent protected-file and privacy behavior, MIME controls, non-overwriting moves, REST redaction, and corrected access/length APIs.
 * **Release documentation**: Added the cross-module test matrix, hosting requirements, complete decision index, and release checklist.

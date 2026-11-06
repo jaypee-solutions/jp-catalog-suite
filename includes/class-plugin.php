@@ -34,14 +34,10 @@ final class Plugin {
                 $class::init();
             }
         }
-        if ( self::is_module_active( 'tabs' ) ) {
-            Access_Block::init();
-            File_List_Block::init();
-            Protected_Files::init();
-        }
-        if ( self::is_module_active( 'tabs' ) ) {
-            Download_Log::init();
-        }
+        Access_Block::init();
+        File_List_Block::init();
+        Protected_Files::init();
+        Download_Log::init( self::is_module_active( 'tabs' ) );
     }
 
     public static function is_module_active( string $id ): bool {
