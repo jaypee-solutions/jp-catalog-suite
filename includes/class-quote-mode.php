@@ -66,7 +66,8 @@ final class Quote_Mode {
     public static function taxes_enabled( bool $enabled ): bool {
         $store_api = function_exists( 'WC' ) && WC() && method_exists( WC(), 'is_store_api_request' ) && WC()->is_store_api_request();
         $store_api = $store_api || ( defined( 'REST_REQUEST' ) && REST_REQUEST && isset( $_SERVER['REQUEST_URI'] ) && 0 === strpos( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), '/wp-json/wc/store/' ) );
-        if ( self::is_active() && ( ! is_admin() || wp_doing_ajax() || $store_api ) ) {
+        $frontend_request = ! is_admin() && ! ( defined( 'REST_REQUEST' ) && REST_REQUEST );
+        if ( self::is_active() && ( $frontend_request || wp_doing_ajax() || $store_api ) ) {
             return false;
         }
         return $enabled;

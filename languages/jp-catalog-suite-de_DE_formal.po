@@ -40,8 +40,6 @@ msgid_plural "Inquiries <span class=\"count\">(%s)</span>"
 msgstr[0] "Anfrage <span class=\"count\">(%s)</span>"
 msgstr[1] "Anfragen <span class=\"count\">(%s)</span>"
 
-msgid "Inquiries"
-msgstr "Anfragen"
 
 msgid "Inquiry received."
 msgstr "Ihre Anfrage ist eingegangen."

@@ -1,6 +1,6 @@
 <?php
 /**
- * Creates and presents customer inquiries.
+ * Marks and completes customer Inquiries.
  *
  * @package JayPee\CatalogSuite
  */
@@ -18,8 +18,6 @@ final class Inquiry_Intake {
         add_filter( 'woocommerce_cart_needs_payment', [ self::class, 'cart_needs_payment' ], 10, 2 );
         add_filter( 'woocommerce_order_needs_payment', [ self::class, 'order_needs_payment' ], 10, 3 );
         add_filter( 'woocommerce_valid_order_statuses_for_payment_complete', [ self::class, 'valid_payment_statuses' ], 10, 2 );
-        add_filter( 'woocommerce_account_menu_items', [ self::class, 'account_menu_items' ] );
-        add_filter( 'woocommerce_account_orders_columns', [ self::class, 'account_orders_columns' ] );
     }
 
     public static function mark_order( \WC_Order $order, array $data = [] ): void {
@@ -41,6 +39,7 @@ final class Inquiry_Intake {
         $order->update_status( 'jps-inquiry', __( 'Inquiry received.', 'jp-catalog-suite' ) );
         do_action( 'jps_cs_inquiry_created', $order );
     }
+
     public static function cart_needs_payment( bool $needs_payment, $cart ): bool {
         unset( $cart );
         return Quote_Mode::is_active() ? false : $needs_payment;
@@ -49,19 +48,5 @@ final class Inquiry_Intake {
     public static function order_needs_payment( bool $needs_payment, \WC_Order $order, array $valid_statuses ): bool {
         unset( $valid_statuses );
         return Inquiries::is_inquiry( $order ) ? false : $needs_payment;
-    }
-
-    public static function account_menu_items( array $items ): array {
-        if ( Quote_Mode::is_active() && isset( $items['orders'] ) ) {
-            $items['orders'] = __( 'Inquiries', 'jp-catalog-suite' );
-        }
-        return $items;
-    }
-
-    public static function account_orders_columns( array $columns ): array {
-        if ( Quote_Mode::is_active() ) {
-            unset( $columns['order-total'] );
-        }
-        return $columns;
     }
 }

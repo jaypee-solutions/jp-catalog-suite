@@ -49,6 +49,7 @@ test( 'guest sends an inquiry on classic checkout', async ( { page } ) => {
 	await page.locator( '#billing_city' ).fill( 'Berlin' );
 	await page.locator( '#billing_postcode' ).fill( '10115' );
 	await page.locator( '#billing_country' ).selectOption( 'DE' );
+	await page.getByRole( 'checkbox', { name: /Terms and Conditions and Cancellation Policy/ } ).check();
 	await page.locator( '#place_order' ).click();
 	await expect( page ).toHaveURL( /order-received/ );
 	await login( page );

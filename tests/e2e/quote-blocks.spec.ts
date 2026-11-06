@@ -33,7 +33,8 @@ test( 'guest sends a Blocks inquiry which stays listed when Quote mode is off', 
 	await page.getByRole( 'textbox', { name: 'Address', exact: true } ).fill( '1 Main Street' );
 	await page.getByLabel( 'City' ).fill( 'Berlin' );
 	await page.getByLabel( 'Postal code' ).fill( '10115' );
-	await page.locator( '.wc-block-components-checkout-place-order-button' ).click();
+	await page.getByRole( 'checkbox', { name: /Terms and Conditions and Cancellation Policy/ } ).check();
+	await page.getByRole( 'button', { name: 'Buy Now' } ).click();
 	await expect( page ).toHaveURL( /order-received/ );
 
 	await login( page );
