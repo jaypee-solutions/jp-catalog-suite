@@ -118,6 +118,23 @@ msgstr "Abweichender Längenschritt"
 
 msgid "Default length override"
 msgstr "Abweichende Standardlänge"
+msgid "Products"
+msgstr "Produkte"
+
+msgid "Replace global tab"
+msgstr "Globalen Tab ersetzen"
+
+msgid "None"
+msgstr "Keiner"
+
+msgid "Tabs"
+msgstr "Tabs"
+
+msgid "Hide on this product"
+msgstr "Bei diesem Produkt ausblenden"
+
+msgid "Add product-specific tab"
+msgstr "Produktspezifischen Tab hinzufügen"
 msgid "Inquiry basket"
 msgstr "Anfragekorb"
 

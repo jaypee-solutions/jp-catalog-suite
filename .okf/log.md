@@ -7,5 +7,6 @@
 * **Global product tabs**: Added the block-editor tab post type, category-scoped resolution, and restricted REST access.
 * **E2E isolation**: Documented Germanized onboarding, cart-line assertions, and persistent order isolation.
 * **Variable-length variations**: Recorded ADR 0013 for inheritable variation-specific limits and server validation.
+* **Product tab overrides**: Added product-scoped tabs, replacement, per-product hiding, and canonical-ID comparisons.
 * **Quote-mode labels**: Added configurable translated inquiry wording across PHP and WooCommerce Blocks.
 * **Inquiry emails**: Added configurable price-free New inquiry and Inquiry confirmation emails.
