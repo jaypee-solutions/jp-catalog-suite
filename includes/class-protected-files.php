@@ -197,7 +197,7 @@ final class Protected_Files {
         $path = get_attached_file( $id );
         $protected_root = realpath( self::directory() );
         $real_path = realpath( (string) $path );
-        if ( false === $protected_root || false === $real_path || ! str_starts_with( wp_normalize_path( $real_path ), trailingslashit( wp_normalize_path( $protected_root ) ) ) || filesize( $real_path ) > 268435456 ) {
+        if ( false === $protected_root || false === $real_path || ! str_starts_with( wp_normalize_path( $real_path ), trailingslashit( wp_normalize_path( $protected_root ) ) ) || ! is_file( $real_path ) || filesize( $real_path ) > 268435456 ) {
             status_header( 404 );
             exit;
         }
