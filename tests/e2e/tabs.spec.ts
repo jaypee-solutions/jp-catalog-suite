@@ -18,4 +18,11 @@ test('product page displays public and protected product tab content by access',
   await page.goto('/product/tab-demo/');
   await page.getByRole('tab', { name: 'Downloads' }).click();
   await expect(page.getByText('Protected Downloads content.')).toBeVisible();
+  const fileEntry = page.getByRole( 'link', { name: /part\.stp/ } );
+  await expect( fileEntry ).toBeVisible();
+  await expect( fileEntry ).toContainText( 'STP' );
+  await expect( fileEntry ).toContainText( '36 B' );
+  await expect( fileEntry ).toHaveAttribute( 'href', /jps_cs_file=/ );
+  const fileResponse = await page.request.get( await fileEntry.getAttribute( 'href' ) || '' );
+  expect( fileResponse.status() ).toBe( 200 );
 });

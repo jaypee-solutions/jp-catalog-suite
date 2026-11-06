@@ -316,3 +316,29 @@ msgstr "Nur für berechtigte Benutzer verfügbar"
 
 msgid "The file could not be moved."
 msgstr "Die Datei konnte nicht verschoben werden."
+
+msgid "login required"
+msgstr "Anmeldung erforderlich"
+
+#: blocks/file-list/edit.js
+msgid "File list"
+msgstr "Dateiliste"
+
+#: blocks/file-list/edit.js
+msgid "Files"
+msgstr "Dateien"
+
+#: blocks/file-list/edit.js
+msgid "Select files"
+msgstr "Dateien auswählen"
+
+#: blocks/file-list/edit.js
+msgid "Use selected files"
+msgstr "Ausgewählte Dateien verwenden"
+
+#: blocks/file-list/edit.js
+msgid "Choose files"
+msgstr "Dateien auswählen"
+
+msgid "Display downloadable files."
+msgstr "Herunterladbare Dateien anzeigen."

@@ -1,0 +1,14 @@
+{
+  "apiVersion": 3,
+  "name": "jp-catalog-suite/file-list",
+  "title": "File list",
+  "category": "widgets",
+  "icon": "media-document",
+  "textdomain": "jp-catalog-suite",
+  "description": "Display downloadable files.",
+  "attributes": {
+    "files": { "type": "array", "default": [] }
+  },
+  "usesContext": [ "postId" ],
+  "supports": { "html": false }
+}
