@@ -46,4 +46,25 @@ final class Test_Checkout_Fields extends WP_UnitTestCase {
         $locale = apply_filters( 'woocommerce_get_country_locale', [ 'DE' => [ 'address_1' => [] ] ] );
         $this->assertTrue( $locale['DE']['address_1']['hidden'] );
     }
+
+    public function test_company_phone_and_address_support_every_configured_state(): void {
+        foreach ( [ 'optional', 'required', 'hidden' ] as $state ) {
+            update_option( 'jps_cs_checkout_company', $state );
+            update_option( 'jps_cs_checkout_phone', $state );
+            update_option( 'jps_cs_checkout_address', $state );
+            $fields = apply_filters( 'woocommerce_checkout_fields', WC()->checkout()->get_checkout_fields() );
+            foreach ( [ 'company', 'phone' ] as $field ) {
+                $key = "billing_{$field}";
+                if ( 'hidden' === $state ) {
+                    $this->assertArrayNotHasKey( $key, $fields['billing'] );
+                } else {
+                    $this->assertArrayHasKey( $key, $fields['billing'] );
+                    $this->assertSame( 'required' === $state, $fields['billing'][ $key ]['required'] );
+                }
+            }
+            $locale = apply_filters( 'woocommerce_get_country_locale', [ 'DE' => [ 'address_1' => [] ] ] );
+            $this->assertSame( 'required' === $state, $locale['DE']['address_1']['required'] );
+            $this->assertSame( 'hidden' === $state, $locale['DE']['address_1']['hidden'] );
+        }
+    }
 }

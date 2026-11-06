@@ -160,7 +160,17 @@ final class Quote_Mode {
             $key     = "billing_{$field}";
             if ( 'hidden' === $setting ) {
                 unset( $fields['billing'][ $key ] );
-            } elseif ( isset( $fields['billing'][ $key ] ) ) {
+            } else {
+                if ( ! isset( $fields['billing'][ $key ] ) ) {
+                    $fields['billing'][ $key ] = [
+                        'type'         => 'text',
+                        'label'        => 'company' === $field ? __( 'Company', 'jp-catalog-suite' ) : __( 'Phone', 'jp-catalog-suite' ),
+                        'required'     => false,
+                        'class'        => [ 'form-row-wide' ],
+                        'autocomplete' => 'company' === $field ? 'organization' : 'tel',
+                        'priority'     => 'company' === $field ? 30 : 100,
+                    ];
+                }
                 $fields['billing'][ $key ]['required'] = 'required' === $setting;
             }
         }

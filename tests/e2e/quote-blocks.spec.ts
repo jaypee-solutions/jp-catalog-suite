@@ -46,8 +46,13 @@ test( 'guest sends a Blocks inquiry which stays listed when Quote mode is off', 
 		await expect( page.getByRole( 'textbox', { name: 'Address', exact: true } ) ).toHaveCount( 0 );
 		await expect( page.locator( '.wc-block-checkout__payment-method' ) ).toHaveCount( 0 );
 		await expect( page.locator( 'body' ) ).not.toContainText( /zahlungspflichtig/i );
+		await expect( page.getByLabel( /company/i ) ).toBeVisible();
+		await expect( page.getByLabel( /phone/i ) ).toBeVisible();
 		await page.getByLabel( 'Email address' ).fill( `blocks-${ Date.now() }@example.com` );
 		await page.getByLabel( 'First name' ).fill( 'Guest' );
+		await expect( page.getByLabel( /first name/i ) ).toHaveAttribute( 'required', '' );
+		await expect( page.getByLabel( /last name/i ) ).toHaveAttribute( 'required', '' );
+		await expect( page.getByLabel( /email address/i ) ).toHaveAttribute( 'required', '' );
 		await page.getByLabel( 'Last name' ).fill( orderLabel );
 		await page.getByRole( 'checkbox', { name: /Terms and Conditions and Cancellation Policy/ } ).check();
 		await expect( page.getByRole( 'button', { name: 'Send inquiry' } ) ).toBeVisible();
