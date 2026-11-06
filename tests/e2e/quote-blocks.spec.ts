@@ -85,6 +85,7 @@ test( 'guest sends a Blocks inquiry which stays listed when Quote mode is off', 
 		order = page.locator( '#the-list tr' ).filter( { hasText: orderLabel } );
 		await expect( order ).toContainText( /Inquiry|Anfrage/i );
 	} finally {
+		wpCli( 'option', 'update', 'jps_cs_module_quote', oldQuote );
 		wpCli( 'option', 'update', 'jps_cs_checkout_phone', oldPhone );
 		wpCli( 'option', 'update', 'woocommerce_coming_soon', oldComingSoon );
 	}
