@@ -76,10 +76,10 @@ final class Access_Block {
         if ( ! $register ) {
             $template = preg_replace( '/\s+\S+\s+\{register\}/u', '', $template ) ?? $template;
         }
-        $html = apply_filters( 'jps_cs_protected_notice_html', $template, $product );
         $login_url = wp_login_url( $url );
         $tokens = [ '{login}' => '<a href="' . esc_url( $login_url ) . '">' . esc_html__( 'log in', 'jp-catalog-suite' ) . '</a>', '{register}' => $register ? '<a href="' . esc_url( $register ) . '">' . esc_html__( 'register', 'jp-catalog-suite' ) . '</a>' : '' ];
-        $html = strtr( (string) $html, $tokens );
+        $html = strtr( $template, $tokens );
+        $html = apply_filters( 'jps_cs_protected_notice_html', $html, $product );
         return '<p class="jps-cs-protected-notice">' . wp_kses( $html, [ 'a' => [ 'href' => [], 'rel' => [], 'class' => [] ] ] ) . '</p>';
     }
 
