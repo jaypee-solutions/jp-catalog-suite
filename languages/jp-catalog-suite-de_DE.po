@@ -342,3 +342,11 @@ msgstr "Dateien auswählen"
 
 msgid "Display downloadable files."
 msgstr "Herunterladbare Dateien anzeigen."
+
+msgctxt "block title"
+msgid "File list"
+msgstr "Dateiliste"
+
+msgctxt "block description"
+msgid "Display downloadable files."
+msgstr "Herunterladbare Dateien anzeigen."
