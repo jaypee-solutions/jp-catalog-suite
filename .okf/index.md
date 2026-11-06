@@ -12,3 +12,4 @@ okf_version: "0.1"
 * [Global product tabs](decisions/0006-tabs-as-block-editor-cpt.md) - Block-editor posts with global/category scope, priority, and REST access restrictions.
 * [Variable-length variation overrides](decisions/0010-variable-length-variation-overrides.md) - Variation-specific limits inherit from the variable product and are enforced at cart insertion.
 * [E2E environment isolation](references/e2e-ci-isolation.md) - CI-specific fixtures and independent E2E assertions.
+* [Price-free Inquiry emails](decisions/0010-price-free-inquiry-emails.md) - Configurable price-free administrator and customer notifications for new Inquiries.

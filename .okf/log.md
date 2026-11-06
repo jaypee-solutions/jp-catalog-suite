@@ -7,3 +7,4 @@
 * **Global product tabs**: Added the block-editor tab post type, category-scoped resolution, and restricted REST access.
 * **E2E isolation**: Documented Germanized onboarding, cart-line assertions, and persistent order isolation.
 * **Variable-length variations**: Added inheritable variation-specific limits and server validation.
+* **Inquiry emails**: Added configurable price-free New inquiry and Inquiry confirmation emails.
