@@ -106,3 +106,15 @@ msgstr "Priorität"
 
 msgid "Sorry, you are not allowed to read product tabs."
 msgstr "Sie dürfen Produkttabs nicht lesen."
+
+msgid "Minimum length override"
+msgstr "Abweichende Mindestlänge"
+
+msgid "Maximum length override"
+msgstr "Abweichende Höchstlänge"
+
+msgid "Length step override"
+msgstr "Abweichender Längenschritt"
+
+msgid "Default length override"
+msgstr "Abweichende Standardlänge"
