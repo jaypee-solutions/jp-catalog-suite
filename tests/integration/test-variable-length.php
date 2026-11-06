@@ -278,4 +278,24 @@ final class Test_Variable_Length extends WP_UnitTestCase {
         }
         $this->assertCount( 2, WC()->cart->get_cart() );
     }
+
+    public function test_length_pricing_applies_to_store_api_cart_item_data(): void {
+        update_option( 'jps_cs_length_pricing_enabled', 'yes' );
+        $product = $this->product( [ 'max' => 300, 'step' => 1, 'price_per_unit' => 'yes' ] );
+        $product->set_regular_price( '2' );
+        $product->save();
+        WC()->cart->empty_cart();
+
+        $request = new WP_REST_Request( 'POST', '/wc/store/v1/cart/add-item' );
+        $request->add_header( 'Nonce', wp_create_nonce( 'wc_store_api' ) );
+        $request->set_body_params( [ 'id' => $product->get_id(), 'quantity' => 1, 'extensions' => [ 'jp-catalog-suite' => [ 'jps_cs_length' => '120' ] ] ] );
+        $request->set_param( 'extensions', [ 'jp-catalog-suite' => [ 'jps_cs_length' => '120' ] ] );
+        $response = rest_get_server()->dispatch( $request );
+        $this->assertSame( 201, $response->get_status(), wp_json_encode( $response->get_data() ) );
+        WC()->cart->calculate_totals();
+        $item = reset( WC()->cart->get_cart() );
+        $this->assertSame( 120.0, $item['jps_cs_length'] );
+        $this->assertSame( 240.0, (float) $item['data']->get_price() );
+        update_option( 'jps_cs_length_pricing_enabled', 'no' );
+    }
 }
