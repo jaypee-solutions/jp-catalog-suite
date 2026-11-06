@@ -6,6 +6,7 @@
 * **Inquiry intake**: Added quote-mode inquiry processing, the core Inquiry status, and Analytics exclusion.
 * **Global product tabs**: Added the block-editor tab post type, category-scoped resolution, and restricted REST access.
 * **E2E isolation**: Documented Germanized onboarding, cart-line assertions, and persistent order isolation.
+* **Product tab overrides**: Added product-scoped tabs, replacement, per-product hiding, and canonical-ID comparisons.
 * **Quote-mode labels**: Added configurable translated inquiry wording across PHP and WooCommerce Blocks.
 * **Inquiry emails**: Added configurable price-free New inquiry and Inquiry confirmation emails.
 * **Price hiding**: Added quote-mode product-price suppression and Inquiry price-free customer views with the Store API limitation.
