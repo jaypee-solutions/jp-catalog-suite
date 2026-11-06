@@ -14,9 +14,11 @@ final class Test_Uninstall extends WP_UnitTestCase {
         $order = wc_create_order();
         $order->set_status( 'processing' );
         $order->save();
+        $product_id = self::factory()->post->create( [ 'post_type' => 'product', 'post_status' => 'publish' ] );
+        update_post_meta( $product_id, '_jps_cs_hidden_tabs', [ 123 ] );
+        update_option( 'jps_cs_uninstall_delete_data', 'yes' );
         update_option( 'jps_cs_module_quote', 'yes' );
         update_option( 'jp_catalog_suite_github_token', 'secret' );
-
         define( 'WP_UNINSTALL_PLUGIN', true );
         require dirname( __DIR__, 2 ) . '/uninstall.php';
 
@@ -24,5 +26,6 @@ final class Test_Uninstall extends WP_UnitTestCase {
         $this->assertSame( [], $names );
         $this->assertFalse( get_option( 'jp_catalog_suite_github_token', false ) );
         $this->assertSame( 'processing', wc_get_order( $order->get_id() )->get_status() );
+        $this->assertSame( '', get_post_meta( $product_id, '_jps_cs_hidden_tabs', true ) );
     }
 }
