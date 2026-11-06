@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-06T18:58:38+00:00\n"
+"POT-Creation-Date: 2026-11-06T19:33:05+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: jp-catalog-suite\n"
@@ -244,7 +244,7 @@ msgstr ""
 
 #: includes/class-settings-page.php:25
 #: includes/class-settings-page.php:41
-#: includes/class-variable-length.php:60
+#: includes/class-variable-length.php:108
 msgid "Variable length"
 msgstr ""
 
@@ -344,65 +344,81 @@ msgstr ""
 msgid "Open the Updates settings"
 msgstr ""
 
-#: includes/class-variable-length.php:32
+#: includes/class-variable-length.php:36
 msgid "Variable length defaults"
 msgstr ""
 
-#: includes/class-variable-length.php:33
+#: includes/class-variable-length.php:37
 msgid "Unit"
 msgstr ""
 
-#: includes/class-variable-length.php:34
-#: includes/class-variable-length.php:62
+#: includes/class-variable-length.php:38
+#: includes/class-variable-length.php:110
 msgid "Minimum length"
 msgstr ""
 
-#: includes/class-variable-length.php:35
-#: includes/class-variable-length.php:62
+#: includes/class-variable-length.php:39
+#: includes/class-variable-length.php:110
 msgid "Maximum length"
 msgstr ""
 
-#: includes/class-variable-length.php:36
-#: includes/class-variable-length.php:62
+#: includes/class-variable-length.php:40
+#: includes/class-variable-length.php:110
 msgid "Length step"
 msgstr ""
 
-#: includes/class-variable-length.php:61
+#: includes/class-variable-length.php:88
+msgid "Minimum length override"
+msgstr ""
+
+#: includes/class-variable-length.php:88
+msgid "Maximum length override"
+msgstr ""
+
+#: includes/class-variable-length.php:88
+msgid "Length step override"
+msgstr ""
+
+#: includes/class-variable-length.php:88
+msgid "Default length override"
+msgstr ""
+
+#: includes/class-variable-length.php:109
 msgid "Length unit"
 msgstr ""
 
-#: includes/class-variable-length.php:61
+#: includes/class-variable-length.php:109
 msgid "Use store default"
 msgstr ""
 
-#: includes/class-variable-length.php:62
+#: includes/class-variable-length.php:110
 msgid "Default length"
 msgstr ""
 
 #. translators: %s is the product's length unit (mm, cm, or m).
-#: includes/class-variable-length.php:86
+#: includes/class-variable-length.php:137
 #, php-format
 msgid "Length (%s)"
 msgstr ""
 
 #. translators: %1$s and %2$s are the inclusive length bounds; %3$s is the unit.
-#: includes/class-variable-length.php:123
+#: includes/class-variable-length.php:182
 #, php-format
 msgid "Please enter a length between %1$s and %2$s %3$s."
 msgstr ""
 
 #. translators: %1$s is the required step size; %2$s is the unit.
-#: includes/class-variable-length.php:128
+#: includes/class-variable-length.php:187
 #, php-format
 msgid "The length must be a multiple of %1$s %2$s."
 msgstr ""
 
-#: includes/class-variable-length.php:157
-#: includes/class-variable-length.php:173
+#: includes/class-variable-length.php:221
+#: includes/class-variable-length.php:237
 msgid "Length"
 msgstr ""
 
-#: includes/class-variable-length.php:186
+#: includes/class-variable-length.php:250
 msgid "Choose length"
 msgstr ""
 
