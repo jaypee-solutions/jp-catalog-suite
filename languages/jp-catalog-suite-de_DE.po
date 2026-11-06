@@ -133,3 +133,68 @@ msgstr "Bezeichnung für Anfrage absenden"
 
 msgid "Thank you. Your inquiry has been received."
 msgstr "Vielen Dank. Ihre Anfrage ist eingegangen."
+msgid "New inquiry"
+msgstr "Neue Anfrage"
+
+msgid "Sent to the shop manager when a customer submits an inquiry."
+msgstr "Wird an die Shopverwaltung gesendet, wenn ein Kunde eine Anfrage übermittelt."
+
+msgid "Inquiry confirmation"
+msgstr "Anfragebestätigung"
+
+msgid "Sent to the customer when an inquiry is received."
+msgstr "Wird an den Kunden gesendet, wenn eine Anfrage eingeht."
+
+msgid "Thank you for your inquiry"
+msgstr "Vielen Dank für Ihre Anfrage"
+
+msgid "[{site_title}]: New inquiry #{order_number}"
+msgstr "[{site_title}]: Neue Anfrage #{order_number}"
+
+msgid "Your inquiry at {site_title}"
+msgstr "Ihre Anfrage bei {site_title}"
+
+msgid "Recipient(s)"
+msgstr "Empfänger"
+
+msgid "Enter recipients (comma-separated). Defaults to the site administrator email address."
+msgstr "Geben Sie Empfänger durch Kommas getrennt ein. Standardmäßig wird die E-Mail-Adresse der Website-Administration verwendet."
+
+msgid "SKU"
+msgstr "Artikelnummer"
+
+msgid "Quantity"
+msgstr "Menge"
+
+msgid "Details"
+msgstr "Details"
+
+msgid "A customer has submitted an inquiry."
+msgstr "Ein Kunde hat eine Anfrage übermittelt."
+
+msgid "Thank you for your inquiry."
+msgstr "Vielen Dank für Ihre Anfrage."
+
+msgid "Customer message"
+msgstr "Nachricht des Kunden"
+
+msgid "Your message"
+msgstr "Ihre Nachricht"
+
+msgid "Name"
+msgstr "Name"
+
+msgid "Email"
+msgstr "E-Mail-Adresse"
+
+msgid "Phone"
+msgstr "Telefon"
+
+msgid "Company"
+msgstr "Unternehmen"
+
+msgid "Billing address"
+msgstr "Rechnungsadresse"
+
+msgid "Customer details"
+msgstr "Kundendetails"

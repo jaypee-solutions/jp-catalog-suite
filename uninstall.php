@@ -21,6 +21,8 @@ foreach ( $option_names as $option_name ) {
     delete_option( $option_name );
 }
 delete_option( 'jp_catalog_suite_github_token' );
+delete_option( 'woocommerce_jps_cs_new_inquiry_settings' );
+delete_option( 'woocommerce_jps_cs_inquiry_confirmation_settings' );
 wp_clear_scheduled_hook( 'jps_cs_purge_download_log' );
 
 if ( ! $purge ) {

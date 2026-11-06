@@ -20,6 +20,9 @@ Enable **Quote mode** in the Catalog Suite settings to let customers submit inqu
 Quote mode provides the translatable default labels **Inquiry basket**, **Add to inquiry**, **Continue to inquiry**, and **Send inquiry**. Set `jps_cs_quote_cart_label`, `jps_cs_quote_add_to_cart_label`, `jps_cs_quote_proceed_label`, and `jps_cs_quote_place_order_label` to override them; an empty value uses the translated default. The `jps_cs_quote_labels` filter adjusts the complete label map. WooCommerce cart and checkout page titles are WordPress page titles; rename those pages separately.
 
 
+## Inquiry emails
+
+Two price-free WooCommerce emails are registered for each new Inquiry: **New inquiry** to the configured recipients (defaults to the site administrator email) and **Inquiry confirmation** to the billing email. Edit or disable them under **WooCommerce → Settings → Emails**. The New inquiry recipient accepts comma-separated addresses. Both email formats list products, SKU, quantity, item details, the customer's message and customer details without prices. The admin message replies to the customer's billing email. The `jps_cs_inquiry_created` action fires when an Inquiry is created; email delivery follows WooCommerce's pending-to-Inquiry notification. The two email settings are removed on uninstall; no email content is retained by this module.
 ## Variable length
 
 Enable the module under **WooCommerce → Settings → Catalog Suite**. Its settings define the default unit, minimum, maximum, and step; simple products can enable Variable length and override those values. Each submitted length is validated and displayed on its separate cart line and order item, while WooCommerce quantity counts pieces. Catalog buttons link to the product page as **Choose length**. The `jps_cs_length_config` filter customizes resolved length configuration. Variable products, Store API add-to-cart, and pricing by length unit are not supported in this phase.
