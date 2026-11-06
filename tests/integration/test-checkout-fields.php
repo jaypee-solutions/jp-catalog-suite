@@ -80,4 +80,19 @@ final class Test_Checkout_Fields extends WP_UnitTestCase {
         $this->assertSame( 'required', apply_filters( 'pre_option_woocommerce_checkout_company_field', false ) );
         $this->assertSame( 'hidden', apply_filters( 'pre_option_woocommerce_checkout_phone_field', false ) );
     }
+
+    public function test_checkout_field_preferences_do_not_apply_when_quote_mode_is_inactive(): void {
+        update_option( 'jps_cs_checkout_company', 'hidden' );
+        update_option( 'jps_cs_checkout_address', 'hidden' );
+        add_filter( 'jps_cs_quote_mode_active', '__return_false' );
+
+        $original = WC()->checkout()->get_checkout_fields();
+        $fields   = apply_filters( 'woocommerce_checkout_fields', $original );
+        $this->assertSame( $original, $fields );
+        $this->assertNull( apply_filters( 'pre_option_woocommerce_checkout_company_field', 'baseline-company' ) );
+        $this->assertSame( [ 'DE' => [ 'address_1' => [] ] ], apply_filters( 'woocommerce_get_country_locale', [ 'DE' => [ 'address_1' => [] ] ] ) );
+        $this->assertSame( [ 'address_1' => [] ], apply_filters( 'woocommerce_default_address_fields', [ 'address_1' => [] ] ) );
+
+        remove_filter( 'jps_cs_quote_mode_active', '__return_false' );
+    }
 }

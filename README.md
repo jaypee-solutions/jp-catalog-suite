@@ -92,3 +92,51 @@ npm run env:stop
 ## Release
 
 Build the installable archive with `npm run build:release`. Update the version in `jp-catalog-suite.php` and `readme.txt`, add a changelog entry, then tag and push the release.
+
+## Installation and configuration
+
+Install the release ZIP through **Plugins → Add New → Upload Plugin**, then activate it. WooCommerce is required. For private GitHub release updates, provide a read-only personal access token for the private repository as `jp_catalog_suite_github_token`; store it in a secret manager or environment-backed configuration, never publish it or commit it.
+
+Open **WooCommerce → Settings → Catalog Suite**. Enable the modules needed in General, then configure each module's settings section. Product-specific controls appear in the product editor. Save settings before testing the storefront.
+
+## Hosting and privacy
+
+Protected-file hosting requirements, including upload limits, Traefik body limits, Apache X-Sendfile, nginx denial, and Varnish pass rules, are documented in the [hosting runbook](.okf/references/hosting-requirements.md). PHP delivery supports files up to 256 MB and does not support HTTP Range requests. Configure production proxy and web-server rules before enabling protected files.
+
+Self-registration is governed by WordPress/WooCommerce account settings. Sites that expose registration should consider an ALTCHA anti-spam integration appropriate to their deployment. The plugin does not include a CAPTCHA service.
+
+The Download log is opt-in and stores user, file, optional product identifier and UTC timestamp; it does not record IP addresses. Personal-data export/erasure and retention cleanup are supported. See **Uninstall** for data-retention behavior.
+
+## Multilingual sites
+
+TranslatePress needs no plugin-specific configuration; translate the frontend strings normally. WPML admin-text configuration is supplied in `wpml-config.xml`. Polylang can translate content and standard strings through its usual workflow; global tabs are WordPress content and should be translated/assigned as appropriate for the site's language setup. Always test both Classic and Blocks checkout in each published language.
+
+## Hook reference
+
+All hook names use the `jps_cs_` prefix. Callback parameters below follow the order passed by the plugin.
+
+| Hook | Signature | Purpose |
+|---|---|---|
+| `jps_cs_quote_mode_active` (filter) | `(bool $active): bool` | Enable or disable quote-mode behavior. |
+| `jps_cs_quote_mode_applies_to_product` (filter) | `(bool $applies, WC_Product $product): bool` | Control quote mode for a product. |
+| `jps_cs_quote_labels` (filter) | `(array $labels): array` | Customize the complete customer-facing label map. |
+| `jps_cs_inquiry_created` (action) | `(WC_Order $order): void` | Runs when a new Inquiry is created. |
+| `jps_cs_germanized_kept_checkboxes` (filter) | `(array $ids): array` | Select Germanized legal checkbox IDs retained in Quote mode. |
+| `jps_cs_tab_content` (filter) | `(string $content, WP_Post $tab, WC_Product $product): string` | Adjust rendered global tab content. |
+| `jps_cs_product_tabs` (filter) | `(array $tabs, WC_Product $product): array` | Adjust the product tab list. |
+| `jps_cs_can_access_protected` (filter) | `(bool $allowed, ?WP_User $user, array $context): bool` | Decide access to protected block content or files. |
+| `jps_cs_protected_notice_html` (filter) | `(string $html, ?WC_Product $product): string` | Customize the Access block notice markup. |
+| `jps_cs_before_file_delivery` (action) | `(int $attachment_id, int $user_id, int $product_id): void` | Runs immediately before authorized file delivery; download logging uses this action. |
+| `jps_cs_file_delivery_method` (filter) | `(string $method, int $attachment_id): string` | Select `php` or `xsendfile` delivery. |
+| `jps_cs_purge_download_log` (action) | `(): void` | Runs the scheduled retention cleanup for the Download log. |
+| `jps_cs_length_config` (filter) | `(array $config, WC_Product $product): array` | Adjust resolved unit and length bounds/defaults. |
+| `jps_cs_length_item_price` (filter) | `(float $price, WC_Product $product, array $cart_item): float` | Adjust calculated length-based cart-item price. |
+
+### Known limitations
+
+- Protected-file PHP delivery has a 256 MB supported upload size and no HTTP Range support; nginx requires an explicit deny rule.
+- Guest access is the default for protected content only when access rules are customized; the default Access policy grants logged-in users.
+- Germanized integration is supported; German Market is not.
+- Blocks cannot hide the Country checkout field, and Blocks order notes cannot be made required.
+- Inquiry status is registered by the plugin; after uninstall, existing inquiries retain their status but are unavailable in order lists until the status is registered again.
+- Length-specific behavior is documented in the module sections above; Store API and variation support depend on the enabled product configuration.

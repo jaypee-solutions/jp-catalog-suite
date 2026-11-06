@@ -13,10 +13,14 @@ final class Download_Log {
 
     public static function init(): void {
         global $wpdb;
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Check the plugin-owned table on initialization.
-        $table_exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( self::table() ) ) );
-        if ( '1' !== get_option( 'jps_cs_db_version' ) || self::table() !== $table_exists ) {
-            self::install_table();
+        if ( '1' !== get_option( 'jps_cs_db_version' ) ) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Check for a missing table only before initial installation.
+            $table_exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( self::table() ) ) );
+            if ( self::table() !== $table_exists ) {
+                self::install_table();
+            } else {
+                update_option( 'jps_cs_db_version', '1' );
+            }
         }
         add_action( 'jps_cs_before_file_delivery', [ self::class, 'record' ], 10, 3 );
         add_action( 'admin_menu', [ self::class, 'admin_menu' ] );

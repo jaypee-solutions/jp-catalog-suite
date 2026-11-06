@@ -172,6 +172,10 @@ final class Quote_Mode {
     }
 
     public static function checkout_fields( array $fields ): array {
+        if ( ! self::is_active() ) {
+            return $fields;
+        }
+
         foreach ( [ 'company', 'phone' ] as $field ) {
             $setting = get_option( "jps_cs_checkout_{$field}", 'optional' );
             $key     = "billing_{$field}";
@@ -206,15 +210,18 @@ final class Quote_Mode {
     }
 
     public static function blocks_company_field() {
-        return get_option( 'jps_cs_checkout_company', 'optional' );
+        return self::is_active() ? get_option( 'jps_cs_checkout_company', 'optional' ) : null;
     }
 
     public static function blocks_phone_field() {
-        return get_option( 'jps_cs_checkout_phone', 'optional' );
+        return self::is_active() ? get_option( 'jps_cs_checkout_phone', 'optional' ) : null;
     }
 
-
     public static function country_locale( array $locale ): array {
+        if ( ! self::is_active() ) {
+            return $locale;
+        }
+
         $address = get_option( 'jps_cs_checkout_address', 'hidden' );
         foreach ( $locale as &$country ) {
             foreach ( [ 'address_1', 'address_2', 'city', 'state', 'postcode', 'country' ] as $field ) {
@@ -229,6 +236,10 @@ final class Quote_Mode {
     }
 
     public static function default_address_fields( array $fields ): array {
+        if ( ! self::is_active() ) {
+            return $fields;
+        }
+
         $address = get_option( 'jps_cs_checkout_address', 'hidden' );
         foreach ( [ 'address_1', 'address_2', 'city', 'state', 'postcode' ] as $field ) {
             if ( isset( $fields[ $field ] ) ) {

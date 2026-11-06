@@ -11,14 +11,14 @@ extracts it as the GitHub release notes and fails without it.
 ## [Unreleased]
 
 ### Added
-- Global product tabs with all-product or category scope and priority.
 - Quote mode supports guest Inquiry checkout without payment, shipping, taxes, or coupons.
-- Variable products support inheritable variation-specific length limits and server-side validation.
-- Quote mode now provides translatable, configurable Inquiry basket and checkout labels in PHP and WooCommerce Blocks.
-- Price-free New inquiry and Inquiry confirmation email notifications with configurable recipients and item details.
-- Quote mode hides customer-facing prices and price offers; existing Inquiry views remain price-free and My Account uses the Inquiries label without totals.
-- Germanized legal notices and non-kept checkout checkboxes are suppressed during Quote mode.
-- Opt-in protected-file Download log with daily retention, capability-protected administration and personal-data export/erasure.
+- Global product tabs with all-product or category scope and priority.
+- Variable-length product inputs with validated cart and order data.
+- Added Germanized compatibility, price-free Inquiry emails and checkout fields, protected product tabs/files, access controls, and opt-in download logging.
+- Variable-length variation overrides, Store API support, and optional price-per-length-unit calculations.
+- Translatable Inquiry labels and customer price hiding.
+- Shop-wide Core tab controls and per-product tab overrides.
+- Inquiry checkout fields configurable for Company, Phone, Address, and Message.
 
 ## [0.1.0] - 2026-11-06
 
