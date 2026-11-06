@@ -114,7 +114,9 @@ final class Variable_Length {
     public static function save_variation_fields( int $variation_id, int $loop ): void {
         $parent = wc_get_product( wp_get_post_parent_id( $variation_id ) );
         $parent_config = $parent instanceof \WC_Product ? self::config( $parent ) : [ 'min' => 1, 'max' => 1000 ];
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce verifies the variation editor nonce before this callback runs.
         $min_raw = isset( $_POST[ self::META['min'] ][ $loop ] ) ? sanitize_text_field( wp_unslash( $_POST[ self::META['min'] ][ $loop ] ) ) : '';
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce verifies the variation editor nonce before this callback runs.
         $max_raw = isset( $_POST[ self::META['max'] ][ $loop ] ) ? sanitize_text_field( wp_unslash( $_POST[ self::META['max'] ][ $loop ] ) ) : '';
         $min_value = '' !== $min_raw ? (float) $min_raw : $parent_config['min'];
         $max_value = '' !== $max_raw ? (float) $max_raw : $parent_config['max'];
@@ -150,7 +152,9 @@ final class Variable_Length {
         if ( ! $product instanceof \WC_Product_Simple && ! $product instanceof \WC_Product_Variable ) {
             return;
         }
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce verifies the product editor nonce before this callback runs.
         $min_raw = isset( $_POST[ self::META['min'] ] ) ? sanitize_text_field( wp_unslash( $_POST[ self::META['min'] ] ) ) : '';
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce verifies the product editor nonce before this callback runs.
         $max_raw = isset( $_POST[ self::META['max'] ] ) ? sanitize_text_field( wp_unslash( $_POST[ self::META['max'] ] ) ) : '';
         $min_value = '' !== $min_raw ? (float) $min_raw : (float) get_option( 'jps_cs_length_min', 1 );
         $max_value = '' !== $max_raw ? (float) $max_raw : (float) get_option( 'jps_cs_length_max', 1000 );
@@ -235,6 +239,7 @@ final class Variable_Length {
             return $passed;
         }
         $is_store_api = ( function_exists( 'is_rest_request' ) && is_rest_request() ) || ( defined( 'REST_REQUEST' ) && REST_REQUEST );
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Detects whether WooCommerce is processing a product form.
         $is_product_form = isset( $_REQUEST['add-to-cart'] ) || isset( $_REQUEST['jps_cs_length'] );
         if ( ! $is_store_api && ! $is_product_form ) {
             return $passed;

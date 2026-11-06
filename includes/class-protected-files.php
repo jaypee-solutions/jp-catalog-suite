@@ -104,6 +104,7 @@ final class Protected_Files {
         return $out;
     }
 
+    // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WooCommerce supplies the sanitize filter contract.
     public static function sanitize_mimes( $value, $option = null, $raw_value = null ): string {
         if ( ! current_user_can( 'manage_options' ) ) {
             return (string) get_option( 'jps_cs_files_mimes', "stp|step=application/step\ndxf=application/dxf" );
@@ -180,7 +181,8 @@ final class Protected_Files {
         if ( ! in_array( strtolower( pathinfo( $path, PATHINFO_EXTENSION ) ), $extensions, true ) ) {
             return;
         }
-        $previous = $_POST['attachments'][ $id ] ?? null;
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- WooCommerce verifies the attachment editor nonce; this value is only preserved for restoration.
+        $previous = isset( $_POST['attachments'][ $id ] ) && is_array( $_POST['attachments'][ $id ] ) ? wc_clean( wp_unslash( $_POST['attachments'][ $id ] ) ) : null;
         $_POST['attachments'][ $id ]['jps_cs_protected'] = '1';
         self::$automatic = true;
         try {
@@ -239,7 +241,11 @@ final class Protected_Files {
         wp_mkdir_p( $directory );
         $target = trailingslashit( $directory ) . wp_unique_filename( $directory, basename( $relative ) );
         $metadata = wp_get_attachment_metadata( $id );
-        if ( ! @rename( $source, $target ) ) {
+        if ( ! class_exists( '\WP_Filesystem_Direct' ) ) {
+            require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
+        }
+        $filesystem = new \WP_Filesystem_Direct( null );
+        if ( ! $filesystem->move( $source, $target, false ) ) {
             $post['errors']['jps_cs_protected']['errors'][] = __( 'The file could not be moved.', 'jp-catalog-suite' );
             return $post;
         }
@@ -279,14 +285,17 @@ final class Protected_Files {
         return '1' === get_post_meta( $id, '_jps_cs_protected', true ) ? self::attachment_url( $guid, $id ) : $guid;
     }
 
+    // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Required by the REST attachment collection filter.
     public static function rest_query( array $args, \WP_REST_Request $request ): array {
         if ( ! current_user_can( 'upload_files' ) ) {
+            // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Excludes protected uploads from guest REST attachment collections.
             $args['meta_query'] = $args['meta_query'] ?? [];
             $args['meta_query'][] = [ 'key' => '_jps_cs_protected', 'compare' => 'NOT EXISTS' ];
         }
         return $args;
     }
 
+    // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Required by the REST attachment response filter.
     public static function rest_attachment( \WP_REST_Response $response, \WP_Post $post, \WP_REST_Request $request ) {
         if ( '1' === get_post_meta( $post->ID, '_jps_cs_protected', true ) ) {
             if ( ! current_user_can( 'upload_files' ) ) {

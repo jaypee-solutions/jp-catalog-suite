@@ -238,7 +238,7 @@ final class Test_Protected_Files extends WP_UnitTestCase {
         $this->assertSame( 'step=application/step', $sanitized );
         $this->assertArrayNotHasKey( 'php', apply_filters( 'upload_mimes', [] ) );
         wp_set_current_user( self::factory()->user->create( [ 'role' => 'shop_manager' ] ) );
-        $this->assertSame( "php=text/plain\nstep=application/step", apply_filters( 'woocommerce_admin_settings_sanitize_option_jps_cs_files_mimes', "php=text/plain", 'jps_cs_files_mimes', [] ) );
+        $this->assertSame( get_option( 'jps_cs_files_mimes' ), apply_filters( 'woocommerce_admin_settings_sanitize_option_jps_cs_files_mimes', 'php=text/plain', 'jps_cs_files_mimes', [] ) );
         if ( null === $previous ) {
             delete_option( 'jps_cs_files_mimes' );
         } else {
