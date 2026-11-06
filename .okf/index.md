@@ -13,4 +13,5 @@ okf_version: "0.1"
 * [E2E environment isolation](references/e2e-ci-isolation.md) - CI-specific fixtures and independent E2E assertions.
 * [Product tab overrides](decisions/0012-product-tab-overrides.md) - Product-specific tabs replace global tabs and hide them per product.
 * [Quote-mode customer labels](decisions/0011-quote-mode-labels.md) - Configurable translated labels for customer-facing inquiry flows.
+* [Core tab settings](decisions/0015-core-tab-settings.md) - Shop-wide Core tab titles, priorities, and visibility.
 * [Price-free Inquiry emails](decisions/0010-price-free-inquiry-emails.md) - Configurable price-free administrator and customer notifications for new Inquiries.

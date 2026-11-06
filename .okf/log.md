@@ -9,3 +9,4 @@
 * **Product tab overrides**: Added product-scoped tabs, replacement, per-product hiding, and canonical-ID comparisons.
 * **Quote-mode labels**: Added configurable translated inquiry wording across PHP and WooCommerce Blocks.
 * **Inquiry emails**: Added configurable price-free New inquiry and Inquiry confirmation emails.
+* **Core tab settings**: Added shop-wide Core tab title, priority, and visibility controls.
