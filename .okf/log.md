@@ -20,3 +20,4 @@
 * **Access block**: Added audience-specific tab content, registration notices, and logged-in cache bypass guidance.
 * **Price per length unit**: Added opt-in product pricing based on cart-item length, preserving Quote mode price hiding.
 * **Protected files**: Added ADR 0007 for denied uploads storage, access-controlled delivery, and host configuration requirements.
+* **Download log privacy**: Added opt-in file-download records with retention, personal-data tools, and account-deletion cleanup.

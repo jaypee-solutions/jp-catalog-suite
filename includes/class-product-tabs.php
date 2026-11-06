@@ -201,6 +201,10 @@ final class Product_Tabs {
         $settings[] = [ 'title' => __( 'Automatically protect extensions', 'jp-catalog-suite' ), 'id' => 'jps_cs_files_protected_exts', 'type' => 'text', 'default' => 'stp, step, dxf' ];
         $settings[] = [ 'title' => __( 'File delivery method', 'jp-catalog-suite' ), 'id' => 'jps_cs_files_delivery', 'type' => 'select', 'default' => 'auto', 'options' => [ 'auto' => __( 'Automatic', 'jp-catalog-suite' ), 'xsendfile' => 'X-Sendfile', 'php' => 'PHP' ] ];
         $settings[] = [ 'type' => 'sectionend', 'id' => 'jps_cs_files_settings' ];
+        $settings[] = [ 'title' => __( 'Download log', 'jp-catalog-suite' ), 'type' => 'title', 'id' => 'jps_cs_download_log_settings' ];
+        $settings[] = [ 'title' => __( 'Enable download log', 'jp-catalog-suite' ), 'id' => 'jps_cs_files_log_enabled', 'type' => 'checkbox', 'default' => 'no' ];
+        $settings[] = [ 'title' => __( 'Download log retention (days)', 'jp-catalog-suite' ), 'id' => 'jps_cs_files_log_retention_days', 'type' => 'number', 'default' => 365, 'custom_attributes' => [ 'min' => 0, 'step' => 1 ], 'desc' => __( 'Set to 0 to keep entries until erased or the user is deleted.', 'jp-catalog-suite' ) ];
+        $settings[] = [ 'type' => 'sectionend', 'id' => 'jps_cs_download_log_settings' ];
         $settings = array_merge( $settings, Access_Block::settings() );
         return $settings;
     }
