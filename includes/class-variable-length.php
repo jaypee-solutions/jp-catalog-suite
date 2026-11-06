@@ -11,6 +11,8 @@ namespace JayPee\CatalogSuite;
 
 final class Variable_Length {
 
+    private static ?string $store_api_length = null;
+
     private const META = [ 'enabled' => '_jps_cs_length_enabled', 'unit' => '_jps_cs_length_unit', 'min' => '_jps_cs_length_min', 'max' => '_jps_cs_length_max', 'step' => '_jps_cs_length_step', 'default' => '_jps_cs_length_default', 'price_per_unit' => '_jps_cs_length_price_per_unit' ];
 
     public static function init(): void {
@@ -21,8 +23,10 @@ final class Variable_Length {
         add_filter( 'woocommerce_available_variation', [ self::class, 'available_variation' ], 10, 3 );
         add_action( 'wp_enqueue_scripts', [ self::class, 'enqueue_scripts' ] );
         add_action( 'woocommerce_before_add_to_cart_button', [ self::class, 'render_input' ] );
-        add_filter( 'woocommerce_add_to_cart_validation', [ self::class, 'validate' ], 10, 3 );
+        add_filter( 'woocommerce_add_to_cart_validation', [ self::class, 'validate' ], 10, 4 );
+        add_filter( 'woocommerce_store_api_add_to_cart_data', [ self::class, 'store_api_add_to_cart_data' ], 10, 2 );
         add_filter( 'woocommerce_add_cart_item_data', [ self::class, 'cart_item_data' ], 10, 3 );
+        add_action( 'woocommerce_add_to_cart', [ self::class, 'clear_store_api_length' ] );
         add_filter( 'woocommerce_get_item_data', [ self::class, 'display_item_data' ], 10, 2 );
         add_action( 'woocommerce_checkout_create_order_line_item', [ self::class, 'order_item_meta' ], 10, 4 );
         add_filter( 'woocommerce_loop_add_to_cart_link', [ self::class, 'loop_button' ], 10, 3 );
@@ -146,8 +150,46 @@ final class Variable_Length {
         printf( '<p class="jps-cs-length"><label for="jps_cs_length">%1$s</label><input id="jps_cs_length" name="jps_cs_length" type="number" required min="%2$s" max="%3$s" step="%4$s" value="%5$s" /></p>', esc_html( sprintf( __( 'Length (%s)', 'jp-catalog-suite' ), $config['unit'] ) ), esc_attr( (string) $config['min'] ), esc_attr( (string) $config['max'] ), esc_attr( (string) $config['step'] ), esc_attr( (string) $config['default'] ) );
     }
 
+    public static function store_api_add_to_cart_data( array $data, \WP_REST_Request $request ): array {
+        $extensions = $request->get_param( 'extensions' );
+        $extension_length = is_array( $extensions ) ? ( $extensions['jp-catalog-suite']['jps_cs_length'] ?? '' ) : '';
+        $value = $request->get_param( 'jps_cs_length' );
+        if ( ! is_scalar( $value ) || '' === (string) $value ) {
+            $value = $extension_length;
+        }
+        self::$store_api_length = is_scalar( $value ) ? wc_format_decimal( sanitize_text_field( (string) $value ) ) : null;
+        $product = wc_get_product( (int) $data['id'] );
+        if ( $product instanceof \WC_Product_Variation ) {
+            $product = wc_get_product( $product->get_parent_id() );
+        }
+        if ( ( ! $product instanceof \WC_Product_Simple && ! $product instanceof \WC_Product_Variable ) || ! self::config( $product )['enabled'] ) {
+            return $data;
+        }
+        $data['cart_item_data']['jps_cs_length'] = (float) self::request_length();
+        $data['cart_item_data']['jps_cs_length_unit'] = self::config( $product )['unit'];
+        return $data;
+    }
+    public static function clear_store_api_length(): void {
+        self::$store_api_length = null;
+    }
+
+
+    private static function request_length(): string {
+        if ( null !== self::$store_api_length ) {
+            return self::$store_api_length;
+        }
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce validates product add-to-cart requests.
+        $value = isset( $_POST['jps_cs_length'] ) ? sanitize_text_field( wp_unslash( $_POST['jps_cs_length'] ) ) : '';
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Product add-to-cart data is validated below.
+        if ( '' === $value && isset( $_REQUEST['jps_cs_length'] ) ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Product add-to-cart data is validated below.
+            $value = sanitize_text_field( wp_unslash( $_REQUEST['jps_cs_length'] ) );
+        }
+        return is_scalar( $value ) ? wc_format_decimal( $value ) : '';
+    }
+
     // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WooCommerce supplies quantity in its validation contract.
-    public static function validate( bool $passed, int $product_id, int $quantity ): bool {
+    public static function validate( bool $passed, int $product_id, int $quantity, int $variation_id = 0 ): bool {
         $product = wc_get_product( $product_id );
         if ( ! $passed || ( ! $product instanceof \WC_Product_Simple && ! $product instanceof \WC_Product_Variable ) ) {
             return $passed;
@@ -156,8 +198,10 @@ final class Variable_Length {
         if ( ! $config['enabled'] ) {
             return $passed;
         }
-        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- WooCommerce validates the variation request.
-        $variation_id = isset( $_REQUEST['variation_id'] ) ? absint( $_REQUEST['variation_id'] ) : 0;
+        if ( 0 === $variation_id ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- WooCommerce validates the variation request.
+            $variation_id = isset( $_REQUEST['variation_id'] ) ? absint( $_REQUEST['variation_id'] ) : 0;
+        }
         if ( $product instanceof \WC_Product_Variable && $variation_id ) {
             $variation = wc_get_product( $variation_id );
             if ( $variation instanceof \WC_Product_Variation && $variation->get_parent_id() === $product_id ) {
@@ -173,16 +217,6 @@ final class Variable_Length {
         return true;
     }
 
-    private static function request_length(): string {
-        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce validates product add-to-cart requests.
-        $value = isset( $_POST['jps_cs_length'] ) ? sanitize_text_field( wp_unslash( $_POST['jps_cs_length'] ) ) : '';
-        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Product add-to-cart data is validated below.
-        if ( '' === $value && isset( $_REQUEST['jps_cs_length'] ) ) {
-            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Product add-to-cart data is validated below.
-            $value = sanitize_text_field( wp_unslash( $_REQUEST['jps_cs_length'] ) );
-        }
-        return is_scalar( $value ) ? wc_format_decimal( $value ) : '';
-    }
 
     private static function validation_message( array $config, string $value ): ?string {
         $length = is_numeric( $value ) ? (float) $value : NAN;
@@ -213,7 +247,7 @@ final class Variable_Length {
                 $config = self::variation_config( $product, $variation );
             }
         }
-        $value = self::request_length();
+        $value = isset( $data['jps_cs_length'] ) ? wc_format_decimal( (string) $data['jps_cs_length'] ) : self::request_length();
         $message = self::validation_message( $config, $value );
         if ( null !== $message ) {
             throw new \Exception( esc_html( $message ) );
@@ -300,6 +334,6 @@ final class Variable_Length {
     }
 
     public static function disable_ajax_add( bool $supports, string $feature, \WC_Product $product ): bool {
-        return 'ajax_add_to_cart' === $feature && $product instanceof \WC_Product_Simple && self::config( $product )['enabled'] ? false : $supports;
+        return 'ajax_add_to_cart' === $feature && ( $product instanceof \WC_Product_Simple || $product instanceof \WC_Product_Variable ) && self::config( $product )['enabled'] ? false : $supports;
     }
 }

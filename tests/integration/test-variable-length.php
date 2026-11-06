@@ -95,6 +95,7 @@ final class Test_Variable_Length extends WP_UnitTestCase {
         $_REQUEST['jps_cs_length'] = '150';
         $_POST['jps_cs_length'] = '150';
         $this->assertNotFalse( WC()->cart->add_to_cart( $product->get_id() ) );
+        $this->assertSame( [ 120.0, 150.0 ], array_column( array_values( WC()->cart->get_cart() ), 'jps_cs_length' ) );
         $this->assertCount( 2, WC()->cart->get_cart() );
         $item_data = apply_filters( 'woocommerce_get_item_data', [], reset( WC()->cart->get_cart() ) );
         $this->assertSame( '120 cm', $item_data[0]['display'] );
@@ -212,5 +213,69 @@ final class Test_Variable_Length extends WP_UnitTestCase {
         $this->assertSame( 'yes', $product->get_meta( '_jps_cs_length_price_per_unit', true ) );
         $_POST = $previous_post;
         update_option( 'jps_cs_length_pricing_enabled', 'no' );
+    }
+
+    public function test_store_api_add_item_preserves_valid_length_and_rejects_invalid_length(): void {
+        $product = $this->product( [ 'max' => 300, 'step' => 1 ] );
+        WC()->cart->empty_cart();
+
+        $request = new WP_REST_Request( 'POST', '/wc/store/v1/cart/add-item' );
+        $request->add_header( 'Nonce', wp_create_nonce( 'wc_store_api' ) );
+        $request->set_body_params( [ 'id' => $product->get_id(), 'quantity' => 1, 'extensions' => [ 'jp-catalog-suite' => [ 'jps_cs_length' => '120' ] ] ] );
+        $request->set_param( 'extensions', [ 'jp-catalog-suite' => [ 'jps_cs_length' => '120' ] ] );
+        $response = rest_get_server()->dispatch( $request );
+        $this->assertSame( 201, $response->get_status(), wp_json_encode( $response->get_data() ) );
+        $this->assertCount( 1, WC()->cart->get_cart() );
+        $item = reset( WC()->cart->get_cart() );
+        $display_data = apply_filters( 'woocommerce_get_item_data', [], $item );
+        $this->assertSame( '120 cm', $display_data[0]['display'] );
+        $this->assertSame( 120.0, $item['jps_cs_length'] );
+        $this->assertSame( 'cm', $item['jps_cs_length_unit'] );
+
+        $request = new WP_REST_Request( 'POST', '/wc/store/v1/cart/add-item' );
+        $request->add_header( 'Nonce', wp_create_nonce( 'wc_store_api' ) );
+        $request->set_body_params( [ 'id' => $product->get_id(), 'quantity' => 1, 'extensions' => [ 'jp-catalog-suite' => [ 'jps_cs_length' => '5' ] ] ] );
+        $request->set_param( 'extensions', [ 'jp-catalog-suite' => [ 'jps_cs_length' => '5' ] ] );
+        $response = rest_get_server()->dispatch( $request );
+        $this->assertGreaterThanOrEqual( 400, $response->get_status() );
+        $this->assertCount( 1, WC()->cart->get_cart() );
+    }
+
+    public function test_store_api_uses_variable_product_variation_length_limits(): void {
+        [ $product, $variations ] = $this->variable_product();
+        WC()->cart->empty_cart();
+        $request = new WP_REST_Request( 'POST', '/wc/store/v1/cart/add-item' );
+        $request->add_header( 'Nonce', wp_create_nonce( 'wc_store_api' ) );
+        $request->set_body_params( [ 'id' => $product->get_id(), 'quantity' => 1, 'variation' => [ [ 'attribute' => 'attribute_colour', 'value' => 'Blue' ] ] ] );
+        $request->set_param( 'variation', [ [ 'attribute' => 'attribute_colour', 'value' => 'Blue' ] ] );
+        $request->set_param( 'extensions', [ 'jp-catalog-suite' => [ 'jps_cs_length' => '9.5' ] ] );
+        $response = rest_get_server()->dispatch( $request );
+        $this->assertSame( 201, $response->get_status(), wp_json_encode( $response->get_data() ) );
+        $item = reset( WC()->cart->get_cart() );
+        $this->assertSame( 9.5, $item['jps_cs_length'] );
+        $this->assertSame( 'cm', $item['jps_cs_length_unit'] );
+
+        $request = new WP_REST_Request( 'POST', '/wc/store/v1/cart/add-item' );
+        $request->add_header( 'Nonce', wp_create_nonce( 'wc_store_api' ) );
+        $request->set_body_params( [ 'id' => $product->get_id(), 'quantity' => 1, 'variation' => [ [ 'attribute' => 'attribute_colour', 'value' => 'Blue' ] ] ] );
+        $request->set_param( 'variation', [ [ 'attribute' => 'attribute_colour', 'value' => 'Blue' ] ] );
+        $request->set_param( 'extensions', [ 'jp-catalog-suite' => [ 'jps_cs_length' => '5' ] ] );
+        $response = rest_get_server()->dispatch( $request );
+        $this->assertGreaterThanOrEqual( 400, $response->get_status() );
+        $this->assertCount( 1, WC()->cart->get_cart() );
+    }
+
+    public function test_store_api_distinct_lengths_create_distinct_cart_lines(): void {
+        $product = $this->product( [ 'max' => 300, 'step' => 1 ] );
+        WC()->cart->empty_cart();
+        foreach ( [ '120', '150' ] as $length ) {
+            $request = new WP_REST_Request( 'POST', '/wc/store/v1/cart/add-item' );
+            $request->add_header( 'Nonce', wp_create_nonce( 'wc_store_api' ) );
+            $request->set_body_params( [ 'id' => $product->get_id(), 'quantity' => 1, 'jps_cs_length' => $length ] );
+            $request->set_param( 'jps_cs_length', $length );
+            $response = rest_get_server()->dispatch( $request );
+            $this->assertSame( 201, $response->get_status() );
+        }
+        $this->assertCount( 2, WC()->cart->get_cart() );
     }
 }
