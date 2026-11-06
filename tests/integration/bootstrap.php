@@ -45,6 +45,7 @@ tests_add_filter(
     static fn (): string => 'yes'
 );
 
+
 tests_add_filter(
     'setup_theme',
     static function (): void {

@@ -35,8 +35,10 @@ final class Plugin {
                 $class::init();
             }
         }
+        if ( self::is_module_active( 'tabs' ) ) {
+            Access_Block::init();
+        }
     }
-
 
     public static function is_module_active( string $id ): bool {
         return 'yes' === get_option( "jps_cs_module_{$id}", 'no' );

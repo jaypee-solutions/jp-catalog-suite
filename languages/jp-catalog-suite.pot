@@ -3,13 +3,13 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JayPee Solutions Catalog Suite for WooCommerce 0.1.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/jp-catalog-suite\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/t8-germanized\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-06T19:33:05+00:00\n"
+"POT-Creation-Date: 2026-11-06T20:06:45+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: jp-catalog-suite\n"
@@ -32,6 +32,32 @@ msgstr ""
 #. Author of the plugin
 #: jp-catalog-suite.php
 msgid "JayPee Solutions"
+msgstr ""
+
+#: includes/class-access-block.php:59
+msgid "You do not have permission to view this content."
+msgstr ""
+
+#: includes/class-access-block.php:75
+#: includes/class-access-block.php:108
+msgid "Please {login} or {register} to view this content."
+msgstr ""
+
+#: includes/class-access-block.php:80
+msgid "log in"
+msgstr ""
+
+#: includes/class-access-block.php:80
+msgid "register"
+msgstr ""
+
+#: includes/class-access-block.php:107
+#: includes/class-access-block.php:108
+msgid "Protected notice"
+msgstr ""
+
+#: includes/class-access-block.php:108
+msgid "Use {login} and {register} for links."
 msgstr ""
 
 #: includes/class-email-inquiry-confirmation.php:16
@@ -159,27 +185,27 @@ msgstr ""
 msgid "Hide"
 msgstr ""
 
-#: includes/class-product-tabs.php:204
+#: includes/class-product-tabs.php:205
 msgid "Description"
 msgstr ""
 
-#: includes/class-product-tabs.php:205
+#: includes/class-product-tabs.php:206
 msgid "Additional information"
 msgstr ""
 
-#: includes/class-product-tabs.php:206
+#: includes/class-product-tabs.php:207
 msgid "Reviews"
 msgstr ""
 
-#: includes/class-product-tabs.php:233
+#: includes/class-product-tabs.php:234
 msgid "Tabs"
 msgstr ""
 
-#: includes/class-product-tabs.php:253
+#: includes/class-product-tabs.php:254
 msgid "Hide on this product"
 msgstr ""
 
-#: includes/class-product-tabs.php:262
+#: includes/class-product-tabs.php:263
 msgid "Add product-specific tab"
 msgstr ""
 
@@ -422,7 +448,7 @@ msgstr ""
 msgid "Choose length"
 msgstr ""
 
-#: jp-catalog-suite.php:68
+#: jp-catalog-suite.php:69
 msgid "JayPee Solutions Catalog Suite for WooCommerce requires WooCommerce."
 msgstr ""
 
@@ -488,4 +514,39 @@ msgstr ""
 #: templates/emails/new-inquiry.php:15
 #: templates/emails/plain/new-inquiry.php:16
 msgid "Customer message"
+msgstr ""
+
+#: blocks/access/edit.js:6
+#: blocks/access/edit.js:34
+msgid "Access"
+msgstr ""
+
+#: blocks/access/edit.js:16
+msgid "Access settings"
+msgstr ""
+
+#: blocks/access/edit.js:18
+msgid "Show content"
+msgstr ""
+
+#: blocks/access/edit.js:21
+msgid "Only with access"
+msgstr ""
+
+#: blocks/access/edit.js:22
+msgid "Only without access"
+msgstr ""
+
+#: blocks/access/edit.js:27
+msgid "Show login notice when hidden"
+msgstr ""
+
+#: blocks/access/block.json
+msgctxt "block title"
+msgid "Access"
+msgstr ""
+
+#: blocks/access/block.json
+msgctxt "block description"
+msgid "Show content according to visitor access."
 msgstr ""
