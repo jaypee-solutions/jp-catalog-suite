@@ -17,7 +17,7 @@ test( 'length pricing multiplies by the entered length and displays the unit', a
 		await expect( page.locator( 'main' ) ).toContainText( /\/ cm/ );
 		const length = page.locator( 'input[name="jps_cs_length"]' );
 		await length.fill( '120' );
-		await page.getByRole( 'button', { name: /add to cart/i } ).click();
+		await page.getByRole( 'button', { name: 'Add to cart', exact: true } ).click();
 		await page.goto( '/cart/' );
 		const cart = page.locator( '.wp-block-woocommerce-cart' );
 		await expect( cart ).toContainText( '120 cm' );
