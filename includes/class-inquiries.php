@@ -66,7 +66,7 @@ final class Inquiries {
 
     public static function order_item_totals( array $totals, \WC_Order $order, string $tax_display ): array {
         unset( $tax_display );
-        return self::is_inquiry( $order ) ? [] : $totals;
+        return self::is_inquiry( $order ) && ( ! is_admin() || doing_action( 'woocommerce_email_before_order_table' ) ) ? [] : $totals;
     }
 
     public static function line_subtotal( string $subtotal, \WC_Order_Item_Product $item, \WC_Order $order ): string {
@@ -75,7 +75,7 @@ final class Inquiries {
     }
 
     public static function formatted_order_total( string $total, \WC_Order $order ): string {
-        return self::is_inquiry( $order ) && ! is_admin() ? '' : $total;
+        return self::is_inquiry( $order ) && ( ! is_admin() || doing_action( 'woocommerce_email_before_order_table' ) ) ? '' : $total;
     }
 
     public static function account_menu_items( array $items ): array {
