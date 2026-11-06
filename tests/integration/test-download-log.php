@@ -46,8 +46,11 @@ final class Test_Download_Log extends WP_UnitTestCase {
     }
 
     public function test_download_log_page_requires_shop_manager_capability(): void {
+        wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
+        global $menu, $submenu;
+        $menu = [];
+        $submenu = [];
         do_action( 'admin_menu' );
-        global $submenu;
         $entry = array_values( array_filter( $submenu['woocommerce'] ?? [], static fn ( array $item ): bool => 'jps-cs-download-log' === $item[2] ) );
         $this->assertCount( 1, $entry );
         $this->assertSame( 'manage_woocommerce', $entry[0][1] );
