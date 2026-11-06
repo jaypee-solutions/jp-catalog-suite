@@ -146,8 +146,8 @@ final class Product_Tabs {
             $scope = 'all';
         }
         update_post_meta( $post_id, '_jps_cs_scope', $scope );
-        $categories = isset( $_POST['jps_cs_categories'] ) ? array_values( array_unique( array_filter( array_map( 'absint', (array) wp_unslash( $_POST['jps_cs_categories'] ) ) ) ) ) : [];
-        update_post_meta( $post_id, '_jps_cs_categories', $categories );
+        $category_ids = isset( $_POST['jps_cs_categories'] ) ? array_values( array_unique( array_filter( array_map( 'absint', (array) wp_unslash( $_POST['jps_cs_categories'] ) ) ) ) ) : [];
+        update_post_meta( $post_id, '_jps_cs_categories', $category_ids );
         $product_ids = isset( $_POST['jps_cs_products'] ) ? array_values( array_unique( array_filter( array_map( 'absint', (array) wp_unslash( $_POST['jps_cs_products'] ) ) ) ) ) : [];
         update_post_meta( $post_id, '_jps_cs_products', $product_ids );
         update_post_meta( $post_id, '_jps_cs_priority', isset( $_POST['jps_cs_priority'] ) ? sanitize_text_field( wp_unslash( $_POST['jps_cs_priority'] ) ) : '' );
@@ -237,7 +237,7 @@ final class Product_Tabs {
                 $stored = array_map( static fn ( int $id ): int => Plugin::canonical_id( $id, 'product' ), array_map( 'absint', (array) get_post_meta( $post->ID, '_jps_cs_products', true ) ) );
                 $applies = in_array( Plugin::canonical_id( $product->get_id(), 'product' ), $stored, true );
             } elseif ( 'categories' === $scope ) {
-                $stored = array_map( static fn ( int $id ): int => Plugin::canonical_id( $id, 'product_cat' ), array_map( 'absint', (array) get_post_meta( $post->ID, '_jps_cs_categories', true ) ) );
+                $stored = array_map( static fn ( int $term_id ): int => Plugin::canonical_id( $term_id, 'product_cat' ), array_map( 'absint', (array) get_post_meta( $post->ID, '_jps_cs_categories', true ) ) );
                 $applies = (bool) array_intersect( $stored, $expanded );
             }
             if ( ! $applies ) {
