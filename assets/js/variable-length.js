@@ -7,6 +7,7 @@
 		if ( ! input.length ) {
 			return;
 		}
+		let currentVariationId = null;
 		const parent = {
 			min: input.attr( 'min' ),
 			max: input.attr( 'max' ),
@@ -14,6 +15,10 @@
 			default: input.val(),
 		};
 		form.on( 'found_variation', function ( event, variation ) {
+			if ( currentVariationId === variation.variation_id ) {
+				return;
+			}
+			currentVariationId = variation.variation_id;
 			const config = variation.jps_cs_length;
 			if ( ! config || ! config.enabled ) {
 				return;
@@ -24,6 +29,7 @@
 			input.val( config.default );
 		} );
 		form.on( 'reset_data', function () {
+			currentVariationId = null;
 			[ 'min', 'max', 'step' ].forEach( function ( key ) {
 				input.attr( key, parent[ key ] );
 			} );
