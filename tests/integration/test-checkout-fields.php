@@ -67,4 +67,11 @@ final class Test_Checkout_Fields extends WP_UnitTestCase {
             $this->assertSame( 'hidden' === $state, $locale['DE']['address_1']['hidden'] );
         }
     }
+
+    public function test_blocks_company_and_phone_follow_saved_preferences(): void {
+        update_option( 'jps_cs_checkout_company', 'required' );
+        update_option( 'jps_cs_checkout_phone', 'hidden' );
+        $this->assertSame( 'required', apply_filters( 'pre_option_woocommerce_checkout_company_field', false ) );
+        $this->assertSame( 'hidden', apply_filters( 'pre_option_woocommerce_checkout_phone_field', false ) );
+    }
 }

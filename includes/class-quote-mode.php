@@ -29,6 +29,8 @@ final class Quote_Mode {
         add_filter( 'woocommerce_checkout_fields', [ self::class, 'checkout_fields' ] );
         add_filter( 'woocommerce_get_country_locale', [ self::class, 'country_locale' ] );
         add_filter( 'woocommerce_default_address_fields', [ self::class, 'default_address_fields' ] );
+        add_filter( 'pre_option_woocommerce_checkout_company_field', [ self::class, 'blocks_company_field' ] );
+        add_filter( 'pre_option_woocommerce_checkout_phone_field', [ self::class, 'blocks_phone_field' ] );
     }
 
     public static function labels(): array {
@@ -187,6 +189,15 @@ final class Quote_Mode {
         $fields['billing']['billing_email']['required']      = true;
         return $fields;
     }
+
+    public static function blocks_company_field() {
+        return get_option( 'jps_cs_checkout_company', 'optional' );
+    }
+
+    public static function blocks_phone_field() {
+        return get_option( 'jps_cs_checkout_phone', 'optional' );
+    }
+
 
     public static function country_locale( array $locale ): array {
         $address = get_option( 'jps_cs_checkout_address', 'hidden' );
