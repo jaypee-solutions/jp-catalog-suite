@@ -29,6 +29,7 @@ final class Test_Access_Block extends WP_UnitTestCase {
         wp_set_current_user( $customer_id );
         $customer = do_blocks( $block );
         $this->assertStringContainsString( 'Protected text', $customer );
+        $this->assertTrue( defined( 'DONOTCACHEPAGE' ) );
 
         $filter_args = [];
         $deny = static function ( $allowed, $user, $context ) use ( &$filter_args ): bool {
