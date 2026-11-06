@@ -196,6 +196,7 @@ final class Product_Tabs {
             $settings[] = [ 'type' => 'sectionend', 'id' => 'jps_cs_core_tab_' . $key ];
         }
         $settings[] = [ 'type' => 'sectionend', 'id' => 'jps_cs_tabs_settings' ];
+        $settings = array_merge( $settings, Access_Block::settings() );
         return $settings;
     }
 

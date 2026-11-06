@@ -13,3 +13,4 @@
 * **Inquiry checkout fields**: Added configurable Company, Phone, Address, and Message settings for inquiry checkout.
 * **Core tab settings**: Added shop-wide Core tab title, priority, and visibility controls.
 * **Price hiding**: Added quote-mode product-price suppression and Inquiry price-free customer views with the Store API limitation.
+* **Access block**: Added audience-specific tab content, registration notices, and logged-in cache bypass guidance.

@@ -22,5 +22,6 @@
         <key name="jps_cs_core_tab_description_title"/>
         <key name="jps_cs_core_tab_additional_information_title"/>
         <key name="jps_cs_core_tab_reviews_title"/>
+        <key name="jps_cs_protected_notice"/>
     </admin-texts>
 </wpml-config>
