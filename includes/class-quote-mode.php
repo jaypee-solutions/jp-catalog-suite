@@ -31,12 +31,82 @@ final class Quote_Mode {
         add_filter( 'woocommerce_cart_needs_shipping', [ self::class, 'needs_shipping' ] );
         add_filter( 'wc_tax_enabled', [ self::class, 'taxes_enabled' ] );
         add_filter( 'woocommerce_coupons_enabled', [ self::class, 'coupons_enabled' ] );
+        add_filter( 'woocommerce_product_single_add_to_cart_text', [ self::class, 'single_add_to_cart_text' ], 10, 2 );
+        add_filter( 'woocommerce_product_add_to_cart_text', [ self::class, 'add_to_cart_text' ], 10, 2 );
         add_filter( 'woocommerce_order_button_text', [ self::class, 'order_button_text' ], PHP_INT_MAX );
-        add_filter( 'woocommerce_product_single_add_to_cart_text', [ self::class, 'add_to_cart_text' ], 100, 2 );
-        add_filter( 'woocommerce_product_add_to_cart_text', [ self::class, 'add_to_cart_text' ], 100, 2 );
         add_filter( 'woocommerce_thankyou_order_received_text', [ self::class, 'thankyou_text' ], 10, 2 );
-        add_filter( 'gettext_woocommerce', [ self::class, 'gettext' ], 10, 3 );
-        add_filter( 'ngettext_woocommerce', [ self::class, 'ngettext' ], 10, 5 );
+        add_filter( 'gettext_woocommerce', [ self::class, 'woocommerce_translation' ], 10, 3 );
+        add_filter( 'ngettext_woocommerce', [ self::class, 'woocommerce_translation' ], 10, 5 );
+        add_action( 'woocommerce_blocks_loaded', [ self::class, 'register_blocks_integration' ] );
+        add_action( 'wp_enqueue_scripts', [ self::class, 'enqueue_mini_cart_integration' ] );
+    }
+
+    public static function labels(): array {
+        $labels = [
+            'cart'        => self::label( 'jps_cs_quote_cart_label', __( 'Inquiry basket', 'jp-catalog-suite' ) ),
+            'add_to_cart' => self::label( 'jps_cs_quote_add_to_cart_label', __( 'Add to inquiry', 'jp-catalog-suite' ) ),
+            'proceed'     => self::label( 'jps_cs_quote_proceed_label', __( 'Continue to inquiry', 'jp-catalog-suite' ) ),
+            'place_order' => self::label( 'jps_cs_quote_place_order_label', __( 'Send inquiry', 'jp-catalog-suite' ) ),
+        ];
+        return apply_filters( 'jps_cs_quote_labels', $labels );
+    }
+
+    private static function label( string $option, string $fallback ): string {
+        $label = get_option( $option, '' );
+        return '' === $label ? $fallback : (string) $label;
+    }
+
+    public static function single_add_to_cart_text( string $text, \WC_Product $product ): string {
+        return self::applies_to( $product ) && in_array( $product->get_type(), [ 'simple', 'variation' ], true ) ? self::labels()['add_to_cart'] : $text;
+    }
+
+    public static function add_to_cart_text( string $text, \WC_Product $product ): string {
+        return self::applies_to( $product ) && in_array( $product->get_type(), [ 'simple', 'variation' ], true ) ? self::labels()['add_to_cart'] : $text;
+    }
+
+    public static function order_button_text( string $text ): string {
+        return self::is_active() ? self::labels()['place_order'] : $text;
+    }
+
+    public static function thankyou_text( string $text, \WC_Order $order ): string {
+        return Inquiries::is_inquiry( $order ) ? __( 'Thank you. Your inquiry has been received.', 'jp-catalog-suite' ) : $text;
+    }
+
+    public static function woocommerce_translation( string $translation, string $text ): string {
+        if ( ! self::is_active() ) {
+            return $translation;
+        }
+        $map = [
+            'Cart' => 'cart',
+            'View cart' => 'cart',
+            'Your cart' => 'cart',
+            'Proceed to checkout' => 'proceed',
+            'Proceed to Checkout' => 'proceed',
+            'Go to checkout' => 'proceed',
+            'Place order' => 'place_order',
+            'Place Order' => 'place_order',
+        ];
+        return isset( $map[ $text ] ) ? self::labels()[ $map[ $text ] ] : $translation;
+    }
+
+    public static function register_blocks_integration(): void {
+        if ( ! class_exists( '\\Automattic\\WooCommerce\\Blocks\\Integrations\\IntegrationRegistry' ) ) {
+            return;
+        }
+        require_once PLUGIN_DIR . 'includes/class-quote-blocks-integration.php';
+        add_action( 'woocommerce_blocks_cart_block_registration', static function ( $registry ): void {
+            $registry->register( new Quote_Blocks_Integration() );
+        } );
+        add_action( 'woocommerce_blocks_checkout_block_registration', static function ( $registry ): void {
+            $registry->register( new Quote_Blocks_Integration() );
+        } );
+    }
+
+    public static function enqueue_mini_cart_integration(): void {
+        if ( wp_script_is( 'wc-blocks-checkout', 'registered' ) ) {
+            ( new Quote_Blocks_Integration() )->register_script();
+            wp_enqueue_script( 'jps-cs-quote-blocks' );
+        }
     }
 
     public static function is_active(): bool {
@@ -146,45 +216,15 @@ final class Quote_Mode {
             return;
         }
         wp_enqueue_style( 'jps-cs-quote-mode', plugins_url( 'assets/css/quote-mode.css', PLUGIN_FILE ), [], VERSION );
-        if ( wp_script_is( 'wc-blocks-checkout', 'registered' ) ) {
-            wp_enqueue_script( 'jps-cs-quote-blocks', plugins_url( 'assets/js/quote-blocks.js', PLUGIN_FILE ), [ 'wc-blocks-checkout' ], VERSION, true );
-        }
-    }
-
-    public static function add_to_cart_text( string $text, \WC_Product $product ): string {
-        return self::applies_to( $product ) && in_array( $product->get_type(), [ 'simple', 'variation' ], true ) ? __( 'Add to inquiry', 'jp-catalog-suite' ) : $text;
-    }
-
-    public static function order_button_text( string $text ): string {
-        return self::is_active() ? __( 'Send inquiry', 'jp-catalog-suite' ) : $text;
-    }
-
-    public static function thankyou_text( string $text, \WC_Order $order ): string {
-        return Inquiries::is_inquiry( $order ) ? __( 'Thank you. Your inquiry has been received.', 'jp-catalog-suite' ) : $text;
-    }
-
-    public static function gettext( string $translation, string $text, string $domain ): string {
-        unset( $domain );
-        if ( ! self::is_active() ) {
-            return $translation;
-        }
-        $labels = [
-            'Cart' => __( 'Inquiry basket', 'jp-catalog-suite' ),
-            'View cart' => __( 'Inquiry basket', 'jp-catalog-suite' ),
-            'Your cart' => __( 'Inquiry basket', 'jp-catalog-suite' ),
-            'Proceed to checkout' => __( 'Continue to inquiry', 'jp-catalog-suite' ),
-            'Place order' => __( 'Send inquiry', 'jp-catalog-suite' ),
-        ];
-        return $labels[ $text ] ?? $translation;
-    }
-
-    public static function ngettext( string $translation, string $single, string $plural, int $number, string $domain ): string {
-        return self::gettext( $translation, 1 === $number ? $single : $plural, $domain );
     }
 
     public static function settings(): array {
         return [
             [ 'title' => __( 'Quote mode', 'jp-catalog-suite' ), 'type' => 'title', 'id' => 'jps_cs_quote' ],
+            [ 'title' => __( 'Inquiry basket label', 'jp-catalog-suite' ), 'id' => 'jps_cs_quote_cart_label', 'type' => 'text', 'default' => '', 'placeholder' => __( 'Inquiry basket', 'jp-catalog-suite' ) ],
+            [ 'title' => __( 'Add to inquiry label', 'jp-catalog-suite' ), 'id' => 'jps_cs_quote_add_to_cart_label', 'type' => 'text', 'default' => '', 'placeholder' => __( 'Add to inquiry', 'jp-catalog-suite' ) ],
+            [ 'title' => __( 'Continue to inquiry label', 'jp-catalog-suite' ), 'id' => 'jps_cs_quote_proceed_label', 'type' => 'text', 'default' => '', 'placeholder' => __( 'Continue to inquiry', 'jp-catalog-suite' ) ],
+            [ 'title' => __( 'Send inquiry label', 'jp-catalog-suite' ), 'id' => 'jps_cs_quote_place_order_label', 'type' => 'text', 'default' => '', 'placeholder' => __( 'Send inquiry', 'jp-catalog-suite' ) ],
             [ 'type' => 'sectionend', 'id' => 'jps_cs_quote' ],
         ];
     }
