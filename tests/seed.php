@@ -30,9 +30,8 @@ if ( ! username_exists( 'customer1' ) ) {
     $customer = get_user_by( 'login', 'customer1' );
     $customer->set_role( 'customer' );
 }
-if ( is_plugin_active( 'woocommerce-germanized/woocommerce-germanized.php' ) ) {
-    deactivate_plugins( 'woocommerce-germanized/woocommerce-germanized.php' );
-}
+// Keep Germanized active for checkout behavior without its first-run admin redirect.
+delete_transient( '_wc_gzd_setup_wizard_redirect' );
 
 // Ticket #9: Global tabs tracer fixtures.
 $tab_query = new WP_Query( [ 'post_type' => 'jps_cs_tab', 'title' => 'Downloads', 'post_status' => 'any', 'posts_per_page' => 1 ] );

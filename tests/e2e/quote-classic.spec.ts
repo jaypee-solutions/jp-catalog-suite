@@ -11,6 +11,8 @@ const ADMIN_USER = process.env.WP_ADMIN_USER ?? 'admin';
 const ADMIN_PASS = process.env.WP_ADMIN_PASS ?? 'password';
 let oldCart = '';
 let oldCheckout = '';
+let oldQuote = '';
+let oldComingSoon = '';
 
 async function login( page: Page ): Promise<void> {
 	await page.context().clearCookies();
@@ -21,9 +23,11 @@ async function login( page: Page ): Promise<void> {
 
 test.beforeAll( () => {
 	oldCart = wpCli( 'option', 'get', 'woocommerce_cart_page_id' );
+	oldCheckout = wpCli( 'option', 'get', 'woocommerce_checkout_page_id' );
+	oldQuote = wpCli( 'option', 'get', 'jps_cs_module_quote' );
+	oldComingSoon = wpCli( 'option', 'get', 'woocommerce_coming_soon' );
 	wpCli( 'option', 'update', 'woocommerce_coming_soon', 'no' );
 	wpCli( 'option', 'update', 'jps_cs_module_quote', 'yes' );
-	oldCheckout = wpCli( 'option', 'get', 'woocommerce_checkout_page_id' );
 	const cart = wpCli( 'post', 'list', '--post_type=page', '--name=classic-cart', '--field=ID' );
 	const checkout = wpCli( 'post', 'list', '--post_type=page', '--name=classic-checkout', '--field=ID' );
 	wpCli( 'option', 'update', 'woocommerce_cart_page_id', cart );
@@ -33,18 +37,21 @@ test.beforeAll( () => {
 test.afterAll( () => {
 	if ( oldCart ) wpCli( 'option', 'update', 'woocommerce_cart_page_id', oldCart );
 	if ( oldCheckout ) wpCli( 'option', 'update', 'woocommerce_checkout_page_id', oldCheckout );
+	wpCli( 'option', 'update', 'jps_cs_module_quote', oldQuote );
+	wpCli( 'option', 'update', 'woocommerce_coming_soon', oldComingSoon );
 } );
 
 test( 'guest sends an inquiry on classic checkout', async ( { page } ) => {
+	const orderLabel = `Classic-${ Date.now() }`;
 	const quoteProfile = wpCli( 'post', 'list', '--post_type=product', '--meta_key=_sku', '--meta_value=QP-1', '--field=ID' );
 	const pricedBolt = wpCli( 'post', 'list', '--post_type=product', '--meta_key=_sku', '--meta_value=QP-2', '--field=ID' );
 	await page.goto( '/?add-to-cart=' + quoteProfile );
 	await page.goto( '/?add-to-cart=' + pricedBolt );
 	await page.goto( '/classic-checkout/' );
 	await expect( page.locator( '#payment .wc_payment_methods li' ) ).toHaveCount( 0 );
-	await page.locator( '#billing_email' ).fill( 'classic-inquiry@example.com' );
+	await page.locator( '#billing_email' ).fill( `classic-${ Date.now() }@example.com` );
 	await page.locator( '#billing_first_name' ).fill( 'Guest' );
-	await page.locator( '#billing_last_name' ).fill( 'Inquiry' );
+	await page.locator( '#billing_last_name' ).fill( orderLabel );
 	await page.locator( '#billing_address_1' ).fill( '1 Main Street' );
 	await page.locator( '#billing_city' ).fill( 'Berlin' );
 	await page.locator( '#billing_postcode' ).fill( '10115' );
@@ -54,5 +61,6 @@ test( 'guest sends an inquiry on classic checkout', async ( { page } ) => {
 	await expect( page ).toHaveURL( /order-received/ );
 	await login( page );
 	await page.goto( '/wp-admin/admin.php?page=wc-orders' );
-	await expect( page.locator( '#the-list tr' ).first() ).toContainText( 'Inquiry' );
+	await expect( page.locator( '#the-list tr' ).filter( { hasText: orderLabel } ) ).toContainText( 'Inquiry' );
 } );
+

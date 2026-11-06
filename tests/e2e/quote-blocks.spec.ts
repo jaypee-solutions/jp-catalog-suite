@@ -18,30 +18,39 @@ async function login( page: Page ): Promise<void> {
 }
 
 test( 'guest sends a Blocks inquiry which stays listed when Quote mode is off', async ( { page } ) => {
-	wpCli( 'option', 'update', 'woocommerce_coming_soon', 'no' );
-	wpCli( 'option', 'update', 'jps_cs_module_quote', 'yes' );
-	const quoteProfile = wpCli( 'post', 'list', '--post_type=product', '--meta_key=_sku', '--meta_value=QP-1', '--field=ID' );
-	const pricedBolt = wpCli( 'post', 'list', '--post_type=product', '--meta_key=_sku', '--meta_value=QP-2', '--field=ID' );
-	await page.goto( '/?add-to-cart=' + quoteProfile );
-	await page.goto( '/?add-to-cart=' + pricedBolt );
-	await page.goto( '/checkout/' );
-	await expect( page.locator( '.wc-block-checkout__payment-method' ) ).toHaveCount( 0 );
-	await page.getByLabel( 'Country/Region' ).selectOption( 'DE' );
-	await page.getByLabel( 'Email address' ).fill( 'inquiry@example.com' );
-	await page.getByLabel( 'First name' ).fill( 'Guest' );
-	await page.getByLabel( 'Last name' ).fill( 'Inquiry' );
-	await page.getByRole( 'textbox', { name: 'Address', exact: true } ).fill( '1 Main Street' );
-	await page.getByLabel( 'City' ).fill( 'Berlin' );
-	await page.getByLabel( 'Postal code' ).fill( '10115' );
-	await page.getByRole( 'checkbox', { name: /Terms and Conditions and Cancellation Policy/ } ).check();
-	await page.getByRole( 'button', { name: 'Buy Now' } ).click();
-	await expect( page ).toHaveURL( /order-received/ );
+	const oldQuote = wpCli( 'option', 'get', 'jps_cs_module_quote' );
+	const oldComingSoon = wpCli( 'option', 'get', 'woocommerce_coming_soon' );
+	const orderLabel = `Blocks-${ Date.now() }`;
+	try {
+		wpCli( 'option', 'update', 'woocommerce_coming_soon', 'no' );
+		wpCli( 'option', 'update', 'jps_cs_module_quote', 'yes' );
+		const quoteProfile = wpCli( 'post', 'list', '--post_type=product', '--meta_key=_sku', '--meta_value=QP-1', '--field=ID' );
+		const pricedBolt = wpCli( 'post', 'list', '--post_type=product', '--meta_key=_sku', '--meta_value=QP-2', '--field=ID' );
+		await page.goto( '/?add-to-cart=' + quoteProfile );
+		await page.goto( '/?add-to-cart=' + pricedBolt );
+		await page.goto( '/checkout/' );
+		await expect( page.locator( '.wc-block-checkout__payment-method' ) ).toHaveCount( 0 );
+		await page.getByLabel( 'Country/Region' ).selectOption( 'DE' );
+		await page.getByLabel( 'Email address' ).fill( `blocks-${ Date.now() }@example.com` );
+		await page.getByLabel( 'First name' ).fill( 'Guest' );
+		await page.getByLabel( 'Last name' ).fill( orderLabel );
+		await page.getByRole( 'textbox', { name: 'Address', exact: true } ).fill( '1 Main Street' );
+		await page.getByLabel( 'City' ).fill( 'Berlin' );
+		await page.getByLabel( 'Postal code' ).fill( '10115' );
+		await page.getByRole( 'checkbox', { name: /Terms and Conditions and Cancellation Policy/ } ).check();
+		await page.getByRole( 'button', { name: 'Buy Now' } ).click();
+		await expect( page ).toHaveURL( /order-received/ );
 
-	await login( page );
-	await page.goto( '/wp-admin/admin.php?page=wc-orders' );
-	await expect( page.locator( '#the-list tr' ).first() ).toContainText( 'Inquiry' );
-	wpCli( 'option', 'update', 'jps_cs_module_quote', 'no' );
-	await page.reload();
-	await expect( page.locator( '#the-list tr' ).first() ).toContainText( 'Inquiry' );
-	wpCli( 'option', 'update', 'jps_cs_module_quote', 'yes' );
+		await login( page );
+		await page.goto( '/wp-admin/admin.php?page=wc-orders' );
+		let order = page.locator( '#the-list tr' ).filter( { hasText: orderLabel } );
+		await expect( order ).toContainText( 'Inquiry' );
+		wpCli( 'option', 'update', 'jps_cs_module_quote', 'no' );
+		await page.reload();
+		order = page.locator( '#the-list tr' ).filter( { hasText: orderLabel } );
+		await expect( order ).toContainText( 'Inquiry' );
+	} finally {
+		wpCli( 'option', 'update', 'jps_cs_module_quote', oldQuote );
+		wpCli( 'option', 'update', 'woocommerce_coming_soon', oldComingSoon );
+	}
 } );
