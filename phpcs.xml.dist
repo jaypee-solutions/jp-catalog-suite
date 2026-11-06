@@ -2,6 +2,8 @@
 <ruleset name="JayPee Solutions Catalog Suite for WooCommerce">
     <description>WordPress Coding Standards for JayPee Solutions Catalog Suite for WooCommerce.</description>
 
+    <file>uninstall.php</file>
+    <file>templates</file>
     <file>jp-catalog-suite.php</file>
     <file>includes</file>
     <file>tests</file>

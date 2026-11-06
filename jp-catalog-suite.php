@@ -2,9 +2,9 @@
 /**
  * Plugin Name:       JayPee Solutions Catalog Suite for WooCommerce
  * Plugin URI:        https://github.com/jaypee-solutions/jp-catalog-suite
- * Description:       JayPee Solutions Catalog Suite for WooCommerce is a WordPress plugin.
+ * Description:       Quote mode, extended product tabs with access levels and protected files, and customer-entered lengths for WooCommerce.
  * Version:           0.1.0
- * Author:            Jan-Peter Alten
+ * Author:            JayPee Solutions
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       jp-catalog-suite
@@ -23,6 +23,7 @@ namespace JayPee\CatalogSuite;
 defined( 'ABSPATH' ) || exit;
 
 const VERSION     = '0.1.0';
+const PLUGIN_DIR  = __DIR__ . '/';
 const PLUGIN_FILE = __FILE__;
 const GITHUB_REPO = 'jaypee-solutions/jp-catalog-suite';
 const UPDATE_URL  = 'https://github.com/jaypee-solutions/jp-catalog-suite/';
@@ -33,6 +34,15 @@ if ( is_readable( __DIR__ . '/vendor/autoload.php' ) ) {
 }
 
 require_once __DIR__ . '/includes/class-updates.php';
+
+require_once __DIR__ . '/includes/class-inquiries.php';
+require_once __DIR__ . '/includes/class-inquiry-intake.php';
+require_once __DIR__ . '/includes/class-quote-mode.php';
+require_once __DIR__ . '/includes/class-product-tabs.php';
+require_once __DIR__ . '/includes/class-plugin.php';
+
+register_activation_hook( PLUGIN_FILE, [ Plugin::class, 'activate' ] );
+register_deactivation_hook( PLUGIN_FILE, [ Plugin::class, 'deactivate' ] );
 
 Updates::init();
 
@@ -61,7 +71,7 @@ add_action(
             return;
         }
 
-        // Register the plugin's own features here.
+        Plugin::init();
     }
 );
 
@@ -74,6 +84,11 @@ add_action(
         if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
             \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
                 'custom_order_tables',
+                PLUGIN_FILE,
+                true
+            );
+            \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
+                'cart_checkout_blocks',
                 PLUGIN_FILE,
                 true
             );

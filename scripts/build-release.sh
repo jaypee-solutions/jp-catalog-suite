@@ -42,7 +42,7 @@ mkdir -p "$DIST_DIR" "$STAGE_DIR"
 # ── Production files ─────────────────────────────────────────────────────────
 cp "$ROOT_DIR/$SLUG.php" "$DIST_DIR/"
 
-for path in README.md readme.txt LICENSE includes assets admin blocks languages; do
+for path in README.md readme.txt LICENSE uninstall.php wpml-config.xml includes assets blocks templates languages; do
 	if [[ -e "$ROOT_DIR/$path" ]]; then
 		cp -R "$ROOT_DIR/$path" "$DIST_DIR/"
 	fi

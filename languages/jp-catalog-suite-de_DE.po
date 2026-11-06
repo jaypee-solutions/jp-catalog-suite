@@ -1,0 +1,108 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: JayPee Solutions Catalog Suite for WooCommerce 0.1.0\n"
+"PO-Revision-Date: 2026-11-06 00:00+0000\n"
+"Last-Translator: JayPee Solutions <support@jaypee.solutions>\n"
+"Language-Team: German\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: de_DE\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Catalog Suite"
+msgstr "Catalog Suite"
+
+msgid "General"
+msgstr "Allgemein"
+
+msgid "Quote mode"
+msgstr "Angebotsmodus"
+
+msgid "Product tabs"
+msgstr "Produkttabs"
+
+msgid "Variable length"
+msgstr "Variable Länge"
+
+msgid "Delete tabs, protected files and the download log when the plugin is deleted. Orders are never deleted."
+msgstr "Tabs, geschützte Dateien und das Download-Protokoll beim Löschen des Plugins löschen. Bestellungen werden niemals gelöscht."
+
+msgid "JayPee Solutions Catalog Suite for WooCommerce requires WooCommerce."
+msgstr "JayPee Solutions Catalog Suite für WooCommerce setzt WooCommerce voraus."
+
+msgid "Variable length defaults"
+msgstr "Standardeinstellungen für variable Länge"
+
+msgid "Unit"
+msgstr "Einheit"
+
+msgid "Length unit"
+msgstr "Längeneinheit"
+
+msgid "Use store default"
+msgstr "Shop-Standard verwenden"
+
+msgid "Minimum length"
+msgstr "Mindestlänge"
+
+msgid "Maximum length"
+msgstr "Höchstlänge"
+
+msgid "Length step"
+msgstr "Längenschritt"
+
+msgid "Default length"
+msgstr "Standardlänge"
+msgid "Length (%s)"
+msgstr "Länge (%s)"
+
+msgid "Please enter a length between %1$s and %2$s %3$s."
+msgstr "Bitte geben Sie eine Länge zwischen %1$s und %2$s %3$s ein."
+
+msgid "The length must be a multiple of %1$s %2$s."
+msgstr "Die Länge muss ein Vielfaches von %1$s %2$s sein."
+
+msgid "Length"
+msgstr "Länge"
+
+msgid "Choose length"
+msgstr "Länge auswählen"
+msgctxt "Order status"
+msgid "Inquiry"
+msgstr "Anfrage"
+
+msgid "Inquiry <span class=\"count\">(%s)</span>"
+msgid_plural "Inquiries <span class=\"count\">(%s)</span>"
+msgstr[0] "Anfrage <span class=\"count\">(%s)</span>"
+msgstr[1] "Anfragen <span class=\"count\">(%s)</span>"
+
+
+msgid "Inquiry received."
+msgstr "Ihre Anfrage ist eingegangen."
+msgid "Product tab"
+msgstr "Produkttab"
+
+msgid "Add product tab"
+msgstr "Produkttab hinzufügen"
+
+msgid "Edit product tab"
+msgstr "Produkttab bearbeiten"
+
+msgid "Tab settings"
+msgstr "Tab-Einstellungen"
+
+msgid "Scope"
+msgstr "Geltungsbereich"
+
+msgid "All products"
+msgstr "Alle Produkte"
+
+msgid "Categories"
+msgstr "Kategorien"
+
+msgid "Priority"
+msgstr "Priorität"
+
+msgid "Sorry, you are not allowed to read product tabs."
+msgstr "Sie dürfen Produkttabs nicht lesen."
