@@ -18,8 +18,9 @@ final class Test_Protected_Files extends WP_UnitTestCase {
         $this->assertStringContainsString( 'jps_cs_file=' . $attachment, wp_get_attachment_url( $attachment ) );
         $this->assertSame( [], apply_filters( 'intermediate_image_sizes_advanced', [ 'thumbnail' => [] ], [], $attachment ) );
         $this->assertSame( [], apply_filters( 'fallback_intermediate_image_sizes', [ 'thumbnail' ], [ 'file' => 'jps-cs-protected/part.stp' ] ) );
-        $customer = self::factory()->user->create( [ 'role' => 'customer' ] );
-        wp_set_current_user( $customer );
+        $customer = get_user_by( 'login', 'customer1' );
+        $customer_id = $customer instanceof WP_User ? $customer->ID : self::factory()->user->create( [ 'user_login' => 'customer1', 'role' => 'customer' ] );
+        wp_set_current_user( $customer_id );
         $_GET['product'] = '999';
         $context = [];
         $access = static function ( $allowed, $user_id, $received ) use ( &$context ): bool {
