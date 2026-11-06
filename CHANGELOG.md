@@ -10,6 +10,9 @@ extracts it as the GitHub release notes and fails without it.
 
 ## [Unreleased]
 
+### Added
+- Global product tabs with all-product or category scope and priority.
+
 ## [0.1.0] - 2026-11-06
 
 ### Added

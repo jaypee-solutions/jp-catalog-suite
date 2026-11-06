@@ -13,6 +13,10 @@ Quote mode, extended product tabs with access levels and protected files, and cu
 
 Open **WooCommerce → Settings → Catalog Suite**. General contains a toggle for each installed module and the optional deletion setting. WooCommerce stores the `jps_cs_module_*` and `jps_cs_uninstall_delete_data` options.
 
+
+## Product tabs
+
+Enable **Product tabs** under WooCommerce → Settings → Catalog Suite. Editors create Global tabs under Products → Product tabs, write content in the block editor, and choose whether each tab applies to all products or selected categories (including descendants). Priority orders matching tabs; the default is 50. Empty text-only tabs are omitted. Hooks `jps_cs_tab_content` and `jps_cs_product_tabs` let extensions adjust rendered content and the product tab list. Tab posts are available through REST only to authorized editors; their settings are copied by WPML. With uninstall deletion enabled, tabs are deleted along with the other Catalog Suite data.
 ## Uninstall
 
 Plugin options, the `jp_catalog_suite_github_token` update credential, and the `jps_cs_purge_download_log` scheduled hook are always removed. When the uninstall deletion option is enabled, Catalog Suite tabs, protected files and the download log are also removed. Orders are never deleted. Uninstall is single-site only; network-wide uninstall is not handled. Inquiries retain their status and become unavailable in order lists after plugin removal. Bulk-change inquiry statuses before deleting the plugin to preserve their visibility.

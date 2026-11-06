@@ -11,7 +11,7 @@ namespace JayPee\CatalogSuite;
 
 final class Plugin {
 
-    public const MODULES = [];
+    public const MODULES = [ 'tabs' => Product_Tabs::class ];
 
     public static function init(): void {
         add_filter(

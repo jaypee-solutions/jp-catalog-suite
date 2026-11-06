@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <wpml-config>
-    <custom-types></custom-types>
-    <custom-fields></custom-fields>
+    <custom-types>
+        <custom-type translate="1">jps_cs_tab</custom-type>
+    </custom-types>
+    <custom-fields>
+        <custom-field action="copy">_jps_cs_scope</custom-field>
+        <custom-field action="copy">_jps_cs_categories</custom-field>
+        <custom-field action="copy">_jps_cs_priority</custom-field>
+    </custom-fields>
     <admin-texts></admin-texts>
 </wpml-config>
