@@ -14,6 +14,10 @@
         <custom-field action="copy">_jps_cs_length_step</custom-field>
         <custom-field action="copy">_jps_cs_length_default</custom-field>
     </custom-fields>
-    </custom-fields>
-    <admin-texts></admin-texts>
+    <admin-texts>
+        <key name="jps_cs_quote_cart_label"/>
+        <key name="jps_cs_quote_add_to_cart_label"/>
+        <key name="jps_cs_quote_proceed_label"/>
+        <key name="jps_cs_quote_place_order_label"/>
+    </admin-texts>
 </wpml-config>
