@@ -45,6 +45,8 @@ if (req.http.Cookie ~ "wordpress_logged_in_") {
 
 Registration links use WooCommerce My Account registration when enabled, otherwise WordPress registration when open; no registration link is rendered when neither is available.
 
+The **File list** block lets editors select multiple Media Library files and previews the rendered list in the editor. Existing files are listed with their title, uppercase extension and size. Protected files link through `?jps_cs_file=<attachment-id>` only for visitors with access; other visitors see an unlinked “(login required)” label. On a product page, the link also includes `product=<id>` for the download log. Missing files are omitted.
+
 ## Protected files
 
 Configure allowed MIME types, automatically protected extensions, and delivery method under **WooCommerce → Settings → Catalog Suite → Product tabs**. STEP and DXF uploads matching the configured extensions are stored in `wp-content/uploads/jps-cs-protected/`, denied by Apache via `.htaccess`, and served only through `?jps_cs_file=<attachment-id>`. A protected attachment URL never exposes its storage path. Non-image protected attachments do not generate previews. Existing PDFs can be protected individually in the media attachment editor; protected attachments can also be returned to public storage there. The `jps_cs_can_access_protected` filter receives the user ID and context containing `attachment_id` for file checks; access is based only on the user and attachment. The untrusted `product` parameter is passed only to `jps_cs_before_file_delivery` for observers. `jps_cs_file_delivery_method` can choose `auto`, `xsendfile`, or `php`.

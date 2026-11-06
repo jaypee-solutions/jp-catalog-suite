@@ -33,6 +33,7 @@ final class Test_Protected_Files extends WP_UnitTestCase {
         };
         add_action( 'jps_cs_before_file_delivery', $delivery );
         set_query_var( 'jps_cs_file', $attachment );
+        $this->assertTrue( apply_filters( 'pre_handle_404', false, $GLOBALS['wp_query'] ) );
         try {
             do_action( 'template_redirect' );
             $this->fail( 'Delivery action must interrupt streaming in this test.' );
@@ -145,6 +146,13 @@ final class Test_Protected_Files extends WP_UnitTestCase {
         wp_set_current_user( 0 );
     }
 
+
+    public function test_product_context_file_request_preempts_wordpress_404(): void {
+        $query = new WP_Query();
+        $query->set( 'jps_cs_file', 123 );
+        $query->set( 'product', '999' );
+        $this->assertTrue( apply_filters( 'pre_handle_404', false, $query ) );
+    }
     public function test_endpoint_redirects_unprotected_attachment_and_404s_missing_id(): void {
         $attachment = wp_insert_attachment( [ 'post_mime_type' => 'text/plain', 'post_title' => 'public file', 'post_status' => 'inherit' ], __FILE__ );
         set_query_var( 'jps_cs_file', $attachment );

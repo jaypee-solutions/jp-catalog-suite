@@ -174,3 +174,13 @@ if ( ! $protected_id ) {
     update_post_meta( $protected_id, '_jps_cs_protected', '1' );
     update_post_meta( $protected_id, '_jps_cs_e2e_fixture', 'part.stp' );
 }
+$file_tabs = get_posts( [ 'post_type' => 'jps_cs_tab', 'post_status' => 'any', 'numberposts' => 1, 'title' => 'Downloads' ] );
+$file_tab = $file_tabs[0] ?? null;
+if ( $file_tab ) {
+    wp_update_post(
+        [
+            'ID'           => $file_tab->ID,
+            'post_content' => '<p>Public info</p><!-- wp:jp-catalog-suite/access {"mode":"only-with-access"} --><p>Protected Downloads content.</p><!-- wp:jp-catalog-suite/file-list {"files":[' . $protected_id . ']} /--><!-- /wp:jp-catalog-suite/access -->',
+        ]
+    );
+}

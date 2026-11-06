@@ -36,6 +36,7 @@ final class Plugin {
         }
         if ( self::is_module_active( 'tabs' ) ) {
             Access_Block::init();
+            File_List_Block::init();
             Protected_Files::init();
         }
         if ( self::is_module_active( 'tabs' ) ) {
