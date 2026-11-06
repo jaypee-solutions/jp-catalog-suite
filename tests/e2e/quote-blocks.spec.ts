@@ -25,10 +25,18 @@ test( 'guest sends a Blocks inquiry which stays listed when Quote mode is off', 
 		wpCli( 'option', 'update', 'woocommerce_coming_soon', 'no' );
 		wpCli( 'option', 'update', 'jps_cs_module_quote', 'yes' );
 		const quoteProfile = wpCli( 'post', 'list', '--post_type=product', '--meta_key=_sku', '--meta_value=QP-1', '--field=ID' );
-		const pricedBolt = wpCli( 'post', 'list', '--post_type=product', '--meta_key=_sku', '--meta_value=QP-2', '--field=ID' );
+        const pricedBolt = wpCli( 'post', 'list', '--post_type=product', '--meta_key=_sku', '--meta_value=QP-2', '--field=ID' );
+        await page.goto( '/shop/' );
+        await expect( page.locator( 'body' ) ).not.toContainText( '€' );
+        await page.goto( '/?p=' + pricedBolt );
+        await expect( page.locator( 'body' ) ).not.toContainText( '€' );
 		await page.goto( '/?add-to-cart=' + quoteProfile );
 		await page.goto( '/?add-to-cart=' + pricedBolt );
+        await page.goto( '/cart/' );
+        await expect( page.locator( 'body' ) ).not.toContainText( '€' );
+
 		await page.goto( '/checkout/' );
+        await expect( page.locator( 'body' ) ).not.toContainText( '€' );
 		await expect( page.locator( '.wc-block-checkout__payment-method' ) ).toHaveCount( 0 );
 		await page.getByLabel( 'Country/Region' ).selectOption( 'DE' );
 		await page.getByLabel( 'Email address' ).fill( `blocks-${ Date.now() }@example.com` );
@@ -41,7 +49,11 @@ test( 'guest sends a Blocks inquiry which stays listed when Quote mode is off', 
 		await page.getByRole( 'button', { name: 'Buy Now' } ).click();
 		await expect( page ).toHaveURL( /order-received/ );
 
+        await expect( page.locator( 'body' ) ).not.toContainText( '€' );
+
 		await login( page );
+        await page.goto( '/my-account/' );
+        await expect( page.getByRole( 'link', { name: 'Inquiries' } ) ).toBeVisible();
 		await page.goto( '/wp-admin/admin.php?page=wc-orders' );
 		let order = page.locator( '#the-list tr' ).filter( { hasText: orderLabel } );
 		await expect( order ).toContainText( 'Inquiry' );
