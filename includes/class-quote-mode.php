@@ -232,6 +232,7 @@ final class Quote_Mode {
         foreach ( [ 'address_1', 'address_2', 'city', 'state', 'postcode' ] as $field ) {
             if ( isset( $fields[ $field ] ) ) {
                 $fields[ $field ]['required'] = 'required' === $address;
+                $fields[ $field ]['hidden']   = 'hidden' === $address;
             }
         }
         return $fields;

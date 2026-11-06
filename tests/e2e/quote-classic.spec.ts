@@ -104,7 +104,7 @@ test( 'guest sends an inquiry on classic checkout', async ( { page } ) => {
 	await page.locator( '#billing_last_name' ).fill( orderLabel );
 	await expect( page.locator( '#billing_company' ) ).toBeVisible();
 	await expect( page.locator( '#billing_phone' ) ).toBeVisible();
-	await expect( page.locator( '#billing_phone' ) ).toHaveAttribute( 'required' );
+	await expect( page.locator( '#billing_phone' ) ).toHaveAttribute( 'aria-required', 'true' );
 	await page.locator( '#billing_phone' ).fill( '030123456' );
 	await expect( page.locator( '#billing_address_1, #billing_city, #billing_postcode' ) ).toHaveCount( 0 );
 	const terms = page.getByRole( 'checkbox', { name: /Terms and Conditions and Cancellation Policy/ } );

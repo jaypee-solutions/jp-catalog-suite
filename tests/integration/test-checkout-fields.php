@@ -45,6 +45,8 @@ final class Test_Checkout_Fields extends WP_UnitTestCase {
         }
         $locale = apply_filters( 'woocommerce_get_country_locale', [ 'DE' => [ 'address_1' => [] ] ] );
         $this->assertTrue( $locale['DE']['address_1']['hidden'] );
+        $defaults = apply_filters( 'woocommerce_default_address_fields', [ 'address_1' => [] ] );
+        $this->assertTrue( $defaults['address_1']['hidden'] );
     }
 
     public function test_company_phone_and_address_support_every_configured_state(): void {
@@ -65,6 +67,9 @@ final class Test_Checkout_Fields extends WP_UnitTestCase {
             $locale = apply_filters( 'woocommerce_get_country_locale', [ 'DE' => [ 'address_1' => [] ] ] );
             $this->assertSame( 'required' === $state, $locale['DE']['address_1']['required'] );
             $this->assertSame( 'hidden' === $state, $locale['DE']['address_1']['hidden'] );
+            $defaults = apply_filters( 'woocommerce_default_address_fields', [ 'address_1' => [] ] );
+            $this->assertSame( 'required' === $state, $defaults['address_1']['required'] );
+            $this->assertSame( 'hidden' === $state, $defaults['address_1']['hidden'] );
         }
     }
 
