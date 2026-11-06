@@ -67,6 +67,13 @@ final class Test_Product_Tabs extends WP_UnitTestCase {
         do_action( 'woocommerce_product_data_panels' );
         $panel = ob_get_clean();
         $this->assertMatchesRegularExpression( '/name="_jps_cs_hidden_tabs\[\]" value="' . $hidden_tab . '"\s+checked/', $panel );
+        $this->assertStringContainsString( 'name="_jps_cs_hidden_tabs[]" value="' . $category_tab . '"', $panel );
+        $this->assertStringContainsString( 'post-new.php?post_type=jps_cs_tab&#038;jps_cs_product=' . $product_id, $panel );
+        wp_set_current_user( 0 );
+        ob_start();
+        do_action( 'woocommerce_product_data_panels' );
+        $guest_panel = ob_get_clean();
+        $this->assertStringNotContainsString( 'jps_cs_product=' . $product_id, $guest_panel );
     }
 
     public function test_product_tab_creation_link_and_editor_preselect_product_scope(): void {

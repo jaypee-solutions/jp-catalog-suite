@@ -1,6 +1,6 @@
 <?php
 /**
- * Product tabs.
+ * Global product tabs.
  *
  * @package JayPee\CatalogSuite
  */
@@ -16,6 +16,7 @@ final class Product_Tabs {
         add_action( 'init', [ self::class, 'register_meta' ] );
         add_action( 'add_meta_boxes_jps_cs_tab', [ self::class, 'add_meta_box' ] );
         add_action( 'save_post_jps_cs_tab', [ self::class, 'save_meta' ] );
+        add_action( 'admin_enqueue_scripts', [ self::class, 'enqueue_admin_assets' ] );
         add_action( 'rest_api_init', [ self::class, 'restrict_guest_rest_access' ] );
         add_action( 'woocommerce_product_options_tabs', [ self::class, 'product_data_tab' ] );
         add_action( 'woocommerce_product_data_panels', [ self::class, 'product_data_panel' ] );
@@ -24,31 +25,39 @@ final class Product_Tabs {
     }
 
     public static function restrict_guest_rest_access(): void {
-        add_filter( 'rest_pre_dispatch', static function ( $result, \WP_REST_Server $rest_server, \WP_REST_Request $request ) {
-            if ( ! is_user_logged_in() && preg_match( '#^/wp/v2/jps_cs_tab(?:/\d+)?$#', $request->get_route() ) ) {
-                return new \WP_Error( 'rest_forbidden', __( 'Sorry, you are not allowed to read product tabs.', 'jp-catalog-suite' ), [ 'status' => 401 ] );
-            }
-            return $result;
-        }, 10, 3 );
+        add_filter(
+            'rest_pre_dispatch',
+            static function ( $result, \WP_REST_Server $rest_server, \WP_REST_Request $request ) {
+                if ( ! is_user_logged_in() && preg_match( '#^/wp/v2/jps_cs_tab(?:/\d+)?$#', $request->get_route() ) ) {
+                    return new \WP_Error( 'rest_forbidden', __( 'Sorry, you are not allowed to read product tabs.', 'jp-catalog-suite' ), [ 'status' => 401 ] );
+                }
+                return $result;
+            },
+            10,
+            3
+        );
     }
 
     public static function register_post_type(): void {
-        register_post_type( 'jps_cs_tab', [
-            'labels' => [
-                'name' => __( 'Product tabs', 'jp-catalog-suite' ),
-                'singular_name' => __( 'Product tab', 'jp-catalog-suite' ),
-                'add_new_item' => __( 'Add product tab', 'jp-catalog-suite' ),
-                'edit_item' => __( 'Edit product tab', 'jp-catalog-suite' ),
-            ],
-            'public' => false,
-            'show_ui' => true,
-            'show_in_menu' => 'edit.php?post_type=product',
-            'show_in_rest' => true,
-            'supports' => [ 'title', 'editor', 'revisions' ],
-            'capability_type' => 'product',
-            'map_meta_cap' => true,
-            'publicly_queryable' => false,
-        ] );
+        register_post_type(
+            'jps_cs_tab',
+            [
+                'labels'             => [
+                    'name'          => __( 'Product tabs', 'jp-catalog-suite' ),
+                    'singular_name' => __( 'Product tab', 'jp-catalog-suite' ),
+                    'add_new_item'  => __( 'Add product tab', 'jp-catalog-suite' ),
+                    'edit_item'     => __( 'Edit product tab', 'jp-catalog-suite' ),
+                ],
+                'public'             => false,
+                'show_ui'            => true,
+                'show_in_menu'       => 'edit.php?post_type=product',
+                'show_in_rest'       => true,
+                'supports'           => [ 'title', 'editor', 'revisions' ],
+                'capability_type'    => 'product',
+                'map_meta_cap'       => true,
+                'publicly_queryable' => false,
+            ]
+        );
     }
 
     public static function register_meta(): void {
@@ -75,10 +84,12 @@ final class Product_Tabs {
     public static function render_meta_box( \WP_Post $post ): void {
         wp_nonce_field( 'jps_cs_tab_meta', 'jps_cs_tab_nonce' );
         $scope = get_post_meta( $post->ID, '_jps_cs_scope', true );
-        $scope = '' !== $scope ? $scope : 'all';
+        if ( '' === $scope ) {
+            $scope = 'all';
+        }
         $categories = array_map( 'absint', (array) get_post_meta( $post->ID, '_jps_cs_categories', true ) );
         $product_ids = array_map( 'absint', (array) get_post_meta( $post->ID, '_jps_cs_products', true ) );
-        $priority = get_post_meta( $post->ID, '_jps_cs_priority', true );
+        $priority   = get_post_meta( $post->ID, '_jps_cs_priority', true );
         $replace = absint( get_post_meta( $post->ID, '_jps_cs_replace_tab', true ) );
         // This query parameter only preselects fields; saving remains protected by the tab nonce.
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- This query parameter only preselects fields; saving remains protected by the tab nonce.
@@ -116,8 +127,7 @@ final class Product_Tabs {
             <option value="0"><?php esc_html_e( 'None', 'jp-catalog-suite' ); ?></option>
             <?php foreach ( get_posts( [ 'post_type' => 'jps_cs_tab', 'post_status' => 'publish', 'numberposts' => -1, 'exclude' => [ $post->ID ], 'suppress_filters' => false ] ) as $global_tab ) : ?>
                 <?php $global_scope = get_post_meta( $global_tab->ID, '_jps_cs_scope', true ); ?>
-                <?php $global_scope = '' !== $global_scope ? $global_scope : 'all'; ?>
-                <?php if ( in_array( $global_scope, [ 'all', 'categories' ], true ) ) : ?>
+                <?php if ( '' === $global_scope || in_array( $global_scope, [ 'all', 'categories' ], true ) ) : ?>
                     <option value="<?php echo esc_attr( (string) $global_tab->ID ); ?>" <?php selected( $replace, (int) $global_tab->ID ); ?>><?php echo esc_html( get_the_title( $global_tab ) ); ?></option>
                 <?php endif; ?>
             <?php endforeach; ?>
@@ -144,7 +154,9 @@ final class Product_Tabs {
         $replace = isset( $_POST['jps_cs_replace_tab'] ) ? absint( wp_unslash( $_POST['jps_cs_replace_tab'] ) ) : 0;
         $replace_post = $replace ? get_post( $replace ) : null;
         $replace_scope = $replace ? get_post_meta( $replace, '_jps_cs_scope', true ) : '';
-        $replace_scope = '' !== $replace_scope ? $replace_scope : 'all';
+        if ( '' === $replace_scope ) {
+            $replace_scope = 'all';
+        }
         if ( ! $replace_post || 'jps_cs_tab' !== $replace_post->post_type || ! in_array( $replace_scope, [ 'all', 'categories' ], true ) ) {
             $replace = 0;
         }
@@ -208,7 +220,8 @@ final class Product_Tabs {
         }
         $expanded = [];
         foreach ( $categories as $category_id ) {
-            foreach ( array_merge( [ (int) $category_id ], get_ancestors( (int) $category_id, 'product_cat', 'taxonomy' ) ) as $term_id ) {
+            $term_ids = array_merge( [ (int) $category_id ], get_ancestors( (int) $category_id, 'product_cat', 'taxonomy' ) );
+            foreach ( $term_ids as $term_id ) {
                 $expanded[] = Plugin::canonical_id( (int) $term_id, 'product_cat' );
             }
         }
@@ -216,7 +229,9 @@ final class Product_Tabs {
         $matched = [];
         foreach ( $posts as $post ) {
             $scope = get_post_meta( $post->ID, '_jps_cs_scope', true );
-            $scope = '' !== $scope ? $scope : 'all';
+            if ( '' === $scope ) {
+                $scope = 'all';
+            }
             $applies = 'all' === $scope;
             if ( 'products' === $scope ) {
                 $stored = array_map( static fn ( int $id ): int => Plugin::canonical_id( $id, 'product' ), array_map( 'absint', (array) get_post_meta( $post->ID, '_jps_cs_products', true ) ) );
@@ -272,9 +287,10 @@ final class Product_Tabs {
             return $tabs;
         }
         foreach ( self::tabs_for( $product ) as $id => $tab ) {
+            $post = $tab['post'];
             $content = $tab['content'];
             $tabs[ 'jps_cs_tab_' . Plugin::canonical_id( (int) $id, 'jps_cs_tab' ) ] = [
-                'title' => get_the_title( $tab['post'] ),
+                'title'    => get_the_title( $post ),
                 'priority' => $tab['priority'],
                 'callback' => static function () use ( $content ): void {
                     echo wp_kses_post( $content );
