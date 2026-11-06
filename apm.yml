@@ -1,0 +1,18 @@
+name: jp-catalog-suite
+version: 1.0.0
+description: APM project for jp-catalog-suite
+author: Jan-Peter Alten
+# Which agent platforms to deploy to.
+# Resolution order: --target flag > this field > auto-detect from filesystem.
+# Accepted values: agent-skills, antigravity, claude, codex, copilot, cursor, gemini, grok-bot, grok-build, hermes, kiro, opencode, vscode, windsurf
+targets:
+  - agent-skills
+dependencies:
+  apm:
+    - mattpocock/skills
+    - jaypee-solutions/apm-okf
+    - jaypee-solutions/apm-dev-workflow
+    - jaypee-solutions/apm-wordpress
+  mcp: []
+includes: auto
+scripts: {}
