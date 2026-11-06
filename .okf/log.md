@@ -15,3 +15,4 @@
 
 ## 2026-11-06
 * **Variable length**: Added Store API request capture, validation and cart-line preservation.
+* **Access block**: Added audience-specific tab content, registration notices, and logged-in cache bypass guidance.

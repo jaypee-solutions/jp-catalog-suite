@@ -91,6 +91,17 @@ foreach ( [ 'Classic Cart' => '[woocommerce_cart]', 'Classic Checkout' => '[wooc
     }
 }
 
+
+// Ticket #12: Access block and protected notice fixtures.
+$access_tab_id = $tab->ID ?? ( $tab_id ?? 0 );
+if ( $access_tab_id ) {
+    wp_update_post(
+        [
+            'ID' => $access_tab_id,
+            'post_content' => '<p>Public info</p><!-- wp:jp-catalog-suite/access {"mode":"only-with-access"} --><p>Protected Downloads content.</p><!-- /wp:jp-catalog-suite/access -->',
+        ]
+    );
+}
 WP_CLI::success( 'Seed complete.' );
 // Ticket #17: Variable length tracer bullet on simple products fixtures.
 $length_product = wc_get_product_id_by_sku( 'LB-1' );
