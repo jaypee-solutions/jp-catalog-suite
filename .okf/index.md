@@ -20,4 +20,5 @@ okf_version: "0.1"
 * [Variable length through the Store API](decisions/0016-variable-length-store-api.md) - Store API additions retain validated length as cart item data.
 * [Germanized integration](decisions/0005-germanized-integration.md) - Keep Germanized legal notices and checkboxes out of active Quote mode.
 * [Access content caching](decisions/0008-caching.md) - Audience-specific Access block content and logged-in cache bypass.
+* [Price per length unit](decisions/0018-price-per-length-unit.md) - Opt-in cart pricing based on customer-entered length.
 * [Protected files](decisions/0007-protected-files.md) - Denied uploads subdirectory, URL rewriting, and user/file-only endpoint authorization.

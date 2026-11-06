@@ -307,6 +307,11 @@ msgstr "Anmeldehinweis anzeigen, wenn der Inhalt ausgeblendet ist"
 msgctxt "block description"
 msgid "Show content according to visitor access."
 msgstr "Inhalt entsprechend dem Zugriff der Besuchenden anzeigen."
+msgid "Price per length unit"
+msgstr "Preis pro Längeneinheit"
+
+msgid "Allows price per length unit on products; leave off in quote mode"
+msgstr "Ermöglicht die Preisberechnung pro Längeneinheit für Produkte; im Angebotsmodus deaktiviert lassen."
 
 msgid "Protected"
 msgstr "Geschützt"

@@ -13,7 +13,7 @@ final class Variable_Length {
 
     private static ?string $store_api_length = null;
 
-    private const META = [ 'enabled' => '_jps_cs_length_enabled', 'unit' => '_jps_cs_length_unit', 'min' => '_jps_cs_length_min', 'max' => '_jps_cs_length_max', 'step' => '_jps_cs_length_step', 'default' => '_jps_cs_length_default' ];
+    private const META = [ 'enabled' => '_jps_cs_length_enabled', 'unit' => '_jps_cs_length_unit', 'min' => '_jps_cs_length_min', 'max' => '_jps_cs_length_max', 'step' => '_jps_cs_length_step', 'default' => '_jps_cs_length_default', 'price_per_unit' => '_jps_cs_length_price_per_unit' ];
 
     public static function init(): void {
         add_action( 'woocommerce_product_options_general_product_data', [ self::class, 'product_fields' ] );
@@ -33,11 +33,14 @@ final class Variable_Length {
         add_filter( 'woocommerce_product_supports', [ self::class, 'disable_ajax_add' ], 10, 3 );
         add_filter( 'woocommerce_order_item_display_meta_key', [ self::class, 'order_meta_key' ], 10, 2 );
         add_filter( 'woocommerce_order_item_display_meta_value', [ self::class, 'order_meta_value' ], 10, 3 );
+        add_action( 'woocommerce_before_calculate_totals', [ self::class, 'set_length_prices' ], 20 );
+        add_filter( 'woocommerce_get_price_html', [ self::class, 'price_html' ], 20, 2 );
     }
 
     public static function settings(): array {
         return [
             [ 'title' => __( 'Variable length defaults', 'jp-catalog-suite' ), 'type' => 'title', 'id' => 'jps_cs_length' ],
+            [ 'title' => __( 'Price per length unit', 'jp-catalog-suite' ), 'id' => 'jps_cs_length_pricing_enabled', 'type' => 'checkbox', 'default' => 'no', 'desc' => __( 'Allows price per length unit on products; leave off in quote mode', 'jp-catalog-suite' ) ],
             [ 'title' => __( 'Unit', 'jp-catalog-suite' ), 'id' => 'jps_cs_length_unit', 'type' => 'select', 'default' => 'cm', 'options' => [ 'mm' => 'mm', 'cm' => 'cm', 'm' => 'm' ] ],
             [ 'title' => __( 'Minimum length', 'jp-catalog-suite' ), 'id' => 'jps_cs_length_min', 'type' => 'number', 'default' => 1, 'custom_attributes' => [ 'min' => 0, 'step' => 'any' ] ],
             [ 'title' => __( 'Maximum length', 'jp-catalog-suite' ), 'id' => 'jps_cs_length_max', 'type' => 'number', 'default' => 1000, 'custom_attributes' => [ 'min' => 0, 'step' => 'any' ] ],
@@ -110,6 +113,9 @@ final class Variable_Length {
             return;
         }
         woocommerce_wp_checkbox( [ 'id' => self::META['enabled'], 'label' => __( 'Variable length', 'jp-catalog-suite' ) ] );
+        if ( 'yes' === get_option( 'jps_cs_length_pricing_enabled', 'no' ) ) {
+            woocommerce_wp_checkbox( [ 'id' => self::META['price_per_unit'], 'label' => __( 'Price per length unit', 'jp-catalog-suite' ) ] );
+        }
         woocommerce_wp_select( [ 'id' => self::META['unit'], 'label' => __( 'Length unit', 'jp-catalog-suite' ), 'options' => [ '' => __( 'Use store default', 'jp-catalog-suite' ), 'mm' => 'mm', 'cm' => 'cm', 'm' => 'm' ] ] );
         foreach ( [ 'min' => __( 'Minimum length', 'jp-catalog-suite' ), 'max' => __( 'Maximum length', 'jp-catalog-suite' ), 'step' => __( 'Length step', 'jp-catalog-suite' ), 'default' => __( 'Default length', 'jp-catalog-suite' ) ] as $key => $label ) {
             woocommerce_wp_text_input( [ 'id' => self::META[ $key ], 'label' => $label, 'type' => 'number', 'custom_attributes' => [ 'min' => 0, 'step' => 'any' ] ] );
@@ -124,6 +130,9 @@ final class Variable_Length {
             // WooCommerce verifies the product editor nonce before this callback runs.
             // phpcs:ignore WordPress.Security.NonceVerification.Missing
             $value = isset( $_POST[ $meta ] ) ? sanitize_text_field( wp_unslash( $_POST[ $meta ] ) ) : '';
+            if ( 'price_per_unit' === $key && 'yes' !== get_option( 'jps_cs_length_pricing_enabled', 'no' ) ) {
+                continue;
+            }
             $product->update_meta_data( $meta, $value );
         }
     }
@@ -245,7 +254,57 @@ final class Variable_Length {
         }
         $data['jps_cs_length'] = (float) $value;
         $data['jps_cs_length_unit'] = $config['unit'];
+        $pricing_product = self::pricing_product( $product );
+        if ( 'yes' === get_option( 'jps_cs_length_pricing_enabled', 'no' ) && 'yes' === $pricing_product->get_meta( self::META['price_per_unit'], true ) ) {
+            $unit_product = $product;
+            if ( $variation_id ) {
+                $variation_product = wc_get_product( $variation_id );
+                if ( $variation_product instanceof \WC_Product_Variation && $variation_product->get_parent_id() === $product_id ) {
+                    $unit_product = $variation_product;
+                }
+            }
+            $data['jps_cs_unit_price'] = (float) $unit_product->get_price( 'edit' );
+        }
         return $data;
+    }
+    public static function set_length_prices( \WC_Cart $cart ): void {
+        foreach ( $cart->get_cart() as $cart_item_key => $cart_item ) {
+            if ( ! isset( $cart_item['jps_cs_length'], $cart_item['data'] ) || ! $cart_item['data'] instanceof \WC_Product ) {
+                continue;
+            }
+            $product = $cart_item['data'];
+            $pricing_product = self::pricing_product( $product );
+            if ( 'yes' !== get_option( 'jps_cs_length_pricing_enabled', 'no' ) || 'yes' !== $pricing_product->get_meta( self::META['price_per_unit'], true ) ) {
+                continue;
+            }
+            $unit_price = isset( $cart_item['jps_cs_unit_price'] ) ? (float) $cart_item['jps_cs_unit_price'] : (float) $product->get_price( 'edit' );
+            $cart->cart_contents[ $cart_item_key ]['jps_cs_unit_price'] = $unit_price;
+            $price = $unit_price * (float) $cart_item['jps_cs_length'];
+            $price = apply_filters( 'jps_cs_length_item_price', $price, $product, $cart_item );
+            $product->set_price( $price );
+        }
+    }
+
+    public static function price_html( string $html, \WC_Product $product ): string {
+        $pricing_product = self::pricing_product( $product );
+        if ( '' === $html || 'yes' !== get_option( 'jps_cs_length_pricing_enabled', 'no' ) || 'yes' !== $pricing_product->get_meta( self::META['price_per_unit'], true ) ) {
+            return $html;
+        }
+        $config = self::config( $pricing_product );
+        if ( ! $config['enabled'] ) {
+            return $html;
+        }
+        return $html . ' / ' . esc_html( $config['unit'] );
+    }
+
+    private static function pricing_product( \WC_Product $product ): \WC_Product {
+        if ( $product instanceof \WC_Product_Variation ) {
+            $parent = wc_get_product( $product->get_parent_id() );
+            if ( $parent instanceof \WC_Product ) {
+                return $parent;
+            }
+        }
+        return $product;
     }
 
     public static function display_item_data( array $data, array $cart_item ): array {

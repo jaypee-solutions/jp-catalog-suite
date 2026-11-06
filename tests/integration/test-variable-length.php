@@ -150,6 +150,104 @@ final class Test_Variable_Length extends WP_UnitTestCase {
         $this->assertNotSame( 'jps_cs_length', $formatted_meta[0]->display_key );
     }
 
+    public function test_length_line_keeps_current_price_when_pricing_is_disabled(): void {
+        update_option( 'jps_cs_length_pricing_enabled', 'no' );
+        $product = $this->product( [ 'max' => 300, 'price_per_unit' => 'yes' ] );
+        $product->set_regular_price( '5' );
+        $product->save();
+        WC()->cart->empty_cart();
+        $_REQUEST['jps_cs_length'] = '120';
+        $_POST['jps_cs_length'] = '120';
+        $this->assertNotFalse( WC()->cart->add_to_cart( $product->get_id(), 1 ) );
+        $line = reset( WC()->cart->get_cart() );
+        $line['data']->set_price( '7' );
+        WC()->cart->calculate_totals();
+        $this->assertSame( 7.0, (float) reset( WC()->cart->get_cart() )['data']->get_price() );
+        WC()->cart->empty_cart();
+    }
+
+    public function test_length_unit_pricing_uses_the_current_product_price(): void {
+        update_option( 'jps_cs_length_pricing_enabled', 'yes' );
+        $product = $this->product( [ 'max' => 300, 'price_per_unit' => 'yes' ] );
+        $product->set_regular_price( '5' );
+        $product->set_sale_price( '3' );
+        $product->save();
+        $this->assertSame( 3.0, (float) wc_get_product( $product->get_id() )->get_price( 'edit' ) );
+        WC()->cart->empty_cart();
+        $_REQUEST['jps_cs_length'] = '120';
+        $_POST['jps_cs_length'] = '120';
+        $this->assertNotFalse( WC()->cart->add_to_cart( $product->get_id(), 1 ) );
+        WC()->cart->calculate_totals();
+        $this->assertSame( 360.0, (float) reset( WC()->cart->get_cart() )['data']->get_price() );
+        WC()->cart->empty_cart();
+        update_option( 'jps_cs_length_pricing_enabled', 'no' );
+    }
+    public function test_price_per_length_unit_multiplies_cart_line_by_length_and_quantity_and_appends_unit(): void {
+        update_option( 'jps_cs_module_quote', 'no' );
+        update_option( 'jps_cs_length_pricing_enabled', 'yes' );
+        $product = $this->product( [ 'price_per_unit' => 'yes', 'max' => 300 ] );
+        $product->set_regular_price( '2' );
+        $product->set_status( 'publish' );
+        $product->save();
+        WC()->cart->empty_cart();
+        $_REQUEST['jps_cs_length'] = '120';
+        $_POST['jps_cs_length'] = '120';
+        $this->assertNotFalse( WC()->cart->add_to_cart( $product->get_id(), 1 ) );
+        WC()->cart->calculate_totals();
+        $line = reset( WC()->cart->get_cart() );
+        $this->assertSame( 240.0, (float) $line['data']->get_price() );
+        WC()->cart->set_quantity( key( WC()->cart->get_cart() ), 2 );
+        WC()->cart->calculate_totals();
+        $this->assertSame( 480.0, (float) WC()->cart->get_cart_contents_total() );
+        add_filter( 'jps_cs_quote_mode_active', '__return_false' );
+        $this->assertStringEndsWith( ' / cm', apply_filters( 'woocommerce_get_price_html', wc_price( 2 ), $product ) );
+        remove_filter( 'jps_cs_quote_mode_active', '__return_false' );
+        add_filter( 'jps_cs_quote_mode_active', '__return_true' );
+        $this->assertSame( '', apply_filters( 'woocommerce_get_price_html', wc_price( 2 ), $product ) );
+        remove_filter( 'jps_cs_quote_mode_active', '__return_true' );
+        update_option( 'jps_cs_length_pricing_enabled', 'no' );
+        WC()->cart->calculate_totals();
+        $this->assertSame( 240.0, (float) reset( WC()->cart->get_cart() )['data']->get_price() );
+        WC()->cart->empty_cart();
+        update_option( 'jps_cs_length_pricing_enabled', 'yes' );
+        update_post_meta( $product->get_id(), '_jps_cs_length_price_per_unit', 'no' );
+        $this->assertNotFalse( WC()->cart->add_to_cart( $product->get_id(), 1 ) );
+        WC()->cart->calculate_totals();
+        $this->assertSame( 2.0, (float) reset( WC()->cart->get_cart() )['data']->get_price() );
+        update_option( 'jps_cs_length_pricing_enabled', 'no' );
+        update_option( 'jps_cs_module_quote', 'yes' );
+    }
+
+    public function test_product_price_per_unit_flag_is_hidden_until_global_pricing_is_enabled(): void {
+        $product = $this->product();
+        global $product_object;
+        $product_object = $product;
+        require_once WC_ABSPATH . 'includes/admin/wc-meta-box-functions.php';
+        update_option( 'jps_cs_length_pricing_enabled', 'no' );
+        ob_start();
+        do_action( 'woocommerce_product_options_general_product_data' );
+        $disabled_fields = ob_get_clean();
+        $this->assertStringNotContainsString( '_jps_cs_length_price_per_unit', $disabled_fields );
+
+        update_option( 'jps_cs_length_pricing_enabled', 'yes' );
+        ob_start();
+        do_action( 'woocommerce_product_options_general_product_data' );
+        $enabled_fields = ob_get_clean();
+        $this->assertStringContainsString( '_jps_cs_length_price_per_unit', $enabled_fields );
+    }
+
+    public function test_product_price_per_unit_flag_is_saved_by_the_product_admin_process_action(): void {
+        $product = $this->product();
+        $previous_post = $_POST;
+        update_option( 'jps_cs_length_pricing_enabled', 'yes' );
+        $_POST['_jps_cs_length_price_per_unit'] = 'yes';
+        do_action( 'woocommerce_admin_process_product_object', $product );
+        $product->save();
+        $this->assertSame( 'yes', $product->get_meta( '_jps_cs_length_price_per_unit', true ) );
+        $_POST = $previous_post;
+        update_option( 'jps_cs_length_pricing_enabled', 'no' );
+    }
+
     public function test_store_api_add_item_preserves_valid_length_and_rejects_invalid_length(): void {
         $product = $this->product( [ 'max' => 300, 'step' => 1 ] );
         WC()->cart->empty_cart();
@@ -212,5 +310,25 @@ final class Test_Variable_Length extends WP_UnitTestCase {
             $this->assertSame( 201, $response->get_status() );
         }
         $this->assertCount( 2, WC()->cart->get_cart() );
+    }
+
+    public function test_length_pricing_applies_to_store_api_cart_item_data(): void {
+        update_option( 'jps_cs_length_pricing_enabled', 'yes' );
+        $product = $this->product( [ 'max' => 300, 'step' => 1, 'price_per_unit' => 'yes' ] );
+        $product->set_regular_price( '2' );
+        $product->save();
+        WC()->cart->empty_cart();
+
+        $request = new WP_REST_Request( 'POST', '/wc/store/v1/cart/add-item' );
+        $request->add_header( 'Nonce', wp_create_nonce( 'wc_store_api' ) );
+        $request->set_body_params( [ 'id' => $product->get_id(), 'quantity' => 1, 'extensions' => [ 'jp-catalog-suite' => [ 'jps_cs_length' => '120' ] ] ] );
+        $request->set_param( 'extensions', [ 'jp-catalog-suite' => [ 'jps_cs_length' => '120' ] ] );
+        $response = rest_get_server()->dispatch( $request );
+        $this->assertSame( 201, $response->get_status(), wp_json_encode( $response->get_data() ) );
+        WC()->cart->calculate_totals();
+        $item = reset( WC()->cart->get_cart() );
+        $this->assertSame( 120.0, $item['jps_cs_length'] );
+        $this->assertSame( 240.0, (float) $item['data']->get_price() );
+        update_option( 'jps_cs_length_pricing_enabled', 'no' );
     }
 }
