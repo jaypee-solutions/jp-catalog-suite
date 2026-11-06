@@ -169,7 +169,7 @@ final class Product_Tabs {
         }
         $hidden = array_map( static fn ( int $id ): int => Plugin::canonical_id( $id, 'jps_cs_tab' ), array_map( 'absint', (array) get_post_meta( $post->ID, '_jps_cs_hidden_tabs', true ) ) );
         $product = wc_get_product( $post->ID );
-        $applicable_tabs = $product instanceof \WC_Product ? self::tabs_for( $product ) : [];
+        $applicable_tabs = $product instanceof \WC_Product ? self::tabs_for( $product, false ) : [];
         $applicable_ids = array_map( static fn ( int $id ): int => Plugin::canonical_id( $id, 'jps_cs_tab' ), array_map( 'absint', array_keys( $applicable_tabs ) ) );
         echo '<div id="jps-cs-product-tabs" class="panel woocommerce_options_panel">';
         foreach ( get_posts( [ 'post_type' => 'jps_cs_tab', 'post_status' => 'publish', 'numberposts' => -1, 'suppress_filters' => false ] ) as $tab ) {
@@ -200,7 +200,7 @@ final class Product_Tabs {
         $product->update_meta_data( '_jps_cs_hidden_tabs', array_values( array_unique( array_filter( $hidden ) ) ) );
     }
 
-    public static function tabs_for( \WC_Product $product ): array {
+    public static function tabs_for( \WC_Product $product, bool $exclude_hidden = true ): array {
         $posts = get_posts( [ 'post_type' => 'jps_cs_tab', 'post_status' => 'publish', 'numberposts' => -1, 'suppress_filters' => false ] );
         $categories = wp_get_object_terms( $product->get_id(), 'product_cat', [ 'fields' => 'ids' ] );
         if ( is_wp_error( $categories ) ) {
@@ -253,7 +253,7 @@ final class Product_Tabs {
                         $matched[ $id ]['priority'] = $replacement_priority ?? 50;
                     }
                 }
-            } elseif ( in_array( Plugin::canonical_id( (int) $id, 'jps_cs_tab' ), $hidden_ids, true ) ) {
+            } elseif ( $exclude_hidden && in_array( Plugin::canonical_id( (int) $id, 'jps_cs_tab' ), $hidden_ids, true ) ) {
                 unset( $matched[ $id ] );
             }
         }

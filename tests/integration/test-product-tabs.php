@@ -62,6 +62,11 @@ final class Test_Product_Tabs extends WP_UnitTestCase {
         $this->assertSame( 'products', get_post_meta( $product_tab, '_jps_cs_scope', true ) );
         $this->assertSame( [ $product_id ], get_post_meta( $product_tab, '_jps_cs_products', true ) );
         $this->assertSame( $all_tab, (int) get_post_meta( $product_tab, '_jps_cs_replace_tab', true ) );
+        $GLOBALS['post'] = get_post( $product_id );
+        ob_start();
+        do_action( 'woocommerce_product_data_panels' );
+        $panel = ob_get_clean();
+        $this->assertMatchesRegularExpression( '/name="_jps_cs_hidden_tabs\[\]" value="' . $hidden_tab . '"\s+checked/', $panel );
     }
 
     public function test_product_tab_creation_link_and_editor_preselect_product_scope(): void {
