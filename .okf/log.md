@@ -12,3 +12,6 @@
 * **Inquiry emails**: Added configurable price-free New inquiry and Inquiry confirmation emails.
 * **Core tab settings**: Added shop-wide Core tab title, priority, and visibility controls.
 * **Price hiding**: Added quote-mode product-price suppression and Inquiry price-free customer views with the Store API limitation.
+
+## 2026-11-06
+* **Variable length**: Added Store API request capture, validation and cart-line preservation.
