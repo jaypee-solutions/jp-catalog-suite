@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-06T17:14:56+00:00\n"
+"POT-Creation-Date: 2026-11-06T17:16:28+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: jp-catalog-suite\n"
@@ -71,21 +71,21 @@ msgstr ""
 msgid "Enter recipients (comma-separated). Defaults to the site administrator email address."
 msgstr ""
 
-#: includes/class-inquiries.php:27
-#: includes/class-inquiries.php:38
+#: includes/class-inquiries.php:28
+#: includes/class-inquiries.php:39
 msgctxt "Order status"
 msgid "Inquiry"
 msgstr ""
 
 #. translators: %s is the number of inquiries in this order-status count.
-#: includes/class-inquiries.php:32
+#: includes/class-inquiries.php:33
 #, php-format
 msgid "Inquiry <span class=\"count\">(%s)</span>"
 msgid_plural "Inquiries <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-inquiries.php:82
+#: includes/class-inquiries.php:83
 msgid "Inquiries"
 msgstr ""
 
