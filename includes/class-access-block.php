@@ -29,18 +29,18 @@ final class Access_Block {
         add_filter( 'registration_redirect', [ self::class, 'registration_redirect' ] );
     }
 
-    public static function can_access( ?\WP_User $user, array $context = [] ): bool {
-        return (bool) apply_filters( 'jps_cs_can_access_protected', $user instanceof \WP_User && $user->exists(), $user, $context );
+    public static function can_access( array $context = [] ): bool {
+        return (bool) apply_filters( 'jps_cs_can_access_protected', is_user_logged_in(), get_current_user_id(), $context );
     }
 
     public static function render( array $attributes, string $content, \WP_Block $block ): string {
-        $user = wp_get_current_user();
         if ( is_user_logged_in() ) {
             self::mark_page_uncacheable();
         }
         $product = $block->context['postId'] ?? get_the_ID();
-        $context = [ 'product' => wc_get_product( absint( $product ) ) ];
-        $allowed = self::can_access( $user, $context );
+        $product_id = absint( $product );
+        $context = [ 'product_id' => $product_id ];
+        $allowed = self::can_access( $context );
         $mode = $attributes['mode'] ?? 'only-with-access';
         if ( ! in_array( $mode, [ 'only-with-access', 'only-without-access' ], true ) ) {
             $mode = 'only-with-access';
@@ -51,7 +51,8 @@ final class Access_Block {
         if ( empty( $attributes['showNotice'] ) ) {
             return '';
         }
-        return self::notice( is_user_logged_in(), $context['product'] instanceof \WC_Product ? $context['product'] : null );
+        $product_object = wc_get_product( $product_id );
+        return self::notice( is_user_logged_in(), $product_object instanceof \WC_Product ? $product_object : null );
     }
 
     public static function notice( bool $logged_in, ?\WC_Product $product ): string {

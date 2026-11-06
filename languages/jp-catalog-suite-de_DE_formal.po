@@ -305,3 +305,12 @@ msgstr "Anmeldehinweis anzeigen, wenn der Inhalt ausgeblendet ist"
 msgctxt "block description"
 msgid "Show content according to visitor access."
 msgstr "Inhalt entsprechend dem Zugriff der Besuchenden anzeigen."
+
+msgid "Protected"
+msgstr "Geschützt"
+
+msgid "Served only to authorized users"
+msgstr "Nur für berechtigte Benutzer verfügbar"
+
+msgid "The file could not be moved."
+msgstr "Die Datei konnte nicht verschoben werden."

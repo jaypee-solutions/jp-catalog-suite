@@ -148,3 +148,29 @@ if ( ! $length_rail ) {
 foreach ( [ 'enabled' => 'yes', 'unit' => 'cm', 'min' => '10', 'max' => '300', 'step' => '1' ] as $key => $value ) {
     update_post_meta( $length_rail, '_jps_cs_length_' . $key, $value );
 }
+
+// Ticket #13: Protected files and download endpoint fixtures.
+require_once dirname( __DIR__ ) . '/includes/class-protected-files.php';
+\JayPee\CatalogSuite\Protected_Files::ensure_directory();
+$protected_path = \JayPee\CatalogSuite\Protected_Files::directory() . '/part.stp';
+if ( ! file_exists( $protected_path ) ) {
+    file_put_contents( $protected_path, 'ISO-10303-21; protected test fixture' );
+}
+$protected_id = get_posts(
+    [
+        'post_type'      => 'attachment',
+        'post_status'    => 'any',
+        'numberposts'    => 1,
+        'title'          => 'part.stp',
+        'fields'         => 'ids',
+    ]
+)[0] ?? 0;
+if ( ! $protected_id ) {
+    $protected_id = wp_insert_attachment(
+        [ 'post_mime_type' => 'application/step', 'post_title' => 'part.stp', 'post_status' => 'inherit' ],
+        $protected_path
+    );
+    update_attached_file( $protected_id, $protected_path );
+    update_post_meta( $protected_id, '_jps_cs_protected', '1' );
+    update_post_meta( $protected_id, '_jps_cs_e2e_fixture', 'part.stp' );
+}

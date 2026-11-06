@@ -3,13 +3,13 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JayPee Solutions Catalog Suite for WooCommerce 0.1.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/t12-access-block\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/t13-protected-files\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-06T19:31:46+00:00\n"
+"POT-Creation-Date: 2026-11-06T20:16:59+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: jp-catalog-suite\n"
@@ -34,29 +34,29 @@ msgstr ""
 msgid "JayPee Solutions"
 msgstr ""
 
-#: includes/class-access-block.php:59
+#: includes/class-access-block.php:60
 msgid "You do not have permission to view this content."
 msgstr ""
 
-#: includes/class-access-block.php:75
-#: includes/class-access-block.php:108
+#: includes/class-access-block.php:76
+#: includes/class-access-block.php:109
 msgid "Please {login} or {register} to view this content."
 msgstr ""
 
-#: includes/class-access-block.php:80
+#: includes/class-access-block.php:81
 msgid "log in"
 msgstr ""
 
-#: includes/class-access-block.php:80
+#: includes/class-access-block.php:81
 msgid "register"
 msgstr ""
 
-#: includes/class-access-block.php:107
 #: includes/class-access-block.php:108
+#: includes/class-access-block.php:109
 msgid "Protected notice"
 msgstr ""
 
-#: includes/class-access-block.php:108
+#: includes/class-access-block.php:109
 msgid "Use {login} and {register} for links."
 msgstr ""
 
@@ -185,28 +185,70 @@ msgstr ""
 msgid "Hide"
 msgstr ""
 
-#: includes/class-product-tabs.php:205
+#: includes/class-product-tabs.php:199
+msgid "Protected files"
+msgstr ""
+
+#: includes/class-product-tabs.php:200
+msgid "Allowed file MIME types"
+msgstr ""
+
+#: includes/class-product-tabs.php:201
+msgid "Automatically protect extensions"
+msgstr ""
+
+#: includes/class-product-tabs.php:202
+msgid "File delivery method"
+msgstr ""
+
+#: includes/class-product-tabs.php:202
+msgid "Automatic"
+msgstr ""
+
+#: includes/class-product-tabs.php:210
 msgid "Description"
 msgstr ""
 
-#: includes/class-product-tabs.php:206
+#: includes/class-product-tabs.php:211
 msgid "Additional information"
 msgstr ""
 
-#: includes/class-product-tabs.php:207
+#: includes/class-product-tabs.php:212
 msgid "Reviews"
 msgstr ""
 
-#: includes/class-product-tabs.php:234
+#: includes/class-product-tabs.php:239
 msgid "Tabs"
 msgstr ""
 
-#: includes/class-product-tabs.php:254
+#: includes/class-product-tabs.php:259
 msgid "Hide on this product"
 msgstr ""
 
-#: includes/class-product-tabs.php:263
+#: includes/class-product-tabs.php:268
 msgid "Add product-specific tab"
+msgstr ""
+
+#: includes/class-protected-files.php:97
+msgid "Protected"
+msgstr ""
+
+#: includes/class-protected-files.php:99
+msgid "Served only to authorized users"
+msgstr ""
+
+#: includes/class-protected-files.php:119
+#: includes/class-protected-files.php:125
+#: includes/class-protected-files.php:138
+msgid "The file could not be moved."
+msgstr ""
+
+#: includes/class-protected-files.php:175
+msgid "File not found."
+msgstr ""
+
+#: includes/class-protected-files.php:186
+msgid "You do not have permission to download this file."
 msgstr ""
 
 #: includes/class-quote-mode.php:46

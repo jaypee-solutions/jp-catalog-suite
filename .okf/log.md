@@ -13,3 +13,4 @@
 * **Core tab settings**: Added shop-wide Core tab title, priority, and visibility controls.
 * **Price hiding**: Added quote-mode product-price suppression and Inquiry price-free customer views with the Store API limitation.
 * **Access block**: Added audience-specific tab content, registration notices, and logged-in cache bypass guidance.
+* **Protected files**: Added ADR 0007 for denied uploads storage, access-controlled delivery, and host configuration requirements.
