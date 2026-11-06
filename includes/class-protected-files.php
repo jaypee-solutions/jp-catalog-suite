@@ -129,28 +129,26 @@ final class Protected_Files {
         $target = $protected ? self::directory() . '/' . $relative : $base . $relative;
         if ( $protected ) {
             self::ensure_directory();
-        } else {
-            wp_mkdir_p( dirname( $target ) );
         }
+        wp_mkdir_p( dirname( $target ) );
         require_once ABSPATH . 'wp-admin/includes/file.php';
         WP_Filesystem();
         global $wp_filesystem;
         $metadata = wp_get_attachment_metadata( $id );
+        if ( ! $wp_filesystem->move( $source, $target, true ) ) {
+            $post['errors']['jps_cs_protected']['errors'][] = __( 'The file could not be moved.', 'jp-catalog-suite' );
+            return $post;
+        }
         if ( is_array( $metadata ) ) {
             foreach ( $metadata['sizes'] ?? [] as $size ) {
                 if ( empty( $size['file'] ) ) {
                     continue;
                 }
                 $size_path = dirname( $source ) . '/' . basename( $size['file'] );
-                if ( is_file( $size_path ) && ! $wp_filesystem->delete( $size_path ) ) {
-                    $post['errors']['jps_cs_protected']['errors'][] = __( 'The file could not be moved.', 'jp-catalog-suite' );
-                    return $post;
+                if ( is_file( $size_path ) ) {
+                    $wp_filesystem->delete( $size_path );
                 }
             }
-        }
-        if ( ! $wp_filesystem->move( $source, $target, true ) ) {
-            $post['errors']['jps_cs_protected']['errors'][] = __( 'The file could not be moved.', 'jp-catalog-suite' );
-            return $post;
         }
         if ( is_array( $metadata ) ) {
             $metadata['file'] = ltrim( str_replace( $base, '', wp_normalize_path( $target ) ), '/' );
