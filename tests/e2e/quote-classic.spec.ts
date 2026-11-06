@@ -49,9 +49,9 @@ test( 'guest sends an inquiry on classic checkout', async ( { page } ) => {
 	await page.locator( '#billing_city' ).fill( 'Berlin' );
 	await page.locator( '#billing_postcode' ).fill( '10115' );
 	await page.locator( '#billing_country' ).selectOption( 'DE' );
-	await page.getByRole( 'button', { name: /place order|send inquiry/i } ).click();
+	await page.locator( '#place_order' ).click();
 	await expect( page ).toHaveURL( /order-received/ );
 	await login( page );
 	await page.goto( '/wp-admin/admin.php?page=wc-orders' );
-	await expect( page.getByText( 'Inquiry', { exact: true } ).first() ).toBeVisible();
+	await expect( page.locator( '#the-list tr' ).first() ).toContainText( 'Inquiry' );
 } );

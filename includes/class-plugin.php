@@ -11,7 +11,7 @@ namespace JayPee\CatalogSuite;
 
 final class Plugin {
 
-    public const MODULES = [ 'quote' => Quote_Mode::class ];
+    public const MODULES = [ 'quote' => Quote_Mode::class, 'tabs' => Product_Tabs::class ];
 
     public static function init(): void {
         Inquiries::init();

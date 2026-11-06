@@ -33,14 +33,14 @@ test( 'guest sends a Blocks inquiry which stays listed when Quote mode is off', 
 	await page.getByRole( 'textbox', { name: 'Address', exact: true } ).fill( '1 Main Street' );
 	await page.getByLabel( 'City' ).fill( 'Berlin' );
 	await page.getByLabel( 'Postal code' ).fill( '10115' );
-	await page.getByRole( 'button', { name: /place order|send inquiry|buy now/i } ).click();
+	await page.locator( '.wc-block-components-checkout-place-order-button' ).click();
 	await expect( page ).toHaveURL( /order-received/ );
 
 	await login( page );
 	await page.goto( '/wp-admin/admin.php?page=wc-orders' );
-	await expect( page.getByText( 'Inquiry', { exact: true } ).first() ).toBeVisible();
+	await expect( page.locator( '#the-list tr' ).first() ).toContainText( 'Inquiry' );
 	wpCli( 'option', 'update', 'jps_cs_module_quote', 'no' );
 	await page.reload();
-	await expect( page.getByText( 'Inquiry', { exact: true } ).first() ).toBeVisible();
+	await expect( page.locator( '#the-list tr' ).first() ).toContainText( 'Inquiry' );
 	wpCli( 'option', 'update', 'jps_cs_module_quote', 'yes' );
 } );

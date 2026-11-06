@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-06T14:49:50+00:00\n"
+"POT-Creation-Date: 2026-11-06T14:52:25+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: jp-catalog-suite\n"
@@ -56,6 +56,50 @@ msgstr ""
 msgid "Inquiries"
 msgstr ""
 
+#: includes/class-product-tabs.php:29
+msgid "Sorry, you are not allowed to read product tabs."
+msgstr ""
+
+#: includes/class-product-tabs.php:43
+#: includes/class-product-tabs.php:117
+#: includes/class-settings-page.php:24
+#: includes/class-settings-page.php:41
+msgid "Product tabs"
+msgstr ""
+
+#: includes/class-product-tabs.php:44
+msgid "Product tab"
+msgstr ""
+
+#: includes/class-product-tabs.php:45
+msgid "Add product tab"
+msgstr ""
+
+#: includes/class-product-tabs.php:46
+msgid "Edit product tab"
+msgstr ""
+
+#: includes/class-product-tabs.php:76
+msgid "Tab settings"
+msgstr ""
+
+#: includes/class-product-tabs.php:88
+msgid "Scope"
+msgstr ""
+
+#: includes/class-product-tabs.php:90
+msgid "All products"
+msgstr ""
+
+#: includes/class-product-tabs.php:91
+#: includes/class-product-tabs.php:93
+msgid "Categories"
+msgstr ""
+
+#: includes/class-product-tabs.php:99
+msgid "Priority"
+msgstr ""
+
 #: includes/class-quote-mode.php:81
 #: includes/class-settings-page.php:23
 #: includes/class-settings-page.php:41
@@ -69,11 +113,6 @@ msgstr ""
 #: includes/class-settings-page.php:21
 #: includes/class-settings-page.php:36
 msgid "General"
-msgstr ""
-
-#: includes/class-settings-page.php:24
-#: includes/class-settings-page.php:41
-msgid "Product tabs"
 msgstr ""
 
 #: includes/class-settings-page.php:25
@@ -177,6 +216,6 @@ msgstr ""
 msgid "Open the Updates settings"
 msgstr ""
 
-#: jp-catalog-suite.php:66
+#: jp-catalog-suite.php:67
 msgid "JayPee Solutions Catalog Suite for WooCommerce requires WooCommerce."
 msgstr ""

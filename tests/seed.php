@@ -34,6 +34,26 @@ if ( is_plugin_active( 'woocommerce-germanized/woocommerce-germanized.php' ) ) {
     deactivate_plugins( 'woocommerce-germanized/woocommerce-germanized.php' );
 }
 
+// Ticket #9: Global tabs tracer fixtures.
+$tab_query = new WP_Query( [ 'post_type' => 'jps_cs_tab', 'title' => 'Downloads', 'post_status' => 'any', 'posts_per_page' => 1 ] );
+$tab = $tab_query->posts[0] ?? null;
+if ( ! $tab ) {
+    $tab_id = wp_insert_post( [ 'post_type' => 'jps_cs_tab', 'post_status' => 'publish', 'post_title' => 'Downloads', 'post_content' => '<p>Public info</p>' ] );
+    update_post_meta( $tab_id, '_jps_cs_scope', 'all' );
+    update_post_meta( $tab_id, '_jps_cs_priority', '50' );
+}
+$product_query = new WP_Query( [ 'post_type' => 'product', 'title' => 'Tab Demo', 'post_status' => 'any', 'posts_per_page' => 1 ] );
+$product = isset( $product_query->posts[0] ) ? wc_get_product( $product_query->posts[0]->ID ) : false;
+if ( ! $product ) {
+    $product = new WC_Product_Simple();
+    $product->set_name( 'Tab Demo' );
+    $product->set_regular_price( '1' );
+    $product->set_status( 'publish' );
+    $product->save();
+}
+update_option( 'woocommerce_coming_soon', 'no' );
+update_option( 'jps_cs_module_tabs', 'yes' );
+
 global $wpdb;
 foreach ( get_users( [ 'fields' => 'ID' ] ) as $user_id ) {
     update_user_meta(

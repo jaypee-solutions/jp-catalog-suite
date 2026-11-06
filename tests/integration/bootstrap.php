@@ -34,6 +34,11 @@ tests_add_filter(
 );
 
 tests_add_filter(
+    'pre_option_jps_cs_module_tabs',
+    static fn (): string => 'yes'
+);
+
+tests_add_filter(
     'setup_theme',
     static function (): void {
         \WC_Install::install();
