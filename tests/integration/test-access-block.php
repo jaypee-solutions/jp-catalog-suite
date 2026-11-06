@@ -41,8 +41,8 @@ final class Test_Access_Block extends WP_UnitTestCase {
             $denied = do_blocks( $block );
             $this->assertStringNotContainsString( 'Protected text', $denied );
             $this->assertStringContainsString( 'You do not have permission to view this content.', $denied );
-            $this->assertSame( $customer_id, $filter_args[0] );
-            $this->assertSame( $product_id, $filter_args[1]['product_id'] );
+            $this->assertSame( $customer_id, $filter_args[0]->ID );
+            $this->assertSame( $product_id, $filter_args[1]['product']->get_id() );
         } finally {
             remove_filter( 'jps_cs_can_access_protected', $deny, 10 );
         }

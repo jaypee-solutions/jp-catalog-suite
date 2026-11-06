@@ -183,7 +183,7 @@ final class Protected_Files {
             wp_safe_redirect( wp_login_url( home_url( $request_uri ) ) );
             exit;
         }
-        if ( ! Access_Block::can_access( [ 'attachment_id' => $id ] ) ) {
+        if ( ! Access_Block::can_access( wp_get_current_user(), [ 'attachment_id' => $id ] ) ) {
             wp_die( esc_html__( 'You do not have permission to download this file.', 'jp-catalog-suite' ), '', [ 'response' => 403 ] ); }
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Product identifier is untrusted and used only for the download log/action.
         $product_id = isset( $_GET['product'] ) && is_scalar( $_GET['product'] ) ? absint( wp_unslash( $_GET['product'] ) ) : 0;
