@@ -11,9 +11,12 @@ namespace JayPee\CatalogSuite;
 
 final class Plugin {
 
-    public const MODULES = [];
+    public const MODULES = [
+        'length' => Variable_Length::class,
+    ];
 
     public static function init(): void {
+        require_once PLUGIN_DIR . 'includes/class-variable-length.php';
         add_filter(
             'woocommerce_get_settings_pages',
             static function ( array $pages ): array {

@@ -21,6 +21,7 @@ tests_add_filter(
         if ( ! is_readable( $woocommerce_file ) ) {
             $woocommerce_file = WP_PLUGIN_DIR . '/woocommerce.latest-stable/woocommerce.php';
         }
+        add_filter( 'pre_option_jps_cs_module_length', static fn() => 'yes' );
         require_once $woocommerce_file;
         require_once dirname( __DIR__, 2 ) . '/jp-catalog-suite.php';
     }

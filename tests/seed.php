@@ -48,3 +48,14 @@ foreach ( get_users( [ 'fields' => 'ID' ] ) as $user_id ) {
 }
 
 WP_CLI::success( 'Seed complete.' );
+// Ticket #17: Variable length tracer bullet on simple products fixtures.
+$length_product = wc_get_product_id_by_sku( 'LB-1' );
+if ( ! $length_product ) {
+    $length_product = wp_insert_post( [ 'post_type' => 'product', 'post_status' => 'publish', 'post_title' => 'Length Bar' ] );
+    update_post_meta( $length_product, '_sku', 'LB-1' );
+    update_post_meta( $length_product, '_regular_price', '5' );
+    update_post_meta( $length_product, '_price', '5' );
+}
+foreach ( [ 'enabled' => 'yes', 'unit' => 'cm', 'min' => '10', 'max' => '300', 'step' => '1' ] as $key => $value ) {
+    update_post_meta( $length_product, '_jps_cs_length_' . $key, $value );
+}

@@ -30,3 +30,45 @@ msgstr "Tabs, geschützte Dateien und das Download-Protokoll beim Löschen des P
 
 msgid "JayPee Solutions Catalog Suite for WooCommerce requires WooCommerce."
 msgstr "JayPee Solutions Catalog Suite für WooCommerce setzt WooCommerce voraus."
+
+msgid "Variable length defaults"
+msgstr "Standardeinstellungen für variable Länge"
+
+msgid "Unit"
+msgstr "Einheit"
+
+msgid "Length unit"
+msgstr "Längeneinheit"
+
+msgid "Use store default"
+msgstr "Shop-Standard verwenden"
+
+msgid "Minimum length"
+msgstr "Mindestlänge"
+
+msgid "Maximum length"
+msgstr "Höchstlänge"
+
+msgid "Length step"
+msgstr "Längenschritt"
+
+msgid "Default length"
+msgstr "Standardlänge"
+
+msgid "Price per length unit"
+msgstr "Preis pro Längeneinheit"
+
+msgid "Length (%s)"
+msgstr "Länge (%s)"
+
+msgid "Please enter a length between %1$s and %2$s %3$s."
+msgstr "Bitte geben Sie eine Länge zwischen %1$s und %2$s %3$s ein."
+
+msgid "The length must be a multiple of %1$s %2$s."
+msgstr "Die Länge muss ein Vielfaches von %1$s %2$s sein."
+
+msgid "Length"
+msgstr "Länge"
+
+msgid "Choose length"
+msgstr "Länge auswählen"
