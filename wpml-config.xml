@@ -19,5 +19,8 @@
         <key name="jps_cs_quote_add_to_cart_label"/>
         <key name="jps_cs_quote_proceed_label"/>
         <key name="jps_cs_quote_place_order_label"/>
+        <key name="jps_cs_core_tab_description_title"/>
+        <key name="jps_cs_core_tab_additional_information_title"/>
+        <key name="jps_cs_core_tab_reviews_title"/>
     </admin-texts>
 </wpml-config>

@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-06T18:07:05+00:00\n"
+"POT-Creation-Date: 2026-11-06T19:04:43+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: jp-catalog-suite\n"
@@ -93,157 +93,178 @@ msgstr ""
 msgid "Inquiry received."
 msgstr ""
 
-#: includes/class-product-tabs.php:32
+#: includes/class-product-tabs.php:33
 msgid "Sorry, you are not allowed to read product tabs."
 msgstr ""
 
-#: includes/class-product-tabs.php:46
-#: includes/class-product-tabs.php:168
+#: includes/class-product-tabs.php:47
+#: includes/class-product-tabs.php:169
 #: includes/class-settings-page.php:24
 #: includes/class-settings-page.php:41
 msgid "Product tabs"
 msgstr ""
 
-#: includes/class-product-tabs.php:47
+#: includes/class-product-tabs.php:48
 msgid "Product tab"
 msgstr ""
 
-#: includes/class-product-tabs.php:48
+#: includes/class-product-tabs.php:49
 msgid "Add product tab"
 msgstr ""
 
-#: includes/class-product-tabs.php:49
+#: includes/class-product-tabs.php:50
 msgid "Edit product tab"
 msgstr ""
 
-#: includes/class-product-tabs.php:81
+#: includes/class-product-tabs.php:82
 msgid "Tab settings"
 msgstr ""
 
-#: includes/class-product-tabs.php:104
+#: includes/class-product-tabs.php:105
 msgid "Scope"
 msgstr ""
 
-#: includes/class-product-tabs.php:106
+#: includes/class-product-tabs.php:107
 msgid "All products"
 msgstr ""
 
-#: includes/class-product-tabs.php:107
-#: includes/class-product-tabs.php:110
+#: includes/class-product-tabs.php:108
+#: includes/class-product-tabs.php:111
 msgid "Categories"
 msgstr ""
 
-#: includes/class-product-tabs.php:108
-#: includes/class-product-tabs.php:116
+#: includes/class-product-tabs.php:109
+#: includes/class-product-tabs.php:117
 msgid "Products"
 msgstr ""
 
-#: includes/class-product-tabs.php:125
+#: includes/class-product-tabs.php:126
 msgid "Replace global tab"
 msgstr ""
 
-#: includes/class-product-tabs.php:127
+#: includes/class-product-tabs.php:128
 msgid "None"
 msgstr ""
 
-#: includes/class-product-tabs.php:135
+#: includes/class-product-tabs.php:136
+#: includes/class-product-tabs.php:185
 msgid "Priority"
 msgstr ""
 
-#: includes/class-product-tabs.php:174
+#: includes/class-product-tabs.php:178
+msgid "Title"
+msgstr ""
+
+#: includes/class-product-tabs.php:191
+msgid "Hide"
+msgstr ""
+
+#: includes/class-product-tabs.php:204
+msgid "Description"
+msgstr ""
+
+#: includes/class-product-tabs.php:205
+msgid "Additional information"
+msgstr ""
+
+#: includes/class-product-tabs.php:206
+msgid "Reviews"
+msgstr ""
+
+#: includes/class-product-tabs.php:233
 msgid "Tabs"
 msgstr ""
 
-#: includes/class-product-tabs.php:194
+#: includes/class-product-tabs.php:253
 msgid "Hide on this product"
 msgstr ""
 
-#: includes/class-product-tabs.php:203
+#: includes/class-product-tabs.php:262
 msgid "Add product-specific tab"
 msgstr ""
 
-#: includes/class-quote-mode.php:49
-#: includes/class-quote-mode.php:309
+#: includes/class-quote-mode.php:51
+#: includes/class-quote-mode.php:310
 msgid "Inquiry basket"
 msgstr ""
 
-#: includes/class-quote-mode.php:50
-#: includes/class-quote-mode.php:310
+#: includes/class-quote-mode.php:52
+#: includes/class-quote-mode.php:311
 msgid "Add to inquiry"
 msgstr ""
 
-#: includes/class-quote-mode.php:51
-#: includes/class-quote-mode.php:311
+#: includes/class-quote-mode.php:53
+#: includes/class-quote-mode.php:312
 msgid "Continue to inquiry"
 msgstr ""
 
-#: includes/class-quote-mode.php:52
-#: includes/class-quote-mode.php:312
+#: includes/class-quote-mode.php:54
+#: includes/class-quote-mode.php:313
 msgid "Send inquiry"
 msgstr ""
 
-#: includes/class-quote-mode.php:75
+#: includes/class-quote-mode.php:77
 msgid "Thank you. Your inquiry has been received."
 msgstr ""
 
-#: includes/class-quote-mode.php:180
-#: includes/class-quote-mode.php:297
+#: includes/class-quote-mode.php:182
+#: includes/class-quote-mode.php:298
 #: templates/emails/inquiry-customer-details.php:18
 msgid "Company"
 msgstr ""
 
-#: includes/class-quote-mode.php:180
-#: includes/class-quote-mode.php:298
+#: includes/class-quote-mode.php:182
+#: includes/class-quote-mode.php:299
 #: templates/emails/inquiry-customer-details.php:17
 msgid "Phone"
 msgstr ""
 
-#: includes/class-quote-mode.php:239
-#: includes/class-quote-mode.php:299
+#: includes/class-quote-mode.php:295
+#: includes/class-quote-mode.php:300
 msgid "Optional"
 msgstr ""
 
-#: includes/class-quote-mode.php:239
-#: includes/class-quote-mode.php:299
+#: includes/class-quote-mode.php:295
+#: includes/class-quote-mode.php:300
 msgid "Required"
 msgstr ""
 
-#: includes/class-quote-mode.php:239
-#: includes/class-quote-mode.php:299
+#: includes/class-quote-mode.php:295
+#: includes/class-quote-mode.php:300
 msgid "Hidden"
 msgstr ""
 
-#: includes/class-quote-mode.php:296
+#: includes/class-quote-mode.php:297
 msgid "Inquiry checkout fields"
 msgstr ""
 
-#: includes/class-quote-mode.php:299
+#: includes/class-quote-mode.php:300
 msgid "Address"
 msgstr ""
 
-#: includes/class-quote-mode.php:300
+#: includes/class-quote-mode.php:301
 msgid "Order message"
 msgstr ""
 
-#: includes/class-quote-mode.php:308
+#: includes/class-quote-mode.php:309
 #: includes/class-settings-page.php:23
 #: includes/class-settings-page.php:41
 msgid "Quote mode"
 msgstr ""
 
-#: includes/class-quote-mode.php:309
+#: includes/class-quote-mode.php:310
 msgid "Inquiry basket label"
 msgstr ""
 
-#: includes/class-quote-mode.php:310
+#: includes/class-quote-mode.php:311
 msgid "Add to inquiry label"
 msgstr ""
 
-#: includes/class-quote-mode.php:311
+#: includes/class-quote-mode.php:312
 msgid "Continue to inquiry label"
 msgstr ""
 
-#: includes/class-quote-mode.php:312
+#: includes/class-quote-mode.php:313
 msgid "Send inquiry label"
 msgstr ""
 
