@@ -1,1 +1,0 @@
-{"version":1,"defects":[],"times":{"Test_Plugin_Activation::test_plugin_activates_without_error":0.023,"Test_Settings::test_catalog_suite_settings_page_is_registered":0.001,"Test_Settings::test_general_settings_are_saved_by_woocommerce":0.012,"Test_Uninstall::test_uninstall_removes_options_without_changing_orders":0.11}}
