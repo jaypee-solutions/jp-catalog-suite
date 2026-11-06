@@ -201,4 +201,16 @@ final class Test_Variable_Length extends WP_UnitTestCase {
         $enabled_fields = ob_get_clean();
         $this->assertStringContainsString( '_jps_cs_length_price_per_unit', $enabled_fields );
     }
+
+    public function test_product_price_per_unit_flag_is_saved_by_the_product_admin_process_action(): void {
+        $product = $this->product();
+        $previous_post = $_POST;
+        update_option( 'jps_cs_length_pricing_enabled', 'yes' );
+        $_POST['_jps_cs_length_price_per_unit'] = 'yes';
+        do_action( 'woocommerce_admin_process_product_object', $product );
+        $product->save();
+        $this->assertSame( 'yes', $product->get_meta( '_jps_cs_length_price_per_unit', true ) );
+        $_POST = $previous_post;
+        update_option( 'jps_cs_length_pricing_enabled', 'no' );
+    }
 }
