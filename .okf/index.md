@@ -11,3 +11,4 @@ okf_version: "0.1"
 * [Inquiries without gateway](decisions/0003-inquiries-without-gateway.md) - Inquiry intake does not depend on payment processing.
 * [Global product tabs](decisions/0006-tabs-as-block-editor-cpt.md) - Block-editor posts with global/category scope, priority, and REST access restrictions.
 * [E2E environment isolation](references/e2e-ci-isolation.md) - CI-specific fixtures and independent E2E assertions.
+* [Quote-mode customer labels](decisions/0010-quote-mode-labels.md) - Configurable translated labels for customer-facing inquiry flows.

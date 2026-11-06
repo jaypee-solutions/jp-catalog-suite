@@ -61,4 +61,12 @@ final class Test_Inquiries extends WP_UnitTestCase {
         $this->assertArrayHasKey( 'wc-jps-inquiry', wc_get_order_statuses() );
         $this->assertContains( 'jps-inquiry', apply_filters( 'woocommerce_analytics_settings_default_excluded_order_statuses', [] ) );
     }
+
+    public function test_quote_labels_use_translated_defaults_and_saved_overrides(): void {
+        update_option( 'jps_cs_quote_place_order_label', '' );
+        $this->assertSame( 'Send inquiry', apply_filters( 'woocommerce_order_button_text', 'Place order' ) );
+
+        update_option( 'jps_cs_quote_place_order_label', 'Submit request' );
+        $this->assertSame( 'Submit request', apply_filters( 'woocommerce_order_button_text', 'Place order' ) );
+    }
 }

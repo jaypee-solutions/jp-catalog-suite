@@ -6,3 +6,4 @@
 * **Inquiry intake**: Added quote-mode inquiry processing, the core Inquiry status, and Analytics exclusion.
 * **Global product tabs**: Added the block-editor tab post type, category-scoped resolution, and restricted REST access.
 * **E2E isolation**: Documented Germanized onboarding, cart-line assertions, and persistent order isolation.
+* **Quote-mode labels**: Added configurable translated inquiry wording across PHP and WooCommerce Blocks.

@@ -38,7 +38,7 @@ test( 'guest sends a Blocks inquiry which stays listed when Quote mode is off', 
 		await page.getByLabel( 'City' ).fill( 'Berlin' );
 		await page.getByLabel( 'Postal code' ).fill( '10115' );
 		await page.getByRole( 'checkbox', { name: /Terms and Conditions and Cancellation Policy/ } ).check();
-		await page.getByRole( 'button', { name: 'Buy Now' } ).click();
+		await page.getByRole( 'button', { name: /send inquiry|buy now|place order/i } ).click();
 		await expect( page ).toHaveURL( /order-received/ );
 
 		await login( page );
