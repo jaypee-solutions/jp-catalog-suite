@@ -12,7 +12,7 @@ const ADMIN_PASS = process.env.WP_ADMIN_PASS ?? 'password';
 let oldCart = '';
 let oldCheckout = '';
 let oldQuote = '';
-let oldPhone = '';
+let oldMessage = '';
 
 async function login( page: Page ): Promise<void> {
 	await page.context().clearCookies();
@@ -53,6 +53,7 @@ test.beforeAll( () => {
 	oldCheckout = wpCli( 'option', 'get', 'woocommerce_checkout_page_id' );
 	oldQuote = wpCli( 'option', 'get', 'jps_cs_module_quote' );
 	oldPhone = wpCli( 'eval', "echo get_option( 'jps_cs_checkout_phone', 'optional' );" );
+	oldMessage = wpCli( 'eval', "echo get_option( 'jps_cs_checkout_message', 'yes' );" );
 	oldComingSoon = wpCli( 'option', 'get', 'woocommerce_coming_soon' );
 	wpCli( 'option', 'update', 'woocommerce_coming_soon', 'no' );
 	wpCli( 'option', 'update', 'jps_cs_checkout_phone', 'required' );
@@ -68,6 +69,7 @@ test.afterAll( () => {
 	if ( oldCheckout ) wpCli( 'option', 'update', 'woocommerce_checkout_page_id', oldCheckout );
 	wpCli( 'option', 'update', 'jps_cs_module_quote', oldQuote );
 	wpCli( 'option', 'update', 'jps_cs_checkout_phone', oldPhone );
+	wpCli( 'option', 'update', 'jps_cs_checkout_message', oldMessage );
 	wpCli( 'option', 'update', 'woocommerce_coming_soon', oldComingSoon );
 } );
 
@@ -82,6 +84,12 @@ test( 'guest sends an inquiry on classic checkout', async ( { page } ) => {
 	await page.goto( '/classic-cart/' );
 	await expect( page.getByRole( 'link', { name: 'Continue to inquiry' } ) ).toBeVisible();
 	await page.goto( '/classic-checkout/' );
+	await expect( page.locator( '#order_comments' ) ).toBeVisible();
+	wpCli( 'option', 'update', 'jps_cs_checkout_message', 'no' );
+	await page.reload();
+	await expect( page.locator( '#order_comments' ) ).toHaveCount( 0 );
+	wpCli( 'option', 'update', 'jps_cs_checkout_message', 'yes' );
+	await page.reload();
 	await expect( page.locator( 'body' ) ).not.toContainText( /zahlungspflichtig/i );
 	await page.locator( '#billing_email' ).fill( `classic-${ Date.now() }@example.com` );
 	await page.locator( '#billing_first_name' ).fill( 'Guest' );
