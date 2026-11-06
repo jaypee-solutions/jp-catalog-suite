@@ -54,10 +54,6 @@ msgstr "Längenschritt"
 
 msgid "Default length"
 msgstr "Standardlänge"
-
-msgid "Price per length unit"
-msgstr "Preis pro Längeneinheit"
-
 msgid "Length (%s)"
 msgstr "Länge (%s)"
 
@@ -72,3 +68,29 @@ msgstr "Länge"
 
 msgid "Choose length"
 msgstr "Länge auswählen"
+msgid "Product tab"
+msgstr "Produkttab"
+
+msgid "Add product tab"
+msgstr "Produkttab hinzufügen"
+
+msgid "Edit product tab"
+msgstr "Produkttab bearbeiten"
+
+msgid "Tab settings"
+msgstr "Tab-Einstellungen"
+
+msgid "Scope"
+msgstr "Geltungsbereich"
+
+msgid "All products"
+msgstr "Alle Produkte"
+
+msgid "Categories"
+msgstr "Kategorien"
+
+msgid "Priority"
+msgstr "Priorität"
+
+msgid "Sorry, you are not allowed to read product tabs."
+msgstr "Sie dürfen Produkttabs nicht lesen."

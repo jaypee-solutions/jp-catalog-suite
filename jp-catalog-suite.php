@@ -34,6 +34,7 @@ if ( is_readable( __DIR__ . '/vendor/autoload.php' ) ) {
 }
 
 require_once __DIR__ . '/includes/class-updates.php';
+require_once __DIR__ . '/includes/class-product-tabs.php';
 require_once __DIR__ . '/includes/class-plugin.php';
 
 register_activation_hook( PLUGIN_FILE, [ Plugin::class, 'activate' ] );

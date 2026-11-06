@@ -57,4 +57,28 @@ final class Test_Variable_Length extends WP_UnitTestCase {
         $_POST['jps_cs_length'] = '10.6';
         $this->assertNotFalse( WC()->cart->add_to_cart( $product->get_id() ) );
     }
+
+    public function test_order_item_meta_formats_length_with_unit_without_exposing_raw_key(): void {
+        $product = $this->product();
+        $order = wc_create_order();
+        $item = new WC_Order_Item_Product();
+        $item->set_product( $product );
+        do_action(
+            'woocommerce_checkout_create_order_line_item',
+            $item,
+            'length-line',
+            [ 'jps_cs_length' => '120', 'jps_cs_length_unit' => 'cm' ],
+            $order
+        );
+        $order->add_item( $item );
+        $order->save();
+
+        $items = $order->get_items();
+        $saved_item = reset( $items );
+        $formatted_meta = array_values( $saved_item->get_formatted_meta_data() );
+        $this->assertCount( 1, $formatted_meta );
+        $this->assertSame( 'Length', $formatted_meta[0]->display_key );
+        $this->assertSame( '120 cm', wp_strip_all_tags( $formatted_meta[0]->display_value ) );
+        $this->assertNotSame( 'jps_cs_length', $formatted_meta[0]->display_key );
+    }
 }

@@ -12,6 +12,7 @@ namespace JayPee\CatalogSuite;
 final class Plugin {
 
     public const MODULES = [
+        'tabs' => Product_Tabs::class,
         'length' => Variable_Length::class,
     ];
 

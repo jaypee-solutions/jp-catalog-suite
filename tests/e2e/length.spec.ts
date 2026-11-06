@@ -21,13 +21,14 @@ test( 'simple variable length product keeps lengths as distinct inquiry lines', 
 	await length.fill( '150' );
 	await page.getByRole( 'button', { name: /add to inquiry|add to cart/i } ).click();
 	await page.goto( '/cart/' );
-	await expect( page.locator( 'body' ) ).toContainText( '120 cm' );
-	await expect( page.locator( 'body' ) ).toContainText( '150 cm' );
+	await expect( page.locator( '.wp-block-woocommerce-cart' ) ).toBeVisible();
+	await expect( page.locator( '.wp-block-woocommerce-cart' ) ).toContainText( '120 cm' );
+	await expect( page.locator( '.wp-block-woocommerce-cart' ) ).toContainText( '150 cm' );
 	await page.goto( '/checkout/' );
 	await page.getByLabel( /first name/i ).fill( 'Length' );
 	await page.getByLabel( /last name/i ).fill( 'Customer' );
 	await page.getByLabel( /email address/i ).fill( 'length@example.com' );
-	await page.getByRole( 'button', { name: /send inquiry/i } ).click();
+	await page.getByRole( 'button', { name: /place order|send inquiry/i } ).click();
 	await expect( page.locator( 'body' ) ).toContainText( /order received|inquiry received/i );
 	await login( page );
 	await page.goto( '/wp-admin/edit.php?post_type=shop_order' );

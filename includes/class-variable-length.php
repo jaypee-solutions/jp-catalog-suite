@@ -23,6 +23,8 @@ final class Variable_Length {
         add_action( 'woocommerce_checkout_create_order_line_item', [ self::class, 'order_item_meta' ], 10, 4 );
         add_filter( 'woocommerce_loop_add_to_cart_link', [ self::class, 'loop_button' ], 10, 3 );
         add_filter( 'woocommerce_product_supports', [ self::class, 'disable_ajax_add' ], 10, 3 );
+        add_filter( 'woocommerce_order_item_display_meta_key', [ self::class, 'order_meta_key' ], 10, 2 );
+        add_filter( 'woocommerce_order_item_display_meta_value', [ self::class, 'order_meta_value' ], 10, 3 );
     }
 
     public static function settings(): array {
@@ -32,7 +34,6 @@ final class Variable_Length {
             [ 'title' => __( 'Minimum length', 'jp-catalog-suite' ), 'id' => 'jps_cs_length_min', 'type' => 'number', 'default' => 1, 'custom_attributes' => [ 'min' => 0, 'step' => 'any' ] ],
             [ 'title' => __( 'Maximum length', 'jp-catalog-suite' ), 'id' => 'jps_cs_length_max', 'type' => 'number', 'default' => 1000, 'custom_attributes' => [ 'min' => 0, 'step' => 'any' ] ],
             [ 'title' => __( 'Length step', 'jp-catalog-suite' ), 'id' => 'jps_cs_length_step', 'type' => 'number', 'default' => 1, 'custom_attributes' => [ 'min' => 0, 'step' => 'any' ] ],
-            [ 'title' => __( 'Price per length unit', 'jp-catalog-suite' ), 'id' => 'jps_cs_length_price_per_unit', 'type' => 'checkbox', 'default' => 'no' ],
             [ 'type' => 'sectionend', 'id' => 'jps_cs_length' ],
         ];
     }
@@ -112,7 +113,7 @@ final class Variable_Length {
             // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Product add-to-cart data is validated below.
             $value = sanitize_text_field( wp_unslash( $_REQUEST['jps_cs_length'] ) );
         }
-        return is_scalar( $value ) ? (string) $value : '';
+        return is_scalar( $value ) ? wc_format_decimal( $value ) : '';
     }
 
     private static function validation_message( array $config, string $value ): ?string {
@@ -151,17 +152,32 @@ final class Variable_Length {
 
     public static function display_item_data( array $data, array $cart_item ): array {
         if ( isset( $cart_item['jps_cs_length'], $cart_item['jps_cs_length_unit'] ) ) {
-            $data[] = [ 'key' => __( 'Length', 'jp-catalog-suite' ), 'value' => $cart_item['jps_cs_length'] . ' ' . $cart_item['jps_cs_length_unit'], 'display' => $cart_item['jps_cs_length'] . ' ' . $cart_item['jps_cs_length_unit'] ]; }
+            $formatted_length = wc_format_localized_decimal( $cart_item['jps_cs_length'] );
+            $data[] = [
+                'key'     => __( 'Length', 'jp-catalog-suite' ),
+                'value'   => $formatted_length . ' ' . $cart_item['jps_cs_length_unit'],
+                'display' => $formatted_length . ' ' . $cart_item['jps_cs_length_unit'],
+            ];
+        }
         return $data;
     }
 
     // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WooCommerce supplies order in its checkout hook contract.
     public static function order_item_meta( \WC_Order_Item_Product $item, string $cart_item_key, array $values, \WC_Order $order ): void {
         if ( isset( $values['jps_cs_length'], $values['jps_cs_length_unit'] ) ) {
-            $item->add_meta_data( 'jps_cs_length', $values['jps_cs_length'], true );
+            $item->add_meta_data( 'jps_cs_length', wc_format_decimal( $values['jps_cs_length'] ), true );
             $item->add_meta_data( '_jps_cs_length_unit', $values['jps_cs_length_unit'], true );
-            $item->add_meta_data( __( 'Length', 'jp-catalog-suite' ), $values['jps_cs_length'] . ' ' . $values['jps_cs_length_unit'], true );
         }
+    }
+    public static function order_meta_key( string $display_key, \WC_Meta_Data $meta ): string {
+        return 'jps_cs_length' === $meta->key ? __( 'Length', 'jp-catalog-suite' ) : $display_key;
+    }
+
+    public static function order_meta_value( string $display_value, \WC_Meta_Data $meta, \WC_Order_Item $item ): string {
+        if ( 'jps_cs_length' !== $meta->key ) {
+            return $display_value;
+        }
+        return wc_format_localized_decimal( $display_value ) . ' ' . $item->get_meta( '_jps_cs_length_unit', true );
     }
 
     // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WooCommerce supplies loop arguments in its filter contract.
