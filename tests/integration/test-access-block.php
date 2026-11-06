@@ -90,6 +90,9 @@ final class Test_Access_Block extends WP_UnitTestCase {
         parse_str( (string) wp_parse_url( $register_url, PHP_URL_QUERY ), $register_query );
         $_REQUEST = $register_query;
         $this->assertSame( get_permalink( $product_id ), apply_filters( 'woocommerce_registration_redirect', home_url( '/my-account/' ) ) );
+        $this->assertSame( get_permalink( $product_id ), apply_filters( 'registration_redirect', home_url( '/my-account/' ) ) );
+        $_REQUEST['redirect_to'] = 'https://attacker.example/';
+        $this->assertSame( home_url( '/my-account/' ), apply_filters( 'registration_redirect', home_url( '/my-account/' ) ) );
         $_REQUEST = [];
         wp_reset_postdata();
         if ( null === $previous_registration ) {

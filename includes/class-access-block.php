@@ -26,6 +26,7 @@ final class Access_Block {
         );
         wp_set_script_translations( 'jps-cs-access-block', 'jp-catalog-suite', PLUGIN_DIR . 'languages' );
         add_filter( 'woocommerce_registration_redirect', [ self::class, 'registration_redirect' ] );
+        add_filter( 'registration_redirect', [ self::class, 'registration_redirect' ] );
     }
 
     public static function can_access( ?\WP_User $user, array $context = [] ): bool {
