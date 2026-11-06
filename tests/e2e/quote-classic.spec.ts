@@ -12,6 +12,7 @@ const ADMIN_PASS = process.env.WP_ADMIN_PASS ?? 'password';
 let oldCart = '';
 let oldCheckout = '';
 let oldQuote = '';
+let oldPhone = '';
 let oldMessage = '';
 
 async function login( page: Page ): Promise<void> {
