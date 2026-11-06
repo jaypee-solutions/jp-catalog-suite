@@ -47,7 +47,7 @@ final class Download_Log {
     }
 
     public static function record( int $attachment_id, int $user_id, int $product_id ): void {
-        if ( 'yes' !== get_option( 'jps_cs_files_log_enabled', 'no' ) || ! $user_id ) {
+        if ( 'yes' !== get_option( 'jps_cs_files_log_enabled', 'no' ) ) {
             return;
         }
         global $wpdb;
