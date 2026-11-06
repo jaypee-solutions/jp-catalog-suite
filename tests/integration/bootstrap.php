@@ -30,6 +30,12 @@ tests_add_filter(
         }
         add_filter( 'pre_option_jps_cs_module_length', static fn() => 'yes' );
         require_once $woocommerce_file;
+        $germanized_dir = WP_PLUGIN_DIR . '/woocommerce-germanized.latest-stable';
+        $germanized_file = $germanized_dir . '/woocommerce-germanized.php';
+        if ( is_readable( $germanized_file ) ) {
+            require_once $germanized_file;
+            require_once $germanized_dir . '/includes/wc-gzd-core-functions.php';
+        }
         require_once dirname( __DIR__, 2 ) . '/jp-catalog-suite.php';
     }
 );
