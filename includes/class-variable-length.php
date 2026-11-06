@@ -23,7 +23,7 @@ final class Variable_Length {
         add_filter( 'woocommerce_available_variation', [ self::class, 'available_variation' ], 10, 3 );
         add_action( 'wp_enqueue_scripts', [ self::class, 'enqueue_scripts' ] );
         add_action( 'woocommerce_before_add_to_cart_button', [ self::class, 'render_input' ] );
-        add_filter( 'woocommerce_add_to_cart_validation', [ self::class, 'validate' ], 10, 3 );
+        add_filter( 'woocommerce_add_to_cart_validation', [ self::class, 'validate' ], 10, 4 );
         add_filter( 'woocommerce_store_api_add_to_cart_data', [ self::class, 'store_api_add_to_cart_data' ], 10, 2 );
         add_filter( 'woocommerce_add_cart_item_data', [ self::class, 'cart_item_data' ], 10, 3 );
         add_action( 'woocommerce_add_to_cart', [ self::class, 'clear_store_api_length' ] );
@@ -150,24 +150,14 @@ final class Variable_Length {
         }
         self::$store_api_length = is_scalar( $value ) ? wc_format_decimal( sanitize_text_field( (string) $value ) ) : null;
         $product = wc_get_product( (int) $data['id'] );
+        if ( $product instanceof \WC_Product_Variation ) {
+            $product = wc_get_product( $product->get_parent_id() );
+        }
         if ( ( ! $product instanceof \WC_Product_Simple && ! $product instanceof \WC_Product_Variable ) || ! self::config( $product )['enabled'] ) {
             return $data;
         }
-        $config = self::config( $product );
-        $variation_id = isset( $data['variation'][0]['id'] ) ? absint( $data['variation'][0]['id'] ) : 0;
-        if ( $product instanceof \WC_Product_Variable && $variation_id ) {
-            $variation = wc_get_product( $variation_id );
-            if ( $variation instanceof \WC_Product_Variation && $variation->get_parent_id() === $product->get_id() ) {
-                $config = self::variation_config( $product, $variation );
-            }
-        }
-        $message = self::validation_message( $config, self::request_length() );
-        if ( null !== $message ) {
-            self::$store_api_length = null;
-            throw new \Automattic\WooCommerce\StoreApi\Exceptions\RouteException( 'jps_cs_invalid_length', esc_html( $message ), 400 );
-        }
         $data['cart_item_data']['jps_cs_length'] = (float) self::request_length();
-        $data['cart_item_data']['jps_cs_length_unit'] = $config['unit'];
+        $data['cart_item_data']['jps_cs_length_unit'] = self::config( $product )['unit'];
         return $data;
     }
     public static function clear_store_api_length(): void {
@@ -190,7 +180,7 @@ final class Variable_Length {
     }
 
     // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WooCommerce supplies quantity in its validation contract.
-    public static function validate( bool $passed, int $product_id, int $quantity ): bool {
+    public static function validate( bool $passed, int $product_id, int $quantity, int $variation_id = 0 ): bool {
         $product = wc_get_product( $product_id );
         if ( ! $passed || ( ! $product instanceof \WC_Product_Simple && ! $product instanceof \WC_Product_Variable ) ) {
             return $passed;
@@ -199,8 +189,10 @@ final class Variable_Length {
         if ( ! $config['enabled'] ) {
             return $passed;
         }
-        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- WooCommerce validates the variation request.
-        $variation_id = isset( $_REQUEST['variation_id'] ) ? absint( $_REQUEST['variation_id'] ) : 0;
+        if ( 0 === $variation_id ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- WooCommerce validates the variation request.
+            $variation_id = isset( $_REQUEST['variation_id'] ) ? absint( $_REQUEST['variation_id'] ) : 0;
+        }
         if ( $product instanceof \WC_Product_Variable && $variation_id ) {
             $variation = wc_get_product( $variation_id );
             if ( $variation instanceof \WC_Product_Variation && $variation->get_parent_id() === $product_id ) {

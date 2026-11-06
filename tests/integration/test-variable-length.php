@@ -176,6 +176,30 @@ final class Test_Variable_Length extends WP_UnitTestCase {
         $this->assertCount( 1, WC()->cart->get_cart() );
     }
 
+    public function test_store_api_uses_variable_product_variation_length_limits(): void {
+        [ $product, $variations ] = $this->variable_product();
+        WC()->cart->empty_cart();
+        $request = new WP_REST_Request( 'POST', '/wc/store/v1/cart/add-item' );
+        $request->add_header( 'Nonce', wp_create_nonce( 'wc_store_api' ) );
+        $request->set_body_params( [ 'id' => $product->get_id(), 'quantity' => 1, 'variation' => [ [ 'attribute' => 'attribute_colour', 'value' => 'Blue' ] ] ] );
+        $request->set_param( 'variation', [ [ 'attribute' => 'attribute_colour', 'value' => 'Blue' ] ] );
+        $request->set_param( 'extensions', [ 'jp-catalog-suite' => [ 'jps_cs_length' => '9.5' ] ] );
+        $response = rest_get_server()->dispatch( $request );
+        $this->assertSame( 201, $response->get_status(), wp_json_encode( $response->get_data() ) );
+        $item = reset( WC()->cart->get_cart() );
+        $this->assertSame( 9.5, $item['jps_cs_length'] );
+        $this->assertSame( 'cm', $item['jps_cs_length_unit'] );
+
+        $request = new WP_REST_Request( 'POST', '/wc/store/v1/cart/add-item' );
+        $request->add_header( 'Nonce', wp_create_nonce( 'wc_store_api' ) );
+        $request->set_body_params( [ 'id' => $product->get_id(), 'quantity' => 1, 'variation' => [ [ 'attribute' => 'attribute_colour', 'value' => 'Blue' ] ] ] );
+        $request->set_param( 'variation', [ [ 'attribute' => 'attribute_colour', 'value' => 'Blue' ] ] );
+        $request->set_param( 'extensions', [ 'jp-catalog-suite' => [ 'jps_cs_length' => '5' ] ] );
+        $response = rest_get_server()->dispatch( $request );
+        $this->assertGreaterThanOrEqual( 400, $response->get_status() );
+        $this->assertCount( 1, WC()->cart->get_cart() );
+    }
+
     public function test_store_api_distinct_lengths_create_distinct_cart_lines(): void {
         $product = $this->product( [ 'max' => 300, 'step' => 1 ] );
         WC()->cart->empty_cart();
