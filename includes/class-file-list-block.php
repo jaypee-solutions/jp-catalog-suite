@@ -55,6 +55,12 @@ final class File_List_Block {
             $url = '';
             $login_required = false;
             if ( $protected ) {
+                if ( is_user_logged_in() ) {
+                    if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+                        define( 'DONOTCACHEPAGE', true );
+                    }
+                    nocache_headers();
+                }
                 if ( Access_Block::can_access( wp_get_current_user(), [ 'attachment_id' => $id ] ) ) {
                     $url = add_query_arg( 'jps_cs_file', $id, home_url( '/' ) );
                     if ( $product_id ) {
