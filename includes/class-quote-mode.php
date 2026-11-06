@@ -17,6 +17,17 @@ final class Quote_Mode {
         add_filter( 'woocommerce_variation_is_purchasable', [ self::class, 'is_variation_purchasable' ], 10, 2 );
         add_filter( 'woocommerce_variation_is_visible', [ self::class, 'is_variation_visible' ], 10, 4 );
         add_action( 'woocommerce_before_calculate_totals', [ self::class, 'set_missing_prices_to_zero' ] );
+        add_filter( 'woocommerce_get_price_html', [ self::class, 'price_html' ], 100, 2 );
+        add_filter( 'woocommerce_show_variation_price', [ self::class, 'show_variation_price' ], 100, 3 );
+        add_filter( 'woocommerce_available_variation', [ self::class, 'available_variation' ], 100, 3 );
+        add_filter( 'woocommerce_sale_flash', [ self::class, 'sale_flash' ], 100, 3 );
+        foreach ( [ 'woocommerce_cart_item_price', 'woocommerce_cart_item_subtotal', 'woocommerce_cart_subtotal', 'woocommerce_cart_total', 'woocommerce_cart_totals_order_total_html' ] as $hook ) {
+            add_filter( $hook, [ self::class, 'cart_price' ], 100 );
+        }
+        add_filter( 'woocommerce_structured_data_product', [ self::class, 'structured_data' ], 100, 2 );
+        add_filter( 'woocommerce_catalog_orderby', [ self::class, 'catalog_orderby' ], 100 );
+        add_filter( 'body_class', [ self::class, 'body_class' ] );
+        add_action( 'wp_enqueue_scripts', [ self::class, 'enqueue_styles' ] );
         add_filter( 'woocommerce_cart_needs_shipping', [ self::class, 'needs_shipping' ] );
         add_filter( 'wc_tax_enabled', [ self::class, 'taxes_enabled' ] );
         add_filter( 'woocommerce_coupons_enabled', [ self::class, 'coupons_enabled' ] );
@@ -222,6 +233,60 @@ final class Quote_Mode {
             }
         }
         return $fields;
+    }
+
+    public static function price_html( string $html, \WC_Product $product ): string {
+        return self::applies_to( $product ) ? '' : $html;
+    }
+
+    public static function show_variation_price( bool $show, $product = null, $variation = null ): bool {
+        $product = $variation instanceof \WC_Product ? $variation : $product;
+        return $product instanceof \WC_Product && self::applies_to( $product ) ? false : $show;
+    }
+
+    public static function available_variation( array $data, $product = null, $variation = null ): array {
+        $product = $variation instanceof \WC_Product ? $variation : $product;
+        if ( $product instanceof \WC_Product && self::applies_to( $product ) ) {
+            $data['price_html'] = '';
+        }
+        return $data;
+    }
+
+    public static function sale_flash( string $html, $post = null, $product = null ): string {
+        unset( $post );
+        return $product instanceof \WC_Product && self::applies_to( $product ) ? '' : $html;
+    }
+
+    public static function cart_price( string $html ): string {
+        return self::is_active() ? '' : $html;
+    }
+
+    public static function structured_data( array $markup, \WC_Product $product ): array {
+        if ( self::applies_to( $product ) ) {
+            unset( $markup['offers'] );
+        }
+        return $markup;
+    }
+
+    public static function catalog_orderby( array $orderby ): array {
+        if ( self::is_active() ) {
+            unset( $orderby['price'], $orderby['price-desc'] );
+        }
+        return $orderby;
+    }
+
+    public static function body_class( array $classes ): array {
+        if ( self::is_active() ) {
+            $classes[] = 'jps-cs-quote-mode';
+        }
+        return $classes;
+    }
+
+    public static function enqueue_styles(): void {
+        if ( ! self::is_active() ) {
+            return;
+        }
+        wp_enqueue_style( 'jps-cs-quote-mode', plugins_url( 'assets/css/quote-mode.css', PLUGIN_FILE ), [], VERSION );
     }
 
     private static function checkout_settings(): array {

@@ -15,3 +15,4 @@ okf_version: "0.1"
 * [Quote-mode customer labels](decisions/0011-quote-mode-labels.md) - Configurable translated labels for customer-facing inquiry flows.
 * [Price-free Inquiry emails](decisions/0010-price-free-inquiry-emails.md) - Configurable price-free administrator and customer notifications for new Inquiries.
 * [Inquiry checkout fields](decisions/0014-inquiry-checkout-fields.md) - Configurable inquiry checkout details in classic and Blocks checkout.
+* [Price hiding and Blocks compatibility](decisions/0004-price-hiding-and-blocks-compatibility.md) - Price-free customer views with Blocks presentation and the Store API limitation.

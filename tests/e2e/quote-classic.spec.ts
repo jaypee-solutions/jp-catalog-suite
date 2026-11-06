@@ -78,11 +78,15 @@ test( 'guest sends an inquiry on classic checkout', async ( { page } ) => {
 	const orderLabel = `Classic-${ Date.now() }`;
 	const quoteProfile = wpCli( 'post', 'list', '--post_type=product', '--meta_key=_sku', '--meta_value=QP-1', '--field=ID' );
 	const pricedBolt = wpCli( 'post', 'list', '--post_type=product', '--meta_key=_sku', '--meta_value=QP-2', '--field=ID' );
+	await page.goto( '/shop/' );
+	await expect( page.locator( 'body' ) ).not.toContainText( '€' );
 	await page.goto( wpCli( 'post', 'url', pricedBolt ) );
+	await expect( page.locator( 'body' ) ).not.toContainText( '€' );
 	await expect( page.getByRole( 'button', { name: 'Add to inquiry' } ) ).toBeVisible();
 	await page.goto( '/?add-to-cart=' + quoteProfile );
 	await page.goto( '/?add-to-cart=' + pricedBolt );
 	await page.goto( '/classic-cart/' );
+	await expect( page.locator( 'body' ) ).not.toContainText( '€' );
 	await expect( page.getByRole( 'link', { name: 'Continue to inquiry' } ) ).toBeVisible();
 	await page.goto( '/classic-checkout/' );
 	await expect( page.locator( '#order_comments' ) ).toBeVisible();
@@ -92,6 +96,8 @@ test( 'guest sends an inquiry on classic checkout', async ( { page } ) => {
 	wpCli( 'option', 'update', 'jps_cs_checkout_message', 'yes' );
 	await page.reload();
 	await expect( page.locator( 'body' ) ).not.toContainText( /zahlungspflichtig/i );
+	await expect( page.locator( 'body' ) ).not.toContainText( '€' );
+	await expect( page.locator( '#payment .wc_payment_methods li' ) ).toHaveCount( 0 );
 	await page.locator( '#billing_email' ).fill( `classic-${ Date.now() }@example.com` );
 	await page.locator( '#billing_first_name' ).fill( 'Guest' );
 	await page.locator( '#billing_last_name' ).fill( orderLabel );
@@ -106,7 +112,10 @@ test( 'guest sends an inquiry on classic checkout', async ( { page } ) => {
 	await expect( page.locator( '#place_order' ) ).toHaveText( 'Send inquiry' );
 	await page.locator( '#place_order' ).click();
 	await expect( page ).toHaveURL( /order-received/ );
-	await login( page );
+        await expect( page.locator( 'body' ) ).not.toContainText( '€' );
+        await login( page );
+        await page.goto( '/my-account/' );
+        await expect( page.getByRole( 'link', { name: 'Inquiries' } ) ).toBeVisible();
 	await page.goto( '/wp-admin/admin.php?page=wc-orders' );
 	await expect( page.locator( '#the-list tr' ).filter( { hasText: orderLabel } ) ).toContainText( 'Inquiry' );
 } );

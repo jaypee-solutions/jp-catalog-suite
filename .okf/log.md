@@ -10,3 +10,4 @@
 * **Quote-mode labels**: Added configurable translated inquiry wording across PHP and WooCommerce Blocks.
 * **Inquiry emails**: Added configurable price-free New inquiry and Inquiry confirmation emails.
 * **Inquiry checkout fields**: Added configurable Company, Phone, Address, and Message settings for inquiry checkout.
+* **Price hiding**: Added quote-mode product-price suppression and Inquiry price-free customer views with the Store API limitation.

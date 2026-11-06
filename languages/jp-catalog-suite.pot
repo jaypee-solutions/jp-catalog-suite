@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-06T17:42:24+00:00\n"
+"POT-Creation-Date: 2026-11-06T18:07:05+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: jp-catalog-suite\n"
@@ -71,19 +71,23 @@ msgstr ""
 msgid "Enter recipients (comma-separated). Defaults to the site administrator email address."
 msgstr ""
 
-#: includes/class-inquiries.php:23
-#: includes/class-inquiries.php:34
+#: includes/class-inquiries.php:28
+#: includes/class-inquiries.php:39
 msgctxt "Order status"
 msgid "Inquiry"
 msgstr ""
 
 #. translators: %s is the number of inquiries in this order-status count.
-#: includes/class-inquiries.php:28
+#: includes/class-inquiries.php:33
 #, php-format
 msgid "Inquiry <span class=\"count\">(%s)</span>"
 msgid_plural "Inquiries <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
+
+#: includes/class-inquiries.php:83
+msgid "Inquiries"
+msgstr ""
 
 #: includes/class-inquiry-intake.php:39
 msgid "Inquiry received."
@@ -158,86 +162,88 @@ msgstr ""
 msgid "Add product-specific tab"
 msgstr ""
 
-#: includes/class-quote-mode.php:36
-#: includes/class-quote-mode.php:222
+#: includes/class-quote-mode.php:49
+#: includes/class-quote-mode.php:309
 msgid "Inquiry basket"
 msgstr ""
 
-#: includes/class-quote-mode.php:37
-#: includes/class-quote-mode.php:223
+#: includes/class-quote-mode.php:50
+#: includes/class-quote-mode.php:310
 msgid "Add to inquiry"
 msgstr ""
 
-#: includes/class-quote-mode.php:38
-#: includes/class-quote-mode.php:224
+#: includes/class-quote-mode.php:51
+#: includes/class-quote-mode.php:311
 msgid "Continue to inquiry"
 msgstr ""
 
-#: includes/class-quote-mode.php:39
-#: includes/class-quote-mode.php:225
+#: includes/class-quote-mode.php:52
+#: includes/class-quote-mode.php:312
 msgid "Send inquiry"
 msgstr ""
 
-#: includes/class-quote-mode.php:62
+#: includes/class-quote-mode.php:75
 msgid "Thank you. Your inquiry has been received."
 msgstr ""
 
-#: includes/class-quote-mode.php:207
-#: includes/class-quote-mode.php:212
-msgid "Optional"
-msgstr ""
-
-#: includes/class-quote-mode.php:207
-#: includes/class-quote-mode.php:212
-msgid "Required"
-msgstr ""
-
-#: includes/class-quote-mode.php:207
-#: includes/class-quote-mode.php:212
-msgid "Hidden"
-msgstr ""
-
-#: includes/class-quote-mode.php:209
-msgid "Inquiry checkout fields"
-msgstr ""
-
-#: includes/class-quote-mode.php:210
+#: includes/class-quote-mode.php:180
+#: includes/class-quote-mode.php:297
 #: templates/emails/inquiry-customer-details.php:18
 msgid "Company"
 msgstr ""
 
-#: includes/class-quote-mode.php:211
+#: includes/class-quote-mode.php:180
+#: includes/class-quote-mode.php:298
 #: templates/emails/inquiry-customer-details.php:17
 msgid "Phone"
 msgstr ""
 
-#: includes/class-quote-mode.php:212
+#: includes/class-quote-mode.php:239
+#: includes/class-quote-mode.php:299
+msgid "Optional"
+msgstr ""
+
+#: includes/class-quote-mode.php:239
+#: includes/class-quote-mode.php:299
+msgid "Required"
+msgstr ""
+
+#: includes/class-quote-mode.php:239
+#: includes/class-quote-mode.php:299
+msgid "Hidden"
+msgstr ""
+
+#: includes/class-quote-mode.php:296
+msgid "Inquiry checkout fields"
+msgstr ""
+
+#: includes/class-quote-mode.php:299
 msgid "Address"
 msgstr ""
 
-#: includes/class-quote-mode.php:213
+#: includes/class-quote-mode.php:300
 msgid "Order message"
 msgstr ""
 
-#: includes/class-quote-mode.php:221
+#: includes/class-quote-mode.php:308
 #: includes/class-settings-page.php:23
 #: includes/class-settings-page.php:41
 msgid "Quote mode"
 msgstr ""
 
-#: includes/class-quote-mode.php:222
+#: includes/class-quote-mode.php:309
 msgid "Inquiry basket label"
 msgstr ""
 
-#: includes/class-quote-mode.php:223
+#: includes/class-quote-mode.php:310
 msgid "Add to inquiry label"
 msgstr ""
 
-#: includes/class-quote-mode.php:224
+#: includes/class-quote-mode.php:311
 msgid "Continue to inquiry label"
 msgstr ""
 
-#: includes/class-quote-mode.php:225
+#: includes/class-quote-mode.php:312
 msgid "Send inquiry label"
 msgstr ""
 
