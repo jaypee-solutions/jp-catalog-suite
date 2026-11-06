@@ -39,8 +39,7 @@ final class Access_Block {
             self::mark_page_uncacheable();
         }
         $product = $block->context['postId'] ?? get_the_ID();
-        $product_id = absint( $product );
-        $context = [ 'product' => wc_get_product( $product_id ) ];
+        $context = [ 'product' => wc_get_product( absint( $product ) ) ];
         $allowed = self::can_access( $user, $context );
         $mode = $attributes['mode'] ?? 'only-with-access';
         if ( ! in_array( $mode, [ 'only-with-access', 'only-without-access' ], true ) ) {
@@ -52,8 +51,7 @@ final class Access_Block {
         if ( empty( $attributes['showNotice'] ) ) {
             return '';
         }
-        $product_object = wc_get_product( $product_id );
-        return self::notice( is_user_logged_in(), $product_object instanceof \WC_Product ? $product_object : null );
+        return self::notice( is_user_logged_in(), $context['product'] instanceof \WC_Product ? $context['product'] : null );
     }
 
     public static function notice( bool $logged_in, ?\WC_Product $product ): string {
