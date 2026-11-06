@@ -310,8 +310,8 @@ msgstr "Inhalt entsprechend dem Zugriff der Besuchenden anzeigen."
 msgid "Price per length unit"
 msgstr "Preis pro Längeneinheit"
 
-msgid "Price products by the entered length."
-msgstr "Produkte anhand der eingegebenen Länge."
+msgid "Allows price per length unit on products; leave off in quote mode"
+msgstr "Ermöglicht die Preisberechnung pro Längeneinheit für Produkte; im Angebotsmodus deaktiviert lassen."
 
 msgid "Protected"
 msgstr "Geschützt"

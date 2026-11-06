@@ -55,9 +55,20 @@ final class Test_Settings extends WP_UnitTestCase {
         $catalog_pages = array_values( array_filter( $pages, static fn ( $candidate ): bool => 'jps_cs' === $candidate->get_id() ) );
         $settings_page = $catalog_pages[0] ?? null;
         $this->assertNotNull( $settings_page );
-        $this->assertContains(
-            'jps_cs_length_pricing_enabled',
-            array_column( $settings_page->get_settings( 'length' ), 'id' )
+        $length_settings = $settings_page->get_settings( 'length' );
+        $setting_ids = array_column( $length_settings, 'id' );
+        $setting_types = array_column( $length_settings, 'type' );
+        $pricing_index = array_search( 'jps_cs_length_pricing_enabled', $setting_ids, true );
+        $title_index = array_search( 'title', $setting_types, true );
+        $sectionend_index = array_search( 'sectionend', $setting_types, true );
+        $this->assertNotFalse( $pricing_index );
+        $this->assertNotFalse( $title_index );
+        $this->assertNotFalse( $sectionend_index );
+        $this->assertGreaterThan( $title_index, $pricing_index );
+        $this->assertLessThan( $sectionend_index, $pricing_index );
+        $this->assertSame(
+            'Allows price per length unit on products; leave off in quote mode',
+            $length_settings[ $pricing_index ]['desc']
         );
         wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
         global $current_tab, $current_section;

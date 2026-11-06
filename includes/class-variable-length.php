@@ -39,8 +39,8 @@ final class Variable_Length {
 
     public static function settings(): array {
         return [
-            [ 'title' => __( 'Price per length unit', 'jp-catalog-suite' ), 'id' => 'jps_cs_length_pricing_enabled', 'type' => 'checkbox', 'default' => 'no', 'desc' => __( 'Price products by the entered length.', 'jp-catalog-suite' ) ],
             [ 'title' => __( 'Variable length defaults', 'jp-catalog-suite' ), 'type' => 'title', 'id' => 'jps_cs_length' ],
+            [ 'title' => __( 'Price per length unit', 'jp-catalog-suite' ), 'id' => 'jps_cs_length_pricing_enabled', 'type' => 'checkbox', 'default' => 'no', 'desc' => __( 'Allows price per length unit on products; leave off in quote mode', 'jp-catalog-suite' ) ],
             [ 'title' => __( 'Unit', 'jp-catalog-suite' ), 'id' => 'jps_cs_length_unit', 'type' => 'select', 'default' => 'cm', 'options' => [ 'mm' => 'mm', 'cm' => 'cm', 'm' => 'm' ] ],
             [ 'title' => __( 'Minimum length', 'jp-catalog-suite' ), 'id' => 'jps_cs_length_min', 'type' => 'number', 'default' => 1, 'custom_attributes' => [ 'min' => 0, 'step' => 'any' ] ],
             [ 'title' => __( 'Maximum length', 'jp-catalog-suite' ), 'id' => 'jps_cs_length_max', 'type' => 'number', 'default' => 1000, 'custom_attributes' => [ 'min' => 0, 'step' => 'any' ] ],
@@ -263,13 +263,11 @@ final class Variable_Length {
             }
             $product = $cart_item['data'];
             $pricing_product = self::pricing_product( $product );
-            $price = (float) $product->get_regular_price();
-            if ( $product->is_on_sale() ) {
-                $price = (float) $product->get_sale_price();
+            if ( 'yes' !== get_option( 'jps_cs_length_pricing_enabled', 'no' ) || 'yes' !== $pricing_product->get_meta( self::META['price_per_unit'], true ) ) {
+                continue;
             }
-            if ( 'yes' === get_option( 'jps_cs_length_pricing_enabled', 'no' ) && 'yes' === $pricing_product->get_meta( self::META['price_per_unit'], true ) ) {
-                $price = apply_filters( 'jps_cs_length_item_price', $price * (float) $cart_item['jps_cs_length'], $product, $cart_item );
-            }
+            $price = (float) $product->get_price( 'edit' ) * (float) $cart_item['jps_cs_length'];
+            $price = apply_filters( 'jps_cs_length_item_price', $price, $product, $cart_item );
             $cart_item['data']->set_price( $price );
         }
     }

@@ -149,6 +149,39 @@ final class Test_Variable_Length extends WP_UnitTestCase {
         $this->assertSame( '120 cm', wp_strip_all_tags( $formatted_meta[0]->display_value ) );
         $this->assertNotSame( 'jps_cs_length', $formatted_meta[0]->display_key );
     }
+
+    public function test_length_line_keeps_current_price_when_pricing_is_disabled(): void {
+        update_option( 'jps_cs_length_pricing_enabled', 'no' );
+        $product = $this->product( [ 'max' => 300, 'price_per_unit' => 'yes' ] );
+        $product->set_regular_price( '5' );
+        $product->save();
+        WC()->cart->empty_cart();
+        $_REQUEST['jps_cs_length'] = '120';
+        $_POST['jps_cs_length'] = '120';
+        $this->assertNotFalse( WC()->cart->add_to_cart( $product->get_id(), 1 ) );
+        $line = reset( WC()->cart->get_cart() );
+        $line['data']->set_price( '7' );
+        WC()->cart->calculate_totals();
+        $this->assertSame( 7.0, (float) reset( WC()->cart->get_cart() )['data']->get_price() );
+        WC()->cart->empty_cart();
+    }
+
+    public function test_length_unit_pricing_uses_the_current_product_price(): void {
+        update_option( 'jps_cs_length_pricing_enabled', 'yes' );
+        $product = $this->product( [ 'max' => 300, 'price_per_unit' => 'yes' ] );
+        $product->set_regular_price( '5' );
+        $product->save();
+        WC()->cart->empty_cart();
+        $_REQUEST['jps_cs_length'] = '120';
+        $_POST['jps_cs_length'] = '120';
+        $this->assertNotFalse( WC()->cart->add_to_cart( $product->get_id(), 1 ) );
+        $line = reset( WC()->cart->get_cart() );
+        $line['data']->set_price( '3' );
+        WC()->cart->calculate_totals();
+        $this->assertSame( 360.0, (float) reset( WC()->cart->get_cart() )['data']->get_price() );
+        WC()->cart->empty_cart();
+        update_option( 'jps_cs_length_pricing_enabled', 'no' );
+    }
     public function test_price_per_length_unit_multiplies_cart_line_by_length_and_quantity_and_appends_unit(): void {
         update_option( 'jps_cs_module_quote', 'no' );
         update_option( 'jps_cs_length_pricing_enabled', 'yes' );
