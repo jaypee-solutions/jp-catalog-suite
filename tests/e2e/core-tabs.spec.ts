@@ -23,7 +23,7 @@ test( 'Core tab settings change titles, order and visibility shop-wide', async (
 		await expect( tabs.getByRole( 'tab', { name: 'Additional information' } ) ).toHaveCount( 0 );
 		await expect( tabs.getByRole( 'tab', { name: 'Downloads' } ) ).toBeVisible();
 		const names = await tabs.getByRole( 'tab' ).allTextContents();
-		expect( names.indexOf( title ) ).toBeLessThan( names.indexOf( 'Downloads' ) );
+		expect( names.findIndex( ( name ) => name.startsWith( title ) ) ).toBeLessThan( names.findIndex( ( name ) => name.includes( 'Downloads' ) ) );
 	} finally {
 		for ( let index = 0; index < optionNames.length; index++ ) {
 			if ( oldValues[ index ] === '__missing__' ) {
