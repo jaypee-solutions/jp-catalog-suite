@@ -14,6 +14,7 @@ let oldCheckout = '';
 let oldQuote = '';
 let oldPhone = '';
 let oldMessage = '';
+let oldComingSoon = '';
 
 async function login( page: Page ): Promise<void> {
 	await page.context().clearCookies();

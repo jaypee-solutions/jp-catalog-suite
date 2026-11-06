@@ -27,6 +27,7 @@ test( 'simple variable length product keeps lengths as distinct inquiry lines', 
 	await expect( page.locator( '.wp-block-woocommerce-cart' ) ).toContainText( '120 cm' );
 	await expect( page.locator( '.wp-block-woocommerce-cart' ) ).toContainText( '150 cm' );
 	await page.goto( '/checkout/' );
+	await page.getByLabel( 'Country/Region' ).selectOption( 'DE' );
 	await page.getByLabel( /first name/i ).fill( 'Length' );
 	await page.getByLabel( /last name/i ).fill( orderLabel );
 	await page.getByLabel( /email address/i ).fill( `length-${ Date.now() }@example.com` );
