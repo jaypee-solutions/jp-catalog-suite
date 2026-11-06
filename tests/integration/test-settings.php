@@ -55,7 +55,7 @@ final class Test_Settings extends WP_UnitTestCase {
         $catalog_pages = array_values( array_filter( $pages, static fn ( $candidate ): bool => 'jps_cs' === $candidate->get_id() ) );
         $settings_page = $catalog_pages[0] ?? null;
         $settings = $settings_page->get_settings( 'tabs' );
-        $ids = [ 'jps_cs_files_mimes', 'jps_cs_files_protected_exts', 'jps_cs_files_delivery' ];
+        $ids = [ 'jps_cs_files_mimes', 'jps_cs_files_protected_exts', 'jps_cs_files_delivery', 'jps_cs_files_log_enabled', 'jps_cs_files_log_retention_days' ];
         $this->assertSame( $ids, array_values( array_intersect( $ids, array_column( $settings, 'id' ) ) ) );
         wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
         global $current_tab, $current_section;
@@ -68,6 +68,8 @@ final class Test_Settings extends WP_UnitTestCase {
             'jps_cs_files_mimes' => "stp=application/step\ndxf=application/dxf",
             'jps_cs_files_protected_exts' => 'step,dxf',
             'jps_cs_files_delivery' => 'php',
+            'jps_cs_files_log_enabled' => '1',
+            'jps_cs_files_log_retention_days' => '90',
             '_wpnonce' => wp_create_nonce( 'woocommerce-settings' ),
         ];
         $_REQUEST = $_POST;
@@ -75,5 +77,7 @@ final class Test_Settings extends WP_UnitTestCase {
         $this->assertSame( "stp=application/step\ndxf=application/dxf", get_option( 'jps_cs_files_mimes' ) );
         $this->assertSame( 'step,dxf', get_option( 'jps_cs_files_protected_exts' ) );
         $this->assertSame( 'php', get_option( 'jps_cs_files_delivery' ) );
+        $this->assertSame( 'yes', get_option( 'jps_cs_files_log_enabled' ) );
+        $this->assertSame( '90', get_option( 'jps_cs_files_log_retention_days' ) );
     }
 }

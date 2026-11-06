@@ -19,3 +19,4 @@
 * **Germanized privacy checkbox**: The built-in privacy checkbox is registration-only by default and requires account creation when rendered at checkout.
 * **Access block**: Added audience-specific tab content, registration notices, and logged-in cache bypass guidance.
 * **Protected files**: Added ADR 0007 for denied uploads storage, access-controlled delivery, and host configuration requirements.
+* **Download log privacy**: Added opt-in file-download records with retention, personal-data tools, and account-deletion cleanup.

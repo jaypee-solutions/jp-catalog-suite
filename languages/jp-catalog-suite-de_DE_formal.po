@@ -316,3 +316,36 @@ msgstr "Nur für berechtigte Benutzer verfügbar"
 
 msgid "The file could not be moved."
 msgstr "Die Datei konnte nicht verschoben werden."
+
+msgid "Download log"
+msgstr "Download-Protokoll"
+
+msgid "Enable download log"
+msgstr "Download-Protokoll aktivieren"
+
+msgid "Download log retention (days)"
+msgstr "Aufbewahrungsdauer des Download-Protokolls (Tage)"
+
+msgid "Set to 0 to keep entries until erased or the user is deleted."
+msgstr "Auf 0 setzen, um Einträge bis zur Löschung oder zum Löschen des Benutzers aufzubewahren."
+
+msgid "You do not have permission to view this page."
+msgstr "Sie sind nicht berechtigt, diese Seite anzuzeigen."
+
+msgid "User"
+msgstr "Benutzer"
+
+msgid "File"
+msgstr "Datei"
+
+msgid "Product"
+msgstr "Produkt"
+
+msgid "Date"
+msgstr "Datum"
+
+msgid "Catalog Suite Download Log"
+msgstr "Download-Protokoll der Catalog Suite"
+
+msgid "When enabled, the Download log records the user, protected file, optional product and download time. Records are retained for the configured number of days; zero keeps them until erased or deleted with the user account."
+msgstr "Wenn das Download-Protokoll aktiviert ist, erfasst es den Benutzer, die geschützte Datei, das optionale Produkt und den Downloadzeitpunkt. Die Einträge werden für die konfigurierte Anzahl von Tagen aufbewahrt; bei null bleiben sie erhalten, bis sie gelöscht oder mit dem Benutzerkonto entfernt werden."

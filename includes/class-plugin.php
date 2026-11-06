@@ -38,6 +38,9 @@ final class Plugin {
             Access_Block::init();
             Protected_Files::init();
         }
+        if ( self::is_module_active( 'tabs' ) ) {
+            Download_Log::init();
+        }
     }
 
     public static function is_module_active( string $id ): bool {
@@ -57,6 +60,7 @@ final class Plugin {
     public static function activate(): void {
         require_once PLUGIN_DIR . 'includes/class-protected-files.php';
         Protected_Files::ensure_directory();
+        Download_Log::install_table();
     }
 
     public static function deactivate(): void {

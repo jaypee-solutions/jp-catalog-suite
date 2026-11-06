@@ -21,3 +21,4 @@ okf_version: "0.1"
 * [Germanized integration](decisions/0005-germanized-integration.md) - Keep Germanized legal notices and checkboxes out of active Quote mode.
 * [Access content caching](decisions/0008-caching.md) - Audience-specific Access block content and logged-in cache bypass.
 * [Protected files](decisions/0007-protected-files.md) - Denied uploads subdirectory, URL rewriting, and user/file-only endpoint authorization.
+* [Download log privacy](decisions/0019-download-log-privacy.md) - Minimal user/file/product records, configurable retention and privacy tools.
