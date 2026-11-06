@@ -26,11 +26,15 @@ test( 'guest sends a Blocks inquiry which stays listed when Quote mode is off', 
 		wpCli( 'option', 'update', 'jps_cs_module_quote', 'yes' );
 		const quoteProfile = wpCli( 'post', 'list', '--post_type=product', '--meta_key=_sku', '--meta_value=QP-1', '--field=ID' );
 		const pricedBolt = wpCli( 'post', 'list', '--post_type=product', '--meta_key=_sku', '--meta_value=QP-2', '--field=ID' );
+		await page.goto( wpCli( 'post', 'url', pricedBolt ) );
+		await expect( page.getByRole( 'button', { name: 'Add to inquiry' } ) ).toBeVisible();
 		await page.goto( '/?add-to-cart=' + quoteProfile );
 		await page.goto( '/?add-to-cart=' + pricedBolt );
+		await page.goto( '/cart/' );
+		await expect( page.getByRole( 'button', { name: 'Continue to inquiry' } ) ).toBeVisible();
 		await page.goto( '/checkout/' );
 		await expect( page.locator( '.wc-block-checkout__payment-method' ) ).toHaveCount( 0 );
-		await page.getByLabel( 'Country/Region' ).selectOption( 'DE' );
+		await expect( page.locator( 'body' ) ).not.toContainText( /zahlungspflichtig/i );
 		await page.getByLabel( 'Email address' ).fill( `blocks-${ Date.now() }@example.com` );
 		await page.getByLabel( 'First name' ).fill( 'Guest' );
 		await page.getByLabel( 'Last name' ).fill( orderLabel );
@@ -38,6 +42,7 @@ test( 'guest sends a Blocks inquiry which stays listed when Quote mode is off', 
 		await page.getByLabel( 'City' ).fill( 'Berlin' );
 		await page.getByLabel( 'Postal code' ).fill( '10115' );
 		await page.getByRole( 'checkbox', { name: /Terms and Conditions and Cancellation Policy/ } ).check();
+		await expect( page.getByRole( 'button', { name: 'Send inquiry' } ) ).toBeVisible();
 		await page.getByRole( 'button', { name: /send inquiry|buy now|place order/i } ).click();
 		await expect( page ).toHaveURL( /order-received/ );
 
@@ -52,5 +57,32 @@ test( 'guest sends a Blocks inquiry which stays listed when Quote mode is off', 
 	} finally {
 		wpCli( 'option', 'update', 'jps_cs_module_quote', oldQuote );
 		wpCli( 'option', 'update', 'woocommerce_coming_soon', oldComingSoon );
+	}
+} );
+
+test( 'Blocks labels follow German locale and custom checkout settings', async ( { page } ) => {
+	const oldQuote = wpCli( 'option', 'get', 'jps_cs_module_quote' );
+	const oldLocale = wpCli( 'option', 'get', 'WPLANG' );
+	const oldPlaceOrder = wpCli( 'option', 'list', '--search=jps_cs_quote_place_order_label', '--field=option_value' );
+	try {
+		wpCli( 'option', 'update', 'jps_cs_module_quote', 'yes' );
+		wpCli( 'option', 'update', 'WPLANG', 'de_DE' );
+		const pricedBolt = wpCli( 'post', 'list', '--post_type=product', '--meta_key=_sku', '--meta_value=QP-2', '--field=ID' );
+		await page.goto( wpCli( 'post', 'url', pricedBolt ) );
+		await expect( page.getByRole( 'button', { name: 'Zur Anfrage hinzufügen' } ) ).toBeVisible();
+
+		wpCli( 'option', 'update', 'WPLANG', oldLocale );
+		wpCli( 'option', 'update', 'jps_cs_quote_place_order_label', 'Submit request' );
+		await page.goto( '/?add-to-cart=' + pricedBolt );
+		await page.goto( '/checkout/' );
+		await expect( page.getByRole( 'button', { name: 'Submit request' } ) ).toBeVisible();
+	} finally {
+		wpCli( 'option', 'update', 'jps_cs_module_quote', oldQuote );
+		wpCli( 'option', 'update', 'WPLANG', oldLocale );
+		if ( oldPlaceOrder ) {
+			wpCli( 'option', 'update', 'jps_cs_quote_place_order_label', oldPlaceOrder );
+		} else {
+			wpCli( 'option', 'delete', 'jps_cs_quote_place_order_label' );
+		}
 	}
 } );

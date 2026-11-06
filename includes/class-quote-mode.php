@@ -46,7 +46,7 @@ final class Quote_Mode {
     }
 
     public static function single_add_to_cart_text( string $text, \WC_Product $product ): string {
-        return self::applies_to( $product ) ? self::labels()['add_to_cart'] : $text;
+        return self::applies_to( $product ) && in_array( $product->get_type(), [ 'simple', 'variation' ], true ) ? self::labels()['add_to_cart'] : $text;
     }
 
     public static function add_to_cart_text( string $text, \WC_Product $product ): string {
@@ -70,7 +70,9 @@ final class Quote_Mode {
             'View cart' => 'cart',
             'Your cart' => 'cart',
             'Proceed to checkout' => 'proceed',
+            'Proceed to Checkout' => 'proceed',
             'Place order' => 'place_order',
+            'Place Order' => 'place_order',
         ];
         return isset( $map[ $text ] ) ? self::labels()[ $map[ $text ] ] : $translation;
     }

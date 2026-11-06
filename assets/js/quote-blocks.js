@@ -6,7 +6,9 @@
 		'View cart': labels.cart,
 		'Your cart': labels.cart,
 		'Proceed to checkout': labels.proceed,
+		'Proceed to Checkout': labels.proceed,
 		'Place order': labels.place_order,
+		'Place Order': labels.place_order,
 	};
 	wp.hooks.addFilter( 'i18n.gettext_woocommerce', 'jp-catalog-suite/labels', ( translation, text ) => map[ text ] || translation );
 	if ( wc.blocksCheckout ) {
