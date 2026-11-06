@@ -229,9 +229,6 @@ final class Variable_Length {
             }
             $product = $cart_item['data'];
             $pricing_product = self::pricing_product( $product );
-            if ( ! $product instanceof \WC_Product ) {
-                continue;
-            }
             $price = (float) $product->get_regular_price();
             if ( $product->is_on_sale() ) {
                 $price = (float) $product->get_sale_price();
@@ -264,6 +261,7 @@ final class Variable_Length {
         }
         return $product;
     }
+
     public static function display_item_data( array $data, array $cart_item ): array {
         if ( isset( $cart_item['jps_cs_length'], $cart_item['jps_cs_length_unit'] ) ) {
             $formatted_length = wc_format_localized_decimal( $cart_item['jps_cs_length'] );
