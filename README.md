@@ -49,7 +49,22 @@ Registration links use WooCommerce My Account registration when enabled, otherwi
 
 Configure allowed MIME types, automatically protected extensions, and delivery method under **WooCommerce → Settings → Catalog Suite → Product tabs**. STEP and DXF uploads matching the configured extensions are stored in `wp-content/uploads/jps-cs-protected/`, denied by Apache via `.htaccess`, and served only through `?jps_cs_file=<attachment-id>`. A protected attachment URL never exposes its storage path. Non-image protected attachments do not generate previews. Existing PDFs can be protected individually in the media attachment editor; protected attachments can also be returned to public storage there. The `jps_cs_can_access_protected` filter receives the user ID and context containing `attachment_id` for file checks; access is based only on the user and attachment. The untrusted `product` parameter is passed only to `jps_cs_before_file_delivery` for observers. `jps_cs_file_delivery_method` can choose `auto`, `xsendfile`, or `php`.
 
-PHP delivery supports files up to 256 MB and does not support HTTP Range requests. Configure PHP upload limits to at least 256 MB and ensure Traefik's request-body limit is no lower. For X-Sendfile, enable and configure Apache `mod_xsendfile` to allow files beneath the protected upload directory. For nginx, deny direct access to `/wp-content/uploads/jps-cs-protected/` with `location ^~ /wp-content/uploads/jps-cs-protected/ { deny all; }`; the `.htaccess` rule does not protect nginx. Activation creates the directory and deny files. When uninstall deletion is enabled, protected attachments and the directory are removed.
+PHP delivery supports files up to 256 MB and does not support HTTP Range requests. Configure PHP upload limits to at least 256 MB and ensure Traefik's request-body limit is no lower. For X-Sendfile, enable Apache `mod_xsendfile` and put these directives in the virtual-host/server configuration, replacing the path with the absolute protected uploads directory:
+
+```apache
+XSendFile On
+XSendFilePath /absolute/path/to/wordpress/wp-content/uploads/jps-cs-protected
+```
+
+For nginx, deny direct access to the protected uploads path:
+
+```nginx
+location ^~ /wp-content/uploads/jps-cs-protected/ {
+    deny all;
+}
+```
+
+The `.htaccess` deny rule does not protect nginx. Activation creates the directory and deny files. When uninstall deletion is enabled, protected attachments and the directory are removed.
 ## Uninstall
 
 Plugin options, the `jp_catalog_suite_github_token` update credential, and the `jps_cs_purge_download_log` scheduled hook are always removed. When the uninstall deletion option is enabled, Catalog Suite tabs, protected files and the download log are also removed. Orders are never deleted. Uninstall is single-site only; network-wide uninstall is not handled. Inquiries retain their status and become unavailable in order lists after plugin removal. Bulk-change inquiry statuses before deleting the plugin to preserve their visibility.
