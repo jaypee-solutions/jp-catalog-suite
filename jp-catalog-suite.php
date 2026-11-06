@@ -39,6 +39,7 @@ require_once __DIR__ . '/includes/class-inquiries.php';
 require_once __DIR__ . '/includes/class-inquiry-intake.php';
 require_once __DIR__ . '/includes/class-quote-mode.php';
 require_once __DIR__ . '/includes/class-product-tabs.php';
+require_once __DIR__ . '/includes/class-inquiry-emails.php';
 require_once __DIR__ . '/includes/class-plugin.php';
 
 register_activation_hook( PLUGIN_FILE, [ Plugin::class, 'activate' ] );
