@@ -19,6 +19,73 @@ final class Test_Variable_Length extends WP_UnitTestCase {
         return wc_get_product( $product->get_id() );
     }
 
+    private function variable_product(): array {
+        $product = new WC_Product_Variable();
+        $product->set_name( 'Length Rail' );
+        $product->set_regular_price( '5' );
+        $attribute = new WC_Product_Attribute();
+        $attribute->set_name( 'Colour' );
+        $attribute->set_options( [ 'Blue', 'Red' ] );
+        $attribute->set_position( 0 );
+        $attribute->set_visible( true );
+        $attribute->set_variation( true );
+        $product->set_attributes( [ $attribute ] );
+        $product->save();
+        update_post_meta( $product->get_id(), '_jps_cs_length_enabled', 'yes' );
+        update_post_meta( $product->get_id(), '_jps_cs_length_unit', 'cm' );
+        update_post_meta( $product->get_id(), '_jps_cs_length_min', '10' );
+        update_post_meta( $product->get_id(), '_jps_cs_length_max', '300' );
+        update_post_meta( $product->get_id(), '_jps_cs_length_step', '1' );
+        $variations = [];
+        foreach ( [ 'Blue', 'Red' ] as $colour ) {
+            $variation = new WC_Product_Variation();
+            $variation->set_status( 'publish' );
+            $variation->set_parent_id( $product->get_id() );
+            $variation->set_attributes( [ 'colour' => $colour ] );
+            $variation->set_regular_price( '5' );
+            $variation->save();
+            if ( 'Blue' === $colour ) {
+                $_POST['_jps_cs_length_min'] = [ 0 => '9.5' ];
+                $_POST['_jps_cs_length_max'] = [ 0 => '200' ];
+                $_POST['_jps_cs_length_step'] = [ 0 => '0.5' ];
+                $_POST['_jps_cs_length_default'] = [ 0 => '120' ];
+                do_action( 'woocommerce_save_product_variation', $variation->get_id(), 0 );
+                unset( $_POST['_jps_cs_length_min'], $_POST['_jps_cs_length_max'], $_POST['_jps_cs_length_step'], $_POST['_jps_cs_length_default'] );
+            }
+            $variations[ $colour ] = $variation->get_id();
+        }
+        WC_Product_Variable::sync( $product->get_id() );
+        return [ wc_get_product( $product->get_id() ), $variations ];
+    }
+
+    public function test_variation_length_overrides_are_sent_to_browser_and_enforced_for_cart_additions(): void {
+        [ $product, $variations ] = $this->variable_product();
+        $blue = wc_get_product( $variations['Blue'] );
+        $red = wc_get_product( $variations['Red'] );
+        $blue_data = apply_filters( 'woocommerce_available_variation', [], $product, $blue );
+        $this->assertSame( 9.5, $blue_data['jps_cs_length']['min'] );
+        $this->assertSame( 200.0, $blue_data['jps_cs_length']['max'] );
+        $this->assertSame( 0.5, $blue_data['jps_cs_length']['step'] );
+        $this->assertSame( '120', $blue_data['jps_cs_length']['default'] );
+        $red_data = apply_filters( 'woocommerce_available_variation', [], $product, $red );
+        $this->assertSame( 10.0, $red_data['jps_cs_length']['min'] );
+        $this->assertSame( 300.0, $red_data['jps_cs_length']['max'] );
+        $this->assertSame( 1.0, $red_data['jps_cs_length']['step'] );
+        WC()->cart->empty_cart();
+        $_REQUEST['jps_cs_length'] = '250';
+        $_POST['jps_cs_length'] = '250';
+        $_REQUEST['variation_id'] = (string) $variations['Blue'];
+        $_POST['variation_id'] = (string) $variations['Blue'];
+        $this->assertFalse( WC()->cart->add_to_cart( $product->get_id(), 1, $variations['Blue'], [ 'attribute_colour' => 'Blue' ] ) );
+        wc_clear_notices();
+        $_REQUEST['variation_id'] = (string) $variations['Red'];
+        $_POST['variation_id'] = (string) $variations['Red'];
+        $this->assertNotFalse( WC()->cart->add_to_cart( $product->get_id(), 1, $variations['Red'], [ 'attribute_colour' => 'Red' ] ) );
+        $item = reset( WC()->cart->get_cart() );
+        $this->assertSame( 250.0, $item['jps_cs_length'] );
+        $this->assertSame( 'cm', $item['jps_cs_length_unit'] );
+    }
+
     public function test_customer_can_add_distinct_valid_lengths_and_invalid_values_are_rejected(): void {
         $product = $this->product( [ 'max' => 300, 'step' => 1 ] );
         WC()->cart->empty_cart();

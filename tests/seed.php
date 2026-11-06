@@ -116,3 +116,35 @@ foreach ( [ 'enabled' => 'yes', 'unit' => 'cm', 'min' => '10', 'max' => '300', '
 }
 update_option( 'jps_cs_module_length', 'yes' );
 update_option( 'jps_cs_module_quote', 'yes' );
+// Ticket #18: Variable length on variable products fixtures.
+$length_rail = wc_get_product_id_by_sku( 'LR-1' );
+if ( ! $length_rail ) {
+    $variable = new WC_Product_Variable();
+    $variable->set_name( 'Length Rail' );
+    $variable->set_status( 'publish' );
+    $variable->set_sku( 'LR-1' );
+    $attribute = new WC_Product_Attribute();
+    $attribute->set_name( 'Colour' );
+    $attribute->set_options( [ 'Blue', 'Red' ] );
+    $attribute->set_position( 0 );
+    $attribute->set_visible( true );
+    $attribute->set_variation( true );
+    $variable->set_attributes( [ $attribute ] );
+    $variable->save();
+    $length_rail = $variable->get_id();
+    foreach ( [ 'Blue', 'Red' ] as $colour ) {
+        $variation = new WC_Product_Variation();
+        $variation->set_status( 'publish' );
+        $variation->set_parent_id( $length_rail );
+        $variation->set_attributes( [ 'colour' => $colour ] );
+        $variation->set_regular_price( '5' );
+        $variation->save();
+        if ( 'Blue' === $colour ) {
+            update_post_meta( $variation->get_id(), '_jps_cs_length_max', '200' );
+        }
+    }
+    WC_Product_Variable::sync( $length_rail );
+}
+foreach ( [ 'enabled' => 'yes', 'unit' => 'cm', 'min' => '10', 'max' => '300', 'step' => '1' ] as $key => $value ) {
+    update_post_meta( $length_rail, '_jps_cs_length_' . $key, $value );
+}
