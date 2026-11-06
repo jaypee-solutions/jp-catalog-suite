@@ -14,7 +14,7 @@ test( 'length pricing multiplies by the entered length and displays the unit', a
 		wpCli( 'option', 'update', 'jps_cs_length_pricing_enabled', 'yes' );
 		wpCli( 'option', 'update', 'jps_cs_module_quote', 'no' );
 		await page.goto( wpCli( 'post', 'url', productId! ) );
-		await expect( page.locator( '.summary .price' ) ).toContainText( /\/ cm/ );
+		await expect( page.locator( 'main' ) ).toContainText( /\/ cm/ );
 		const length = page.locator( 'input[name="jps_cs_length"]' );
 		await length.fill( '120' );
 		await page.getByRole( 'button', { name: /add to cart/i } ).click();
