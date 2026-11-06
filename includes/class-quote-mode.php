@@ -26,8 +26,9 @@ final class Quote_Mode {
         add_filter( 'woocommerce_thankyou_order_received_text', [ self::class, 'thankyou_text' ], 10, 2 );
         add_filter( 'gettext_woocommerce', [ self::class, 'woocommerce_translation' ], 10, 3 );
         add_filter( 'ngettext_woocommerce', [ self::class, 'woocommerce_translation' ], 10, 5 );
-        add_action( 'woocommerce_blocks_loaded', [ self::class, 'register_blocks_integration' ] );
-        add_action( 'wp_enqueue_scripts', [ self::class, 'enqueue_mini_cart_integration' ] );
+        add_filter( 'woocommerce_checkout_fields', [ self::class, 'checkout_fields' ] );
+        add_filter( 'woocommerce_get_country_locale', [ self::class, 'country_locale' ] );
+        add_filter( 'woocommerce_default_address_fields', [ self::class, 'default_address_fields' ] );
     }
 
     public static function labels(): array {
@@ -153,14 +154,78 @@ final class Quote_Mode {
         return self::is_active() ? false : $enabled;
     }
 
-    public static function settings(): array {
+    public static function checkout_fields( array $fields ): array {
+        foreach ( [ 'company', 'phone' ] as $field ) {
+            $setting = get_option( "jps_cs_checkout_{$field}", 'optional' );
+            $key     = "billing_{$field}";
+            if ( 'hidden' === $setting ) {
+                unset( $fields['billing'][ $key ] );
+            } elseif ( isset( $fields['billing'][ $key ] ) ) {
+                $fields['billing'][ $key ]['required'] = 'required' === $setting;
+            }
+        }
+        if ( 'hidden' === get_option( 'jps_cs_checkout_address', 'hidden' ) ) {
+            foreach ( [ 'billing_address_1', 'billing_address_2', 'billing_city', 'billing_state', 'billing_postcode', 'billing_country' ] as $key ) {
+                unset( $fields['billing'][ $key ] );
+            }
+        }
+        if ( 'no' === get_option( 'jps_cs_checkout_message', 'yes' ) ) {
+            unset( $fields['order']['order_comments'] );
+        }
+        $fields['billing']['billing_first_name']['required'] = true;
+        $fields['billing']['billing_last_name']['required']  = true;
+        $fields['billing']['billing_email']['required']      = true;
+        return $fields;
+    }
+
+    public static function country_locale( array $locale ): array {
+        $address = get_option( 'jps_cs_checkout_address', 'hidden' );
+        foreach ( $locale as &$country ) {
+            foreach ( [ 'address_1', 'address_2', 'city', 'state', 'postcode', 'country' ] as $field ) {
+                if ( isset( $country[ $field ] ) ) {
+                    $country[ $field ]['required'] = 'country' === $field || 'required' === $address;
+                    if ( 'country' !== $field ) {
+                        $country[ $field ]['hidden'] = 'hidden' === $address;
+                    }
+                }
+            }
+        }
+        return $locale;
+    }
+
+    public static function default_address_fields( array $fields ): array {
+        $address = get_option( 'jps_cs_checkout_address', 'hidden' );
+        foreach ( [ 'address_1', 'address_2', 'city', 'state', 'postcode' ] as $field ) {
+            if ( isset( $fields[ $field ] ) ) {
+                $fields[ $field ]['required'] = 'required' === $address;
+            }
+        }
+        return $fields;
+    }
+
+    private static function checkout_settings(): array {
+        $options = [ 'optional' => __( 'Optional', 'jp-catalog-suite' ), 'required' => __( 'Required', 'jp-catalog-suite' ), 'hidden' => __( 'Hidden', 'jp-catalog-suite' ) ];
         return [
-            [ 'title' => __( 'Quote mode', 'jp-catalog-suite' ), 'type' => 'title', 'id' => 'jps_cs_quote' ],
-            [ 'title' => __( 'Inquiry basket label', 'jp-catalog-suite' ), 'id' => 'jps_cs_quote_cart_label', 'type' => 'text', 'default' => '', 'placeholder' => __( 'Inquiry basket', 'jp-catalog-suite' ) ],
-            [ 'title' => __( 'Add to inquiry label', 'jp-catalog-suite' ), 'id' => 'jps_cs_quote_add_to_cart_label', 'type' => 'text', 'default' => '', 'placeholder' => __( 'Add to inquiry', 'jp-catalog-suite' ) ],
-            [ 'title' => __( 'Continue to inquiry label', 'jp-catalog-suite' ), 'id' => 'jps_cs_quote_proceed_label', 'type' => 'text', 'default' => '', 'placeholder' => __( 'Continue to inquiry', 'jp-catalog-suite' ) ],
-            [ 'title' => __( 'Send inquiry label', 'jp-catalog-suite' ), 'id' => 'jps_cs_quote_place_order_label', 'type' => 'text', 'default' => '', 'placeholder' => __( 'Send inquiry', 'jp-catalog-suite' ) ],
-            [ 'type' => 'sectionend', 'id' => 'jps_cs_quote' ],
+            [ 'title' => __( 'Inquiry checkout fields', 'jp-catalog-suite' ), 'type' => 'title', 'id' => 'jps_cs_checkout_fields' ],
+            [ 'title' => __( 'Company', 'jp-catalog-suite' ), 'id' => 'jps_cs_checkout_company', 'type' => 'select', 'default' => 'optional', 'options' => $options ],
+            [ 'title' => __( 'Phone', 'jp-catalog-suite' ), 'id' => 'jps_cs_checkout_phone', 'type' => 'select', 'default' => 'optional', 'options' => $options ],
+            [ 'title' => __( 'Address', 'jp-catalog-suite' ), 'id' => 'jps_cs_checkout_address', 'type' => 'select', 'default' => 'hidden', 'options' => [ 'hidden' => __( 'Hidden', 'jp-catalog-suite' ), 'optional' => __( 'Optional', 'jp-catalog-suite' ), 'required' => __( 'Required', 'jp-catalog-suite' ) ] ],
+            [ 'title' => __( 'Order message', 'jp-catalog-suite' ), 'id' => 'jps_cs_checkout_message', 'type' => 'checkbox', 'default' => 'yes' ],
+            [ 'type' => 'sectionend', 'id' => 'jps_cs_checkout_fields' ],
         ];
+    }
+
+    public static function settings(): array {
+        return array_merge(
+            [
+                [ 'title' => __( 'Quote mode', 'jp-catalog-suite' ), 'type' => 'title', 'id' => 'jps_cs_quote' ],
+                [ 'title' => __( 'Inquiry basket label', 'jp-catalog-suite' ), 'id' => 'jps_cs_quote_cart_label', 'type' => 'text', 'default' => '', 'placeholder' => __( 'Inquiry basket', 'jp-catalog-suite' ) ],
+                [ 'title' => __( 'Add to inquiry label', 'jp-catalog-suite' ), 'id' => 'jps_cs_quote_add_to_cart_label', 'type' => 'text', 'default' => '', 'placeholder' => __( 'Add to inquiry', 'jp-catalog-suite' ) ],
+                [ 'title' => __( 'Continue to inquiry label', 'jp-catalog-suite' ), 'id' => 'jps_cs_quote_proceed_label', 'type' => 'text', 'default' => '', 'placeholder' => __( 'Continue to inquiry', 'jp-catalog-suite' ) ],
+                [ 'title' => __( 'Send inquiry label', 'jp-catalog-suite' ), 'id' => 'jps_cs_quote_place_order_label', 'type' => 'text', 'default' => '', 'placeholder' => __( 'Send inquiry', 'jp-catalog-suite' ) ],
+                [ 'type' => 'sectionend', 'id' => 'jps_cs_quote' ],
+            ],
+            self::checkout_settings()
+        );
     }
 }

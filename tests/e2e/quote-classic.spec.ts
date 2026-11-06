@@ -83,10 +83,9 @@ test( 'guest sends an inquiry on classic checkout', async ( { page } ) => {
 	await page.locator( '#billing_email' ).fill( `classic-${ Date.now() }@example.com` );
 	await page.locator( '#billing_first_name' ).fill( 'Guest' );
 	await page.locator( '#billing_last_name' ).fill( orderLabel );
-	await page.locator( '#billing_address_1' ).fill( '1 Main Street' );
-	await page.locator( '#billing_city' ).fill( 'Berlin' );
-	await page.locator( '#billing_postcode' ).fill( '10115' );
-	await selectCheckoutCountry( page, 'DE' );
+	await expect( page.locator( '#billing_company' ) ).toBeVisible();
+	await expect( page.locator( '#billing_phone' ) ).toBeVisible();
+	await expect( page.locator( '#billing_address_1, #billing_city, #billing_postcode' ) ).toHaveCount( 0 );
 	const terms = page.getByRole( 'checkbox', { name: /Terms and Conditions and Cancellation Policy/ } );
 	await terms.check();
 	await expect( terms ).toBeChecked();

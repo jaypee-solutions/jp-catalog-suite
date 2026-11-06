@@ -8,3 +8,4 @@
 * **E2E isolation**: Documented Germanized onboarding, cart-line assertions, and persistent order isolation.
 * **Quote-mode labels**: Added configurable translated inquiry wording across PHP and WooCommerce Blocks.
 * **Inquiry emails**: Added configurable price-free New inquiry and Inquiry confirmation emails.
+* **Inquiry checkout fields**: Added configurable Company, Phone, Address, and Message settings for inquiry checkout.

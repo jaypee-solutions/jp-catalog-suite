@@ -42,16 +42,13 @@ test( 'guest sends a Blocks inquiry which stays listed when Quote mode is off', 
 		await page.goto( '/cart/' );
 		await expect( page.getByRole( 'link', { name: 'Continue to inquiry' } ) ).toBeVisible();
 		await page.goto( '/checkout/' );
-		await page.getByLabel( 'Country/Region' ).selectOption( 'DE' );
-		await expect( page.getByLabel( 'Postal code' ) ).toBeVisible();
+		await expect( page.getByLabel( 'Country/Region' ) ).toBeVisible();
+		await expect( page.getByRole( 'textbox', { name: 'Address', exact: true } ) ).toHaveCount( 0 );
 		await expect( page.locator( '.wc-block-checkout__payment-method' ) ).toHaveCount( 0 );
 		await expect( page.locator( 'body' ) ).not.toContainText( /zahlungspflichtig/i );
 		await page.getByLabel( 'Email address' ).fill( `blocks-${ Date.now() }@example.com` );
 		await page.getByLabel( 'First name' ).fill( 'Guest' );
 		await page.getByLabel( 'Last name' ).fill( orderLabel );
-		await page.getByRole( 'textbox', { name: 'Address', exact: true } ).fill( '1 Main Street' );
-		await page.getByLabel( 'City' ).fill( 'Berlin' );
-		await page.getByLabel( 'Postal code' ).fill( '10115' );
 		await page.getByRole( 'checkbox', { name: /Terms and Conditions and Cancellation Policy/ } ).check();
 		await expect( page.getByRole( 'button', { name: 'Send inquiry' } ) ).toBeVisible();
 		await page.getByRole( 'button', { name: /send inquiry|buy now|place order/i } ).click();

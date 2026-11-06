@@ -23,6 +23,10 @@ Quote mode provides the translatable default labels **Inquiry basket**, **Add to
 ## Inquiry emails
 
 Two price-free WooCommerce emails are registered for each new Inquiry: **New inquiry** to the configured recipients (defaults to the site administrator email) and **Inquiry confirmation** to the billing email. Edit or disable them under **WooCommerce → Settings → Emails**. The New inquiry recipient accepts comma-separated addresses. Both email formats list products, SKU, quantity, item details, the customer's message and customer details without prices. The admin message replies to the customer's billing email. The `jps_cs_inquiry_created` action fires when an Inquiry is created; email delivery follows WooCommerce's pending-to-Inquiry notification. The two email settings are removed on uninstall; no email content is retained by this module.
+
+## Inquiry checkout fields
+
+Configure Company, Phone, and Address as optional, required, or hidden, and enable or disable the message under the Quote mode settings in **WooCommerce → Settings → Catalog Suite**. Name and email remain required. Address visibility and required state follow WooCommerce country locale behavior; classic checkout also removes hidden address fields. Blocks cannot hide Country, which remains preselected to the store country, and Blocks order notes cannot be required; the Checkout block's own order-notes setting controls whether its message field appears. Options use `jps_cs_checkout_company`, `jps_cs_checkout_phone`, `jps_cs_checkout_address`, and `jps_cs_checkout_message`.
 ## Variable length
 
 Enable the module under **WooCommerce → Settings → Catalog Suite**. Its settings define the default unit, minimum, maximum, and step; simple products can enable Variable length and override those values. Each submitted length is validated and displayed on its separate cart line and order item, while WooCommerce quantity counts pieces. Catalog buttons link to the product page as **Choose length**. The `jps_cs_length_config` filter customizes resolved length configuration. Variable products, Store API add-to-cart, and pricing by length unit are not supported in this phase.
