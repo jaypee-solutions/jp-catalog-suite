@@ -196,6 +196,11 @@ final class Product_Tabs {
             $settings[] = [ 'type' => 'sectionend', 'id' => 'jps_cs_core_tab_' . $key ];
         }
         $settings[] = [ 'type' => 'sectionend', 'id' => 'jps_cs_tabs_settings' ];
+        $settings[] = [ 'title' => __( 'Protected files', 'jp-catalog-suite' ), 'type' => 'title', 'id' => 'jps_cs_files_settings' ];
+        $settings[] = [ 'title' => __( 'Allowed file MIME types', 'jp-catalog-suite' ), 'id' => 'jps_cs_files_mimes', 'type' => 'textarea', 'default' => "stp|step=application/step\ndxf=application/dxf" ];
+        $settings[] = [ 'title' => __( 'Automatically protect extensions', 'jp-catalog-suite' ), 'id' => 'jps_cs_files_protected_exts', 'type' => 'text', 'default' => 'stp, step, dxf' ];
+        $settings[] = [ 'title' => __( 'File delivery method', 'jp-catalog-suite' ), 'id' => 'jps_cs_files_delivery', 'type' => 'select', 'default' => 'auto', 'options' => [ 'auto' => __( 'Automatic', 'jp-catalog-suite' ), 'xsendfile' => 'X-Sendfile', 'php' => 'PHP' ] ];
+        $settings[] = [ 'type' => 'sectionend', 'id' => 'jps_cs_files_settings' ];
         $settings = array_merge( $settings, Access_Block::settings() );
         return $settings;
     }

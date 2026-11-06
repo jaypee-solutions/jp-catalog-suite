@@ -10,7 +10,6 @@ declare( strict_types = 1 );
 namespace JayPee\CatalogSuite;
 
 final class Plugin {
-
     public const MODULES = [
         'quote' => Quote_Mode::class,
         'tabs' => Product_Tabs::class,
@@ -19,6 +18,7 @@ final class Plugin {
 
     public static function init(): void {
         require_once PLUGIN_DIR . 'includes/class-variable-length.php';
+        require_once PLUGIN_DIR . 'includes/class-protected-files.php';
         Inquiries::init();
         Inquiry_Emails::init();
         add_filter(
@@ -29,7 +29,6 @@ final class Plugin {
                 return $pages;
             }
         );
-
         foreach ( self::MODULES as $id => $class ) {
             if ( self::is_module_active( $id ) ) {
                 $class::init();
@@ -37,6 +36,7 @@ final class Plugin {
         }
         if ( self::is_module_active( 'tabs' ) ) {
             Access_Block::init();
+            Protected_Files::init();
         }
     }
 
@@ -54,7 +54,10 @@ final class Plugin {
         );
     }
 
-    public static function activate(): void {}
+    public static function activate(): void {
+        require_once PLUGIN_DIR . 'includes/class-protected-files.php';
+        Protected_Files::ensure_directory();
+    }
 
     public static function deactivate(): void {
         wp_clear_scheduled_hook( 'jps_cs_purge_download_log' );

@@ -71,4 +71,31 @@ final class Test_Settings extends WP_UnitTestCase {
         \WC_Admin_Settings::save();
         $this->assertSame( 'yes', get_option( 'jps_cs_length_pricing_enabled' ) );
     }
+
+    public function test_protected_file_settings_are_saved_by_woocommerce(): void {
+        $pages = apply_filters( 'woocommerce_get_settings_pages', [] );
+        $catalog_pages = array_values( array_filter( $pages, static fn ( $candidate ): bool => 'jps_cs' === $candidate->get_id() ) );
+        $settings_page = $catalog_pages[0] ?? null;
+        $settings = $settings_page->get_settings( 'tabs' );
+        $ids = [ 'jps_cs_files_mimes', 'jps_cs_files_protected_exts', 'jps_cs_files_delivery' ];
+        $this->assertSame( $ids, array_values( array_intersect( $ids, array_column( $settings, 'id' ) ) ) );
+        wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
+        global $current_tab, $current_section;
+        $current_tab = 'jps_cs';
+        $current_section = 'tabs';
+        if ( ! class_exists( 'WC_Admin_Settings' ) ) {
+            require_once WC_ABSPATH . 'includes/admin/class-wc-admin-settings.php';
+        }
+        $_POST = [
+            'jps_cs_files_mimes' => "stp=application/step\ndxf=application/dxf",
+            'jps_cs_files_protected_exts' => 'step,dxf',
+            'jps_cs_files_delivery' => 'php',
+            '_wpnonce' => wp_create_nonce( 'woocommerce-settings' ),
+        ];
+        $_REQUEST = $_POST;
+        \WC_Admin_Settings::save();
+        $this->assertSame( "stp=application/step\ndxf=application/dxf", get_option( 'jps_cs_files_mimes' ) );
+        $this->assertSame( 'step,dxf', get_option( 'jps_cs_files_protected_exts' ) );
+        $this->assertSame( 'php', get_option( 'jps_cs_files_delivery' ) );
+    }
 }

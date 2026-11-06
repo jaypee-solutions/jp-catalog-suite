@@ -311,4 +311,13 @@ msgid "Price per length unit"
 msgstr "Preis pro Längeneinheit"
 
 msgid "Price products by the entered length."
-msgstr "Produkte anhand der eingegebenen Länge berechnen."
+msgstr "Produkte anhand der eingegebenen Länge."
+
+msgid "Protected"
+msgstr "Geschützt"
+
+msgid "Served only to authorized users"
+msgstr "Nur für berechtigte Benutzer verfügbar"
+
+msgid "The file could not be moved."
+msgstr "Die Datei konnte nicht verschoben werden."
