@@ -66,4 +66,21 @@ final class Test_Protected_Files extends WP_UnitTestCase {
         $this->expectException( WPDieException::class );
         do_action( 'template_redirect' );
     }
+    public function test_protected_download_returns_forbidden_when_access_is_denied(): void {
+        $attachment = wp_insert_attachment( [ 'post_mime_type' => 'application/step', 'post_title' => 'private file', 'post_status' => 'inherit' ], __FILE__ );
+        update_post_meta( $attachment, '_jps_cs_protected', '1' );
+        wp_set_current_user( self::factory()->user->create( [ 'role' => 'customer' ] ) );
+        set_query_var( 'jps_cs_file', $attachment );
+        $deny = static fn (): bool => false;
+        add_filter( 'jps_cs_can_access_protected', $deny );
+        try {
+            do_action( 'template_redirect' );
+            $this->fail( 'An unauthorized download must return 403.' );
+        } catch ( WPDieException $error ) {
+            $this->assertStringContainsString( 'You do not have permission to download this file.', $error->getMessage() );
+        } finally {
+            remove_filter( 'jps_cs_can_access_protected', $deny );
+            wp_set_current_user( 0 );
+        }
+    }
 }
