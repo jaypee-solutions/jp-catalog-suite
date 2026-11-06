@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Locator, type Page } from '@playwright/test';
 
 function wpCli( ...args: string[] ): string {
 	const output = execFileSync( 'npx', [ 'wp-env', 'run', 'cli', '--', 'wp', ...args ], { encoding: 'utf8', env: { ...process.env, WP_ENV_HOME: './.wp-env' } } );
@@ -19,6 +19,33 @@ async function login( page: Page ): Promise<void> {
 	await page.request.get( '/wp-login.php' );
 	const response = await page.request.post( '/wp-login.php', { form: { log: ADMIN_USER, pwd: ADMIN_PASS, 'wp-submit': 'Log In', redirect_to: '/wp-admin/', testcookie: '1' }, maxRedirects: 0 } );
 	expect( response.status() ).toBe( 302 );
+}
+
+async function waitForCheckoutUpdate( page: Page, country: Locator, countryCode: string ): Promise<void> {
+	await page.evaluate( () => {
+		document.body.dataset.jpsCheckoutUpdate = 'pending';
+		const jQuery = Reflect.get( window, 'jQuery' ) as ( element: HTMLElement ) => {
+			one: ( eventName: string, callback: () => void ) => void;
+		};
+		jQuery( document.body ).one( 'updated_checkout.jpsCatalogSuiteTest', () => {
+			document.body.dataset.jpsCheckoutUpdate = 'complete';
+		} );
+	} );
+	await country.selectOption( countryCode );
+	await expect( page.locator( 'body' ) ).toHaveAttribute( 'data-jps-checkout-update', 'complete' );
+}
+
+async function selectCheckoutCountry( page: Page, countryCode: string ): Promise<void> {
+	const country = page.locator( '#billing_country' );
+	if ( countryCode === await country.inputValue() ) {
+		const alternativeCountry = await country.locator( 'option' ).evaluateAll( ( options ) =>
+			options.map( ( option ) => ( option as HTMLOptionElement ).value ).find( ( value ) => value && value !== countryCode )
+		);
+		if ( alternativeCountry ) {
+			await waitForCheckoutUpdate( page, country, alternativeCountry );
+		}
+	}
+	await waitForCheckoutUpdate( page, country, countryCode );
 }
 
 test.beforeAll( () => {
@@ -59,8 +86,10 @@ test( 'guest sends an inquiry on classic checkout', async ( { page } ) => {
 	await page.locator( '#billing_address_1' ).fill( '1 Main Street' );
 	await page.locator( '#billing_city' ).fill( 'Berlin' );
 	await page.locator( '#billing_postcode' ).fill( '10115' );
-	await page.locator( '#billing_country' ).selectOption( 'DE' );
-	await page.getByRole( 'checkbox', { name: /Terms and Conditions and Cancellation Policy/ } ).check();
+	await selectCheckoutCountry( page, 'DE' );
+	const terms = page.getByRole( 'checkbox', { name: /Terms and Conditions and Cancellation Policy/ } );
+	await terms.check();
+	await expect( terms ).toBeChecked();
 	await expect( page.locator( '#place_order' ) ).toHaveText( 'Send inquiry' );
 	await page.locator( '#place_order' ).click();
 	await expect( page ).toHaveURL( /order-received/ );

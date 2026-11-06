@@ -7,6 +7,7 @@
 		'Your cart': labels.cart,
 		'Proceed to checkout': labels.proceed,
 		'Proceed to Checkout': labels.proceed,
+		'Go to checkout': labels.proceed,
 		'Place order': labels.place_order,
 		'Place Order': labels.place_order,
 	};

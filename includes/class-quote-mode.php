@@ -71,6 +71,7 @@ final class Quote_Mode {
             'Your cart' => 'cart',
             'Proceed to checkout' => 'proceed',
             'Proceed to Checkout' => 'proceed',
+            'Go to checkout' => 'proceed',
             'Place order' => 'place_order',
             'Place Order' => 'place_order',
         ];

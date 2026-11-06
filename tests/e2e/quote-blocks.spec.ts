@@ -1,3 +1,4 @@
+import { basename } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { test, expect, type Page } from '@playwright/test';
 
@@ -5,6 +6,10 @@ function wpCli( ...args: string[] ): string {
 	const output = execFileSync( 'npx', [ 'wp-env', 'run', 'cli', '--', 'wp', ...args ], { encoding: 'utf8', env: { ...process.env, WP_ENV_HOME: './.wp-env' } } );
 	const numeric = output.split( /\r?\n/ ).map( ( line ) => line.trim() ).filter( ( line ) => /^\d+$/.test( line ) );
 	return numeric.length ? numeric[ numeric.length - 1 ] : output.split( /\r?\n/ ).map( ( line ) => line.trim() ).filter( ( line ) => line && ! line.startsWith( 'ℹ' ) && ! line.startsWith( '✔' ) && ! line.startsWith( 'Deprecated:' ) ).join( '\n' ).trim();
+}
+
+function compileGermanCatalog(): void {
+	execFileSync( 'npx', [ 'wp-env', 'run', 'cli', `--env-cwd=wp-content/plugins/${ basename( process.cwd() ) }`, 'wp', 'i18n', 'make-mo', 'languages' ], { encoding: 'utf8', env: { ...process.env, WP_ENV_HOME: './.wp-env' } } );
 }
 
 const ADMIN_USER = process.env.WP_ADMIN_USER ?? 'admin';
@@ -31,7 +36,7 @@ test( 'guest sends a Blocks inquiry which stays listed when Quote mode is off', 
 		await page.goto( '/?add-to-cart=' + quoteProfile );
 		await page.goto( '/?add-to-cart=' + pricedBolt );
 		await page.goto( '/cart/' );
-		await expect( page.getByRole( 'button', { name: 'Continue to inquiry' } ) ).toBeVisible();
+		await expect( page.getByRole( 'link', { name: 'Continue to inquiry' } ) ).toBeVisible();
 		await page.goto( '/checkout/' );
 		await expect( page.locator( '.wc-block-checkout__payment-method' ) ).toHaveCount( 0 );
 		await expect( page.locator( 'body' ) ).not.toContainText( /zahlungspflichtig/i );
@@ -66,10 +71,14 @@ test( 'Blocks labels follow German locale and custom checkout settings', async (
 	const oldPlaceOrder = wpCli( 'option', 'list', '--search=jps_cs_quote_place_order_label', '--field=option_value' );
 	try {
 		wpCli( 'option', 'update', 'jps_cs_module_quote', 'yes' );
+		compileGermanCatalog();
 		wpCli( 'option', 'update', 'WPLANG', 'de_DE' );
 		const pricedBolt = wpCli( 'post', 'list', '--post_type=product', '--meta_key=_sku', '--meta_value=QP-2', '--field=ID' );
 		await page.goto( wpCli( 'post', 'url', pricedBolt ) );
 		await expect( page.getByRole( 'button', { name: 'Zur Anfrage hinzufügen' } ) ).toBeVisible();
+		await page.goto( '/?add-to-cart=' + pricedBolt );
+		await page.goto( '/checkout/' );
+		await expect( page.getByRole( 'button', { name: 'Anfrage absenden' } ) ).toBeVisible();
 
 		wpCli( 'option', 'update', 'WPLANG', oldLocale );
 		wpCli( 'option', 'update', 'jps_cs_quote_place_order_label', 'Submit request' );
