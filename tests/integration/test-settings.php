@@ -49,4 +49,26 @@ final class Test_Settings extends WP_UnitTestCase {
         }
         $this->assertSame( 'yes', get_option( 'jps_cs_uninstall_delete_data' ) );
     }
+
+    public function test_length_pricing_setting_is_saved_by_woocommerce(): void {
+        $pages = apply_filters( 'woocommerce_get_settings_pages', [] );
+        $catalog_pages = array_values( array_filter( $pages, static fn ( $candidate ): bool => 'jps_cs' === $candidate->get_id() ) );
+        $settings_page = $catalog_pages[0] ?? null;
+        $this->assertNotNull( $settings_page );
+        $this->assertContains(
+            'jps_cs_length_pricing_enabled',
+            array_column( $settings_page->get_settings( 'length' ), 'id' )
+        );
+        wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
+        global $current_tab, $current_section;
+        $current_tab     = 'jps_cs';
+        $current_section = 'length';
+        $_POST = [
+            'jps_cs_length_pricing_enabled' => '1',
+            '_wpnonce'                      => wp_create_nonce( 'woocommerce-settings' ),
+        ];
+        $_REQUEST = $_POST;
+        \WC_Admin_Settings::save();
+        $this->assertSame( 'yes', get_option( 'jps_cs_length_pricing_enabled' ) );
+    }
 }

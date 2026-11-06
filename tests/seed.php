@@ -115,6 +115,19 @@ foreach ( [ 'enabled' => 'yes', 'unit' => 'cm', 'min' => '10', 'max' => '300', '
     update_post_meta( $length_product, '_jps_cs_length_' . $key, $value );
 }
 update_option( 'jps_cs_module_length', 'yes' );
+// Ticket #20: Price per length unit fixtures.
+$priced_length_id = wc_get_product_id_by_sku( 'LBP-1' );
+if ( ! $priced_length_id ) {
+    $priced_length = new WC_Product_Simple();
+    $priced_length->set_name( 'Priced Length Bar' );
+    $priced_length->set_sku( 'LBP-1' );
+    $priced_length->set_regular_price( '2' );
+    $priced_length->set_status( 'publish' );
+    $priced_length_id = $priced_length->save();
+}
+foreach ( [ 'enabled' => 'yes', 'unit' => 'cm', 'min' => '10', 'max' => '300', 'step' => '1', 'price_per_unit' => 'yes' ] as $key => $value ) {
+    update_post_meta( $priced_length_id, '_jps_cs_length_' . $key, $value );
+}
 update_option( 'jps_cs_module_quote', 'yes' );
 // Ticket #18: Variable length on variable products fixtures.
 $length_rail = wc_get_product_id_by_sku( 'LR-1' );

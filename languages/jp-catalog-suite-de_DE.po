@@ -307,3 +307,8 @@ msgstr "Anmeldehinweis anzeigen, wenn der Inhalt ausgeblendet ist"
 msgctxt "block description"
 msgid "Show content according to visitor access."
 msgstr "Inhalt entsprechend dem Zugriff der Besuchenden anzeigen."
+msgid "Price per length unit"
+msgstr "Preis pro Längeneinheit"
+
+msgid "Price products by the entered length."
+msgstr "Produkte anhand der eingegebenen Länge berechnen."

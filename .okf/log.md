@@ -15,3 +15,4 @@
 * **Germanized integration**: Recorded ADR 0005; suppress Germanized shopmarks and non-kept legal checkboxes only during Quote mode.
 * **Germanized privacy checkbox**: The built-in privacy checkbox is registration-only by default and requires account creation when rendered at checkout.
 * **Access block**: Added audience-specific tab content, registration notices, and logged-in cache bypass guidance.
+* **Price per length unit**: Added opt-in product pricing based on cart-item length, preserving Quote mode price hiding.
