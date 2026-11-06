@@ -11,5 +11,4 @@ timestamp: 2026-11-06T00:00:00Z
 Capture the Store API request length at `woocommerce_store_api_add_to_cart_data` and reuse the existing validation and cart-item-data path. Different entered lengths remain distinct cart lines. When add-to-cart-with-options omits the input, customers should use the Add to Cart form block for length products.
 
 # Citations
-
-- [ADR 0016](../../../docs/adr/0016-variable-length-store-api.md)
+- [ADR 0016](../../docs/adr/0016-variable-length-store-api.md)
