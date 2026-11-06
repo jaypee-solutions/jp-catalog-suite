@@ -1,6 +1,6 @@
 <?php
 /**
- * Customer-entered length for simple products.
+ * Customer-entered length for simple and variable products.
  *
  * @package JayPee\CatalogSuite
  */
