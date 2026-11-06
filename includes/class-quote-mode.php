@@ -190,7 +190,7 @@ final class Quote_Mode {
             }
         }
         if ( 'hidden' === get_option( 'jps_cs_checkout_address', 'hidden' ) ) {
-            foreach ( [ 'billing_address_1', 'billing_address_2', 'billing_city', 'billing_state', 'billing_postcode', 'billing_country' ] as $key ) {
+            foreach ( [ 'billing_address_1', 'billing_address_2', 'billing_city', 'billing_state', 'billing_postcode' ] as $key ) {
                 unset( $fields['billing'][ $key ] );
             }
         }
@@ -216,11 +216,10 @@ final class Quote_Mode {
         $address = get_option( 'jps_cs_checkout_address', 'hidden' );
         foreach ( $locale as &$country ) {
             foreach ( [ 'address_1', 'address_2', 'city', 'state', 'postcode', 'country' ] as $field ) {
-                if ( isset( $country[ $field ] ) ) {
-                    $country[ $field ]['required'] = 'country' === $field || 'required' === $address;
-                    if ( 'country' !== $field ) {
-                        $country[ $field ]['hidden'] = 'hidden' === $address;
-                    }
+                $country[ $field ]           = $country[ $field ] ?? [];
+                $country[ $field ]['required'] = 'country' === $field || 'required' === $address;
+                if ( 'country' !== $field ) {
+                    $country[ $field ]['hidden'] = 'hidden' === $address;
                 }
             }
         }

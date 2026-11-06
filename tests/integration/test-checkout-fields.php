@@ -40,9 +40,10 @@ final class Test_Checkout_Fields extends WP_UnitTestCase {
     public function test_hidden_address_is_removed_from_classic_and_locale_fields(): void {
         update_option( 'jps_cs_checkout_address', 'hidden' );
         $fields = apply_filters( 'woocommerce_checkout_fields', WC()->checkout()->get_checkout_fields() );
-        foreach ( [ 'billing_address_1', 'billing_address_2', 'billing_city', 'billing_state', 'billing_postcode', 'billing_country' ] as $key ) {
+        foreach ( [ 'billing_address_1', 'billing_address_2', 'billing_city', 'billing_state', 'billing_postcode' ] as $key ) {
             $this->assertArrayNotHasKey( $key, $fields['billing'] );
         }
+        $this->assertArrayHasKey( 'billing_country', $fields['billing'] );
         $locale = apply_filters( 'woocommerce_get_country_locale', [ 'DE' => [ 'address_1' => [] ] ] );
         $this->assertTrue( $locale['DE']['address_1']['hidden'] );
         $defaults = apply_filters( 'woocommerce_default_address_fields', [ 'address_1' => [] ] );
