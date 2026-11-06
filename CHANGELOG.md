@@ -12,6 +12,7 @@ extracts it as the GitHub release notes and fails without it.
 
 ### Added
 - Global product tabs with all-product or category scope and priority.
+- Quote mode supports guest Inquiry checkout without payment, shipping, taxes, or coupons.
 
 ## [0.1.0] - 2026-11-06
 

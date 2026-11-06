@@ -68,6 +68,18 @@ msgstr "Länge"
 
 msgid "Choose length"
 msgstr "Länge auswählen"
+msgctxt "Order status"
+msgid "Inquiry"
+msgstr "Anfrage"
+
+msgid "Inquiry <span class=\"count\">(%s)</span>"
+msgid_plural "Inquiries <span class=\"count\">(%s)</span>"
+msgstr[0] "Anfrage <span class=\"count\">(%s)</span>"
+msgstr[1] "Anfragen <span class=\"count\">(%s)</span>"
+
+
+msgid "Inquiry received."
+msgstr "Ihre Anfrage ist eingegangen."
 msgid "Product tab"
 msgstr "Produkttab"
 

@@ -67,6 +67,31 @@ foreach ( get_users( [ 'fields' => 'ID' ] ) as $user_id ) {
     );
 }
 
+// Ticket #3: Inquiry tracer bullet: price-less checkout becomes an Inquiry fixtures.
+$quote_profile_id = wc_get_product_id_by_sku( 'QP-1' );
+if ( ! $quote_profile_id ) {
+    $product = new WC_Product_Simple();
+    $product->set_name( 'Quote Profile' );
+    $product->set_sku( 'QP-1' );
+    $product->set_status( 'publish' );
+    $quote_profile_id = $product->save();
+}
+$priced_bolt_id = wc_get_product_id_by_sku( 'QP-2' );
+if ( ! $priced_bolt_id ) {
+    $product = new WC_Product_Simple();
+    $product->set_name( 'Priced Bolt' );
+    $product->set_sku( 'QP-2' );
+    $product->set_regular_price( '9.99' );
+    $product->set_status( 'publish' );
+    $priced_bolt_id = $product->save();
+}
+foreach ( [ 'Classic Cart' => '[woocommerce_cart]', 'Classic Checkout' => '[woocommerce_checkout]' ] as $title => $content ) {
+    $existing = get_posts( [ 'post_type' => 'page', 'title' => $title, 'post_status' => 'any', 'numberposts' => 1, 'fields' => 'ids' ] );
+    if ( ! $existing ) {
+        wp_insert_post( [ 'post_type' => 'page', 'post_status' => 'publish', 'post_title' => $title, 'post_content' => $content ] );
+    }
+}
+
 WP_CLI::success( 'Seed complete.' );
 // Ticket #17: Variable length tracer bullet on simple products fixtures.
 $length_product = wc_get_product_id_by_sku( 'LB-1' );

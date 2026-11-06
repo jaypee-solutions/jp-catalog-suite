@@ -12,12 +12,14 @@ namespace JayPee\CatalogSuite;
 final class Plugin {
 
     public const MODULES = [
+        'quote' => Quote_Mode::class,
         'tabs' => Product_Tabs::class,
         'length' => Variable_Length::class,
     ];
 
     public static function init(): void {
         require_once PLUGIN_DIR . 'includes/class-variable-length.php';
+        Inquiries::init();
         add_filter(
             'woocommerce_get_settings_pages',
             static function ( array $pages ): array {
@@ -33,6 +35,7 @@ final class Plugin {
             }
         }
     }
+
 
     public static function is_module_active( string $id ): bool {
         return 'yes' === get_option( "jps_cs_module_{$id}", 'no' );

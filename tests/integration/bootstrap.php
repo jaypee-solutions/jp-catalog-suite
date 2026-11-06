@@ -15,6 +15,13 @@ require dirname( __DIR__, 2 ) . '/vendor/autoload.php';
 require_once getenv( 'WP_TESTS_DIR' ) . '/includes/functions.php';
 
 tests_add_filter(
+    'pre_option_jps_cs_module_quote',
+    static function (): string {
+        return 'yes';
+    }
+);
+
+tests_add_filter(
     'muplugins_loaded',
     static function (): void {
         $woocommerce_file = WP_PLUGIN_DIR . '/woocommerce/woocommerce.php';
