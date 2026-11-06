@@ -1,6 +1,6 @@
 <?php
 /**
- * Customer-entered length for simple products.
+ * Customer-entered length for simple and variable products.
  *
  * @package JayPee\CatalogSuite
  */
@@ -16,6 +16,10 @@ final class Variable_Length {
     public static function init(): void {
         add_action( 'woocommerce_product_options_general_product_data', [ self::class, 'product_fields' ] );
         add_action( 'woocommerce_admin_process_product_object', [ self::class, 'save_product_fields' ] );
+        add_action( 'woocommerce_variation_options_pricing', [ self::class, 'variation_fields' ], 10, 3 );
+        add_action( 'woocommerce_save_product_variation', [ self::class, 'save_variation_fields' ], 10, 2 );
+        add_filter( 'woocommerce_available_variation', [ self::class, 'available_variation' ], 10, 3 );
+        add_action( 'wp_enqueue_scripts', [ self::class, 'enqueue_scripts' ] );
         add_action( 'woocommerce_before_add_to_cart_button', [ self::class, 'render_input' ] );
         add_filter( 'woocommerce_add_to_cart_validation', [ self::class, 'validate' ], 10, 3 );
         add_filter( 'woocommerce_add_cart_item_data', [ self::class, 'cart_item_data' ], 10, 3 );
@@ -53,10 +57,54 @@ final class Variable_Length {
         return apply_filters( 'jps_cs_length_config', $config, $product );
     }
 
+    private static function variation_config( \WC_Product $parent_product, \WC_Product_Variation $variation ): array {
+        $config = self::config( $parent_product );
+        foreach ( [ 'min', 'max', 'step', 'default' ] as $key ) {
+            $override = get_post_meta( $variation->get_id(), self::META[ $key ], true );
+            if ( '' !== $override ) {
+                $config[ $key ] = 'default' === $key ? $override : (float) $override;
+            }
+        }
+        return $config;
+    }
+
+    public static function available_variation( array $data, \WC_Product $parent_product, \WC_Product_Variation $variation ): array {
+        $config = self::variation_config( $parent_product, $variation );
+        $data['jps_cs_length'] = [ 'enabled' => $config['enabled'], 'min' => $config['min'], 'max' => $config['max'], 'step' => $config['step'], 'default' => $config['default'] ];
+        return $data;
+    }
+
+    public static function enqueue_scripts(): void {
+        if ( ! is_product() ) {
+            return;
+        }
+        $product = wc_get_product( get_queried_object_id() );
+        if ( $product instanceof \WC_Product_Variable && self::config( $product )['enabled'] ) {
+            wp_enqueue_script( 'jps-cs-variable-length', plugins_url( '../assets/js/variable-length.js', __FILE__ ), [ 'jquery', 'wc-add-to-cart-variation' ], '0.1.0', true );
+        }
+    }
+
+    public static function variation_fields( int $loop, array $variation_data, \WP_Post $variation ): void {
+        foreach ( [ 'min' => __( 'Minimum length override', 'jp-catalog-suite' ), 'max' => __( 'Maximum length override', 'jp-catalog-suite' ), 'step' => __( 'Length step override', 'jp-catalog-suite' ), 'default' => __( 'Default length override', 'jp-catalog-suite' ) ] as $key => $label ) {
+            woocommerce_wp_text_input( [ 'id' => self::META[ $key ] . '[' . $loop . ']', 'name' => self::META[ $key ] . '[' . $loop . ']', 'value' => get_post_meta( $variation->ID, self::META[ $key ], true ), 'label' => $label, 'type' => 'number', 'wrapper_class' => 'form-row form-row-full', 'custom_attributes' => [ 'min' => 0, 'step' => 'any' ] ] );
+        }
+    }
+
+    public static function save_variation_fields( int $variation_id, int $loop ): void {
+        foreach ( [ 'min', 'max', 'step', 'default' ] as $key ) {
+            $meta = self::META[ $key ];
+            // WooCommerce verifies the variation editor nonce before this callback runs.
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing
+            $value = isset( $_POST[ $meta ][ $loop ] ) ? sanitize_text_field( wp_unslash( $_POST[ $meta ][ $loop ] ) ) : '';
+            update_post_meta( $variation_id, $meta, $value );
+        }
+    }
+
     public static function product_fields(): void {
         global $product_object;
-        if ( ! $product_object instanceof \WC_Product_Simple ) {
-            return; }
+        if ( ! $product_object instanceof \WC_Product_Simple && ! $product_object instanceof \WC_Product_Variable ) {
+            return;
+        }
         woocommerce_wp_checkbox( [ 'id' => self::META['enabled'], 'label' => __( 'Variable length', 'jp-catalog-suite' ) ] );
         woocommerce_wp_select( [ 'id' => self::META['unit'], 'label' => __( 'Length unit', 'jp-catalog-suite' ), 'options' => [ '' => __( 'Use store default', 'jp-catalog-suite' ), 'mm' => 'mm', 'cm' => 'cm', 'm' => 'm' ] ] );
         foreach ( [ 'min' => __( 'Minimum length', 'jp-catalog-suite' ), 'max' => __( 'Maximum length', 'jp-catalog-suite' ), 'step' => __( 'Length step', 'jp-catalog-suite' ), 'default' => __( 'Default length', 'jp-catalog-suite' ) ] as $key => $label ) {
@@ -65,8 +113,9 @@ final class Variable_Length {
     }
 
     public static function save_product_fields( \WC_Product $product ): void {
-        if ( ! $product instanceof \WC_Product_Simple ) {
-            return; }
+        if ( ! $product instanceof \WC_Product_Simple && ! $product instanceof \WC_Product_Variable ) {
+            return;
+        }
         foreach ( self::META as $key => $meta ) {
             // WooCommerce verifies the product editor nonce before this callback runs.
             // phpcs:ignore WordPress.Security.NonceVerification.Missing
@@ -77,11 +126,13 @@ final class Variable_Length {
 
     public static function render_input(): void {
         global $product;
-        if ( ! $product instanceof \WC_Product_Simple ) {
-            return; }
+        if ( ! $product instanceof \WC_Product_Simple && ! $product instanceof \WC_Product_Variable ) {
+            return;
+        }
         $config = self::config( $product );
         if ( ! $config['enabled'] ) {
-            return; }
+            return;
+        }
         // translators: %s is the product's length unit (mm, cm, or m).
         printf( '<p class="jps-cs-length"><label for="jps_cs_length">%1$s</label><input id="jps_cs_length" name="jps_cs_length" type="number" required min="%2$s" max="%3$s" step="%4$s" value="%5$s" /></p>', esc_html( sprintf( __( 'Length (%s)', 'jp-catalog-suite' ), $config['unit'] ) ), esc_attr( (string) $config['min'] ), esc_attr( (string) $config['max'] ), esc_attr( (string) $config['step'] ), esc_attr( (string) $config['default'] ) );
     }
@@ -89,12 +140,20 @@ final class Variable_Length {
     // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WooCommerce supplies quantity in its validation contract.
     public static function validate( bool $passed, int $product_id, int $quantity ): bool {
         $product = wc_get_product( $product_id );
-        if ( ! $passed || ! $product instanceof \WC_Product_Simple ) {
+        if ( ! $passed || ( ! $product instanceof \WC_Product_Simple && ! $product instanceof \WC_Product_Variable ) ) {
             return $passed;
         }
         $config = self::config( $product );
         if ( ! $config['enabled'] ) {
             return $passed;
+        }
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- WooCommerce validates the variation request.
+        $variation_id = isset( $_REQUEST['variation_id'] ) ? absint( $_REQUEST['variation_id'] ) : 0;
+        if ( $product instanceof \WC_Product_Variable && $variation_id ) {
+            $variation = wc_get_product( $variation_id );
+            if ( $variation instanceof \WC_Product_Variation && $variation->get_parent_id() === $product_id ) {
+                $config = self::variation_config( $product, $variation );
+            }
         }
         $value = self::request_length();
         $message = self::validation_message( $config, $value );
@@ -130,15 +189,20 @@ final class Variable_Length {
         return null;
     }
 
-    // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Variation support is explicitly out of scope.
     public static function cart_item_data( array $data, int $product_id, int $variation_id ): array {
         $product = wc_get_product( $product_id );
-        if ( ! $product instanceof \WC_Product_Simple ) {
+        if ( ! $product instanceof \WC_Product_Simple && ! $product instanceof \WC_Product_Variable ) {
             return $data;
         }
         $config = self::config( $product );
         if ( ! $config['enabled'] ) {
             return $data;
+        }
+        if ( $product instanceof \WC_Product_Variable && $variation_id ) {
+            $variation = wc_get_product( $variation_id );
+            if ( $variation instanceof \WC_Product_Variation && $variation->get_parent_id() === $product_id ) {
+                $config = self::variation_config( $product, $variation );
+            }
         }
         $value = self::request_length();
         $message = self::validation_message( $config, $value );
