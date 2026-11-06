@@ -111,6 +111,46 @@ final class Test_Product_Tabs extends WP_UnitTestCase {
         $this->assertNotFalse( $page );
         $this->assertNotEmpty( $page->get_settings_for_section( 'tabs' ) );
     }
+    public function test_core_tab_settings_are_saved_and_applied_without_replacing_core_tabs(): void {
+        $product_id = self::factory()->post->create( [ 'post_type' => 'product', 'post_status' => 'publish' ] );
+        $original = $this->tabs_for_product( $product_id, true );
+        $this->assertSame( 'Description', $original['description']['title'] );
+        $this->assertSame( 'Additional information', $original['additional_information']['title'] );
+        $this->assertStringStartsWith( 'Reviews', $original['reviews']['title'] );
+        $this->assertSame( 10, $original['description']['priority'] );
+        $this->assertSame( 20, $original['additional_information']['priority'] );
+        $this->assertSame( 30, $original['reviews']['priority'] );
+
+        wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
+        global $current_tab, $current_section;
+        $current_tab = 'jps_cs';
+        $current_section = 'tabs';
+        if ( ! class_exists( 'WC_Admin_Settings' ) ) {
+            require_once WC_ABSPATH . 'includes/admin/class-wc-admin-settings.php';
+        }
+        $_POST = [
+            'jps_cs_core_tab_description_title' => 'Overview',
+            'jps_cs_core_tab_description_priority' => '',
+            'jps_cs_core_tab_additional_information_title' => '',
+            'jps_cs_core_tab_additional_information_priority' => '',
+            'jps_cs_core_tab_additional_information_hidden' => '1',
+            'jps_cs_core_tab_reviews_title' => '',
+            'jps_cs_core_tab_reviews_priority' => '5',
+            '_wpnonce' => wp_create_nonce( 'woocommerce-settings' ),
+        ];
+        $_REQUEST = $_POST;
+        \WC_Admin_Settings::save();
+
+        $custom_tab_id = $this->create_tab( 'Core collision', 'Content', 'all', [], 1 );
+        $tabs = $this->tabs_for_product( $product_id, true );
+        $this->assertArrayNotHasKey( 'additional_information', $tabs );
+        $this->assertSame( 5, $tabs['reviews']['priority'] );
+        $ordered_tabs = $tabs;
+        uasort( $ordered_tabs, static fn ( array $left, array $right ): int => $left['priority'] <=> $right['priority'] );
+        $ordered_keys = array_keys( $ordered_tabs );
+        $this->assertLessThan( array_search( 'description', $ordered_keys, true ), array_search( 'reviews', $ordered_keys, true ) );
+        $this->assertArrayHasKey( 'jps_cs_tab_' . $custom_tab_id, $tabs );
+    }
 
     public function test_whitespace_only_tab_content_is_not_rendered(): void {
         $product_id = self::factory()->post->create( [ 'post_type' => 'product', 'post_status' => 'publish' ] );
@@ -126,11 +166,19 @@ final class Test_Product_Tabs extends WP_UnitTestCase {
         $this->assertTrue( $response->get_status() >= 400 || ! str_contains( $data['content']['rendered'] ?? '', 'Secret tab body.' ) );
     }
 
-    private function tabs_for_product( int $product_id ): array {
+    private function tabs_for_product( int $product_id, bool $include_core = false ): array {
         $GLOBALS['product'] = wc_get_product( $product_id );
         $GLOBALS['post'] = get_post( $product_id );
         setup_postdata( $GLOBALS['post'] );
-        $tabs = apply_filters( 'woocommerce_product_tabs', [], $GLOBALS['product'] );
+        $tabs = apply_filters(
+            'woocommerce_product_tabs',
+            $include_core ? [
+                'description' => [ 'title' => 'Description', 'priority' => 10 ],
+                'additional_information' => [ 'title' => 'Additional information', 'priority' => 20 ],
+                'reviews' => [ 'title' => 'Reviews', 'priority' => 30 ],
+            ] : [],
+            $GLOBALS['product']
+        );
         wp_reset_postdata();
         return $tabs;
     }

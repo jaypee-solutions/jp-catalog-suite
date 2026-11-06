@@ -124,6 +124,20 @@ msgstr "Bei diesem Produkt ausblenden"
 
 msgid "Add product-specific tab"
 msgstr "Produktspezifischen Tab hinzufügen"
+
+msgid "Title"
+msgstr "Titel"
+
+msgid "Hide"
+msgstr "Ausblenden"
+msgid "Description"
+msgstr "Beschreibung"
+
+msgid "Additional information"
+msgstr "Zusätzliche Informationen"
+
+msgid "Reviews"
+msgstr "Bewertungen"
 msgid "Inquiry basket"
 msgstr "Anfragekorb"
 
