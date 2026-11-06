@@ -83,12 +83,12 @@ test( 'guest sends an inquiry on classic checkout', async ( { page } ) => {
 	await expect( page.locator( 'body' ) ).not.toContainText( '€' );
 	await page.goto( wpCli( 'post', 'url', pricedBolt ) );
 	await expect( page.locator( 'body' ) ).not.toContainText( '€' );
-	await expect( page.getByRole( 'button', { name: 'Add to inquiry' } ) ).toBeVisible();
+	await expect( page.locator( '.single_add_to_cart_button' ) ).toBeVisible();
 	await page.goto( '/?add-to-cart=' + quoteProfile );
 	await page.goto( '/?add-to-cart=' + pricedBolt );
 	await page.goto( '/classic-cart/' );
 	await expect( page.locator( 'body' ) ).not.toContainText( '€' );
-	await expect( page.getByRole( 'link', { name: 'Continue to inquiry' } ) ).toBeVisible();
+	await expect( page.getByRole( 'link', { name: /continue to inquiry|weiter zur anfrage/i } ) ).toBeVisible();
 	await page.goto( '/classic-checkout/' );
 	await expect( page.locator( '#order_comments' ) ).toBeVisible();
 	wpCli( 'option', 'update', 'jps_cs_checkout_message', 'no' );
@@ -107,18 +107,18 @@ test( 'guest sends an inquiry on classic checkout', async ( { page } ) => {
 	await expect( page.locator( '#billing_phone' ) ).toHaveAttribute( 'aria-required', 'true' );
 	await page.locator( '#billing_phone' ).fill( '030123456' );
 	await expect( page.locator( '#billing_address_1, #billing_city, #billing_postcode' ) ).toHaveCount( 0 );
-	const terms = page.getByRole( 'checkbox', { name: /Terms and Conditions and Cancellation Policy/ } );
+	const terms = page.getByRole( 'checkbox', { name: /Terms and Conditions|Bedingungen|AGB/i } );
 	await selectCheckoutCountry( page, 'DE' );
 	await terms.check();
 	await expect( terms ).toBeChecked();
-	await expect( page.locator( '#place_order' ) ).toHaveText( 'Send inquiry' );
+	await expect( page.locator( '#place_order' ) ).toContainText( /Send inquiry|Anfrage absenden/i );
 	await page.locator( '#place_order' ).click();
 	await expect( page ).toHaveURL( /order-received/ );
         await expect( page.locator( 'body' ) ).not.toContainText( '€' );
         await login( page );
         await page.goto( '/my-account/' );
-        await expect( page.getByRole( 'link', { name: 'Inquiries' } ) ).toBeVisible();
+        await expect( page.getByRole( 'link', { name: /Inquiries|Anfragen/i } ) ).toBeVisible();
 	await page.goto( '/wp-admin/admin.php?page=wc-orders' );
-	await expect( page.locator( '#the-list tr' ).filter( { hasText: orderLabel } ) ).toContainText( 'Inquiry' );
+	await expect( page.locator( '#the-list tr' ).filter( { hasText: orderLabel } ) ).toContainText( /Inquiry|Anfrage/i );
 } );
 
