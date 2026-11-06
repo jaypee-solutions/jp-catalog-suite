@@ -59,6 +59,16 @@ final class Test_Product_Tabs extends WP_UnitTestCase {
         $this->assertSame( '10', get_post_meta( $tab_id, '_jps_cs_priority', true ) );
     }
 
+    public function test_tab_settings_meta_box_is_registered(): void {
+        wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
+        $tab = get_post( self::factory()->post->create( [ 'post_type' => 'jps_cs_tab', 'post_status' => 'draft' ] ) );
+        set_current_screen( 'post' );
+
+        do_action( 'add_meta_boxes_jps_cs_tab', $tab );
+
+        $this->assertArrayHasKey( 'jps_cs_tab_settings', $GLOBALS['wp_meta_boxes']['jps_cs_tab']['side']['default'] ?? [] );
+    }
+
     public function test_product_tabs_settings_section_is_reachable(): void {
         $pages = apply_filters( 'woocommerce_get_settings_pages', [] );
         $page = current( array_filter( $pages, static fn ( $candidate ): bool => 'jps_cs' === $candidate->get_id() ) );
