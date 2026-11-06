@@ -107,6 +107,27 @@ final class Test_Access_Block extends WP_UnitTestCase {
         }
     }
 
+    public function test_protected_notice_filter_receives_rendered_html(): void {
+        $product_id = $this->create_product();
+        $GLOBALS['post'] = get_post( $product_id );
+        setup_postdata( $GLOBALS['post'] );
+        $seen_html = '';
+        $filter = static function ( $html, $product ) use ( &$seen_html ): string {
+            $seen_html = $html;
+            return '<strong>Custom protected notice</strong>';
+        };
+        add_filter( 'jps_cs_protected_notice_html', $filter, 10, 2 );
+        try {
+            wp_set_current_user( 0 );
+            $block = '<!-- wp:jp-catalog-suite/access {"mode":"only-with-access"} --><p>Protected text</p><!-- /wp:jp-catalog-suite/access -->';
+            $html = do_blocks( $block );
+            $this->assertStringContainsString( '<a href=', $seen_html );
+            $this->assertStringContainsString( 'Custom protected notice', $html );
+        } finally {
+            remove_filter( 'jps_cs_protected_notice_html', $filter, 10 );
+            wp_reset_postdata();
+        }
+    }
 
     public function test_protected_notice_setting_is_saved_by_woocommerce(): void {
         $pages = apply_filters( 'woocommerce_get_settings_pages', [] );
@@ -136,6 +157,7 @@ final class Test_Access_Block extends WP_UnitTestCase {
         }
         wp_set_current_user( 0 );
     }
+
     private function create_product(): int {
         $product = new WC_Product_Simple();
         $product->set_name( 'Access product' );
