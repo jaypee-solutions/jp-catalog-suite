@@ -7,7 +7,9 @@
 
 defined( 'ABSPATH' ) || exit;
 
-do_action( 'woocommerce_email_header', $email->get_heading(), $email );
+echo "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n";
+echo esc_html( wp_strip_all_tags( $email->get_heading() ) ) . "\n";
+echo "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n";
 echo esc_html__( 'A customer has submitted an inquiry.', 'jp-catalog-suite' ) . "\n\n";
 wc_get_template( 'emails/inquiry-items.php', [ 'order' => $order, 'plain_text' => true ], '', $template_dir );
 if ( $order->get_customer_note() ) {
@@ -15,4 +17,4 @@ if ( $order->get_customer_note() ) {
 }
 wc_get_template( 'emails/inquiry-customer-details.php', [ 'order' => $order, 'plain_text' => true ], '', $template_dir );
 do_action( 'woocommerce_email_customer_details', $order, $sent_to_admin, $plain_text, $email );
-do_action( 'woocommerce_email_footer', $email );
+echo esc_html( wp_strip_all_tags( apply_filters( 'woocommerce_email_footer_text', get_option( 'woocommerce_email_footer_text' ) ) ) );

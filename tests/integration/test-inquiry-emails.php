@@ -53,6 +53,44 @@ final class Test_Inquiry_Emails extends WP_UnitTestCase {
         $this->assertStringContainsString( 'Reply-To: buyer@example.test', implode( "\n", $this->sent_mail[0]['headers'] ) );
     }
 
+
+    public function test_plain_email_variants_include_price_free_item_details(): void {
+        $this->capture_mail();
+        update_option( 'woocommerce_jps_cs_new_inquiry_settings', [ 'enabled' => 'yes', 'email_type' => 'plain' ] );
+        update_option( 'woocommerce_jps_cs_inquiry_confirmation_settings', [ 'enabled' => 'yes', 'email_type' => 'plain' ] );
+        $mailer = WC()->mailer();
+        $mailer->emails = [];
+        $mailer->init();
+
+        $product = new WC_Product_Simple();
+        $product->set_name( 'Plain email product' );
+        $product->set_sku( 'MAIL-PLAIN' );
+        $product->set_regular_price( '12.34' );
+        $product->save();
+        $order = wc_create_order();
+        $order->add_product( $product );
+        $order->set_billing_email( 'plain@example.test' );
+        $order->set_billing_first_name( 'Plain Buyer' );
+        $order->set_customer_note( 'Plain message.' );
+        $order->update_meta_data( '_jps_cs_inquiry', 'yes' );
+        $order->set_status( 'pending' );
+        $order->save();
+        $item = current( $order->get_items() );
+        $item->add_meta_data( 'Length', '120 cm' );
+        $item->save();
+        $order->payment_complete();
+
+        $this->assertCount( 2, $this->sent_mail );
+        foreach ( $this->sent_mail as $mail ) {
+            $this->assertStringNotContainsString( '12.34', $mail['message'] );
+            $this->assertStringNotContainsString( '12,34', $mail['message'] );
+            $this->assertStringContainsString( 'MAIL-PLAIN', $mail['message'] );
+            $this->assertStringNotContainsString( '<html', $mail['message'] );
+            $this->assertStringContainsString( 'Length: 120 cm', $mail['message'] );
+            $this->assertStringContainsString( 'Plain Buyer', $mail['message'] );
+            $this->assertStringContainsString( 'Plain message.', $mail['message'] );
+        }
+    }
     public function test_email_settings_expose_both_emails_and_disabling_stops_delivery(): void {
         $this->capture_mail();
         $emails = WC()->mailer()->get_emails();
