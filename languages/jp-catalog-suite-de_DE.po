@@ -54,6 +54,7 @@ msgstr "Längenschritt"
 
 msgid "Default length"
 msgstr "Standardlänge"
+
 msgid "Length (%s)"
 msgstr "Länge (%s)"
 
@@ -68,6 +69,7 @@ msgstr "Länge"
 
 msgid "Choose length"
 msgstr "Länge auswählen"
+
 msgctxt "Order status"
 msgid "Inquiry"
 msgstr "Anfrage"
@@ -77,9 +79,9 @@ msgid_plural "Inquiries <span class=\"count\">(%s)</span>"
 msgstr[0] "Anfrage <span class=\"count\">(%s)</span>"
 msgstr[1] "Anfragen <span class=\"count\">(%s)</span>"
 
-
 msgid "Inquiry received."
 msgstr "Ihre Anfrage ist eingegangen."
+
 msgid "Product tab"
 msgstr "Produkttab"
 
@@ -118,6 +120,7 @@ msgstr "Abweichender Längenschritt"
 
 msgid "Default length override"
 msgstr "Abweichende Standardlänge"
+
 msgid "Products"
 msgstr "Produkte"
 
@@ -141,6 +144,7 @@ msgstr "Titel"
 
 msgid "Hide"
 msgstr "Ausblenden"
+
 msgid "Description"
 msgstr "Beschreibung"
 
@@ -149,6 +153,7 @@ msgstr "Zusätzliche Informationen"
 
 msgid "Reviews"
 msgstr "Bewertungen"
+
 msgid "Inquiry basket"
 msgstr "Anfragekorb"
 
@@ -175,6 +180,7 @@ msgstr "Bezeichnung für Anfrage absenden"
 
 msgid "Thank you. Your inquiry has been received."
 msgstr "Vielen Dank. Ihre Anfrage ist eingegangen."
+
 msgid "New inquiry"
 msgstr "Neue Anfrage"
 
@@ -244,23 +250,9 @@ msgstr "Kundendetails"
 msgid "Inquiries"
 msgstr "Anfragen"
 
-msgid "Add to inquiry"
-msgstr "Zur Anfrage hinzufügen"
-
-msgid "Send inquiry"
-msgstr "Anfrage absenden"
-
-msgid "Thank you. Your inquiry has been received."
-msgstr "Vielen Dank. Ihre Anfrage ist eingegangen."
-
-msgid "Inquiry basket"
-msgstr "Anfragekorb"
-
-msgid "Continue to inquiry"
-msgstr "Weiter zur Anfrage"
-
 msgid "Germanized legal notices and checkout checkboxes are adjusted in Quote mode. The privacy checkbox is kept when enabled in Germanized."
 msgstr "Die rechtlichen Hinweise und Kontrollkästchen von Germanized werden im Angebotsmodus angepasst. Das Kontrollkästchen zur Datenschutzerklärung bleibt erhalten, wenn es in Germanized aktiviert ist."
+
 msgid "You do not have permission to view this content."
 msgstr "Sie haben keine Berechtigung, diesen Inhalt anzuzeigen."
 
@@ -307,6 +299,7 @@ msgstr "Anmeldehinweis anzeigen, wenn der Inhalt ausgeblendet ist"
 msgctxt "block description"
 msgid "Show content according to visitor access."
 msgstr "Inhalt entsprechend dem Zugriff der Besuchenden anzeigen."
+
 msgid "Price per length unit"
 msgstr "Preis pro Längeneinheit"
 
@@ -354,6 +347,7 @@ msgstr "Download-Protokoll der Catalog Suite"
 
 msgid "When enabled, the Download log records the user, protected file, optional product and download time. Records are retained for the configured number of days; zero keeps them until erased or deleted with the user account."
 msgstr "Wenn das Download-Protokoll aktiviert ist, erfasst es den Benutzer, die geschützte Datei, das optionale Produkt und den Downloadzeitpunkt. Die Einträge werden für die konfigurierte Anzahl von Tagen aufbewahrt; bei null bleiben sie erhalten, bis sie gelöscht oder mit dem Benutzerkonto entfernt werden."
+
 msgid "login required"
 msgstr "Anmeldung erforderlich"
 
