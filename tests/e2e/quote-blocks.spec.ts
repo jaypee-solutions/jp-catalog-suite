@@ -29,6 +29,7 @@ async function login( page: Page ): Promise<void> {
 test( 'guest sends a Blocks inquiry which stays listed when Quote mode is off', async ( { page } ) => {
 	const oldQuote = wpCli( 'option', 'get', 'jps_cs_module_quote' );
 	const oldComingSoon = wpCli( 'option', 'get', 'woocommerce_coming_soon' );
+	const oldPhone = wpCli( 'eval', "echo get_option( 'jps_cs_checkout_phone', 'optional' );" );
 	const orderLabel = `Blocks-${ Date.now() }`;
 	try {
 		wpCli( 'option', 'update', 'woocommerce_coming_soon', 'no' );
@@ -41,13 +42,16 @@ test( 'guest sends a Blocks inquiry which stays listed when Quote mode is off', 
 		await page.goto( '/?add-to-cart=' + pricedBolt );
 		await page.goto( '/cart/' );
 		await expect( page.getByRole( 'link', { name: 'Continue to inquiry' } ) ).toBeVisible();
+		wpCli( 'option', 'update', 'jps_cs_checkout_phone', 'required' );
 		await page.goto( '/checkout/' );
 		await expect( page.getByLabel( 'Country/Region' ) ).toBeVisible();
 		await expect( page.getByRole( 'textbox', { name: 'Address', exact: true } ) ).toHaveCount( 0 );
 		await expect( page.locator( '.wc-block-checkout__payment-method' ) ).toHaveCount( 0 );
 		await expect( page.locator( 'body' ) ).not.toContainText( /zahlungspflichtig/i );
 		await expect( page.getByLabel( /company/i ) ).toBeVisible();
+		await expect( page.getByLabel( /phone/i ) ).toHaveAttribute( 'required', '' );
 		await expect( page.getByLabel( /phone/i ) ).toBeVisible();
+		await page.getByLabel( /phone/i ).fill( '030123456' );
 		await page.getByLabel( 'Email address' ).fill( `blocks-${ Date.now() }@example.com` );
 		await page.getByLabel( 'First name' ).fill( 'Guest' );
 		await expect( page.getByLabel( /first name/i ) ).toHaveAttribute( 'required', '' );
@@ -68,7 +72,7 @@ test( 'guest sends a Blocks inquiry which stays listed when Quote mode is off', 
 		order = page.locator( '#the-list tr' ).filter( { hasText: orderLabel } );
 		await expect( order ).toContainText( 'Inquiry' );
 	} finally {
-		wpCli( 'option', 'update', 'jps_cs_module_quote', oldQuote );
+		wpCli( 'option', 'update', 'jps_cs_checkout_phone', oldPhone );
 		wpCli( 'option', 'update', 'woocommerce_coming_soon', oldComingSoon );
 	}
 } );

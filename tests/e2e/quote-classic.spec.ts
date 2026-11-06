@@ -12,7 +12,7 @@ const ADMIN_PASS = process.env.WP_ADMIN_PASS ?? 'password';
 let oldCart = '';
 let oldCheckout = '';
 let oldQuote = '';
-let oldComingSoon = '';
+let oldPhone = '';
 
 async function login( page: Page ): Promise<void> {
 	await page.context().clearCookies();
@@ -52,8 +52,10 @@ test.beforeAll( () => {
 	oldCart = wpCli( 'option', 'get', 'woocommerce_cart_page_id' );
 	oldCheckout = wpCli( 'option', 'get', 'woocommerce_checkout_page_id' );
 	oldQuote = wpCli( 'option', 'get', 'jps_cs_module_quote' );
+	oldPhone = wpCli( 'eval', "echo get_option( 'jps_cs_checkout_phone', 'optional' );" );
 	oldComingSoon = wpCli( 'option', 'get', 'woocommerce_coming_soon' );
 	wpCli( 'option', 'update', 'woocommerce_coming_soon', 'no' );
+	wpCli( 'option', 'update', 'jps_cs_checkout_phone', 'required' );
 	wpCli( 'option', 'update', 'jps_cs_module_quote', 'yes' );
 	const cart = wpCli( 'post', 'list', '--post_type=page', '--name=classic-cart', '--field=ID' );
 	const checkout = wpCli( 'post', 'list', '--post_type=page', '--name=classic-checkout', '--field=ID' );
@@ -65,6 +67,7 @@ test.afterAll( () => {
 	if ( oldCart ) wpCli( 'option', 'update', 'woocommerce_cart_page_id', oldCart );
 	if ( oldCheckout ) wpCli( 'option', 'update', 'woocommerce_checkout_page_id', oldCheckout );
 	wpCli( 'option', 'update', 'jps_cs_module_quote', oldQuote );
+	wpCli( 'option', 'update', 'jps_cs_checkout_phone', oldPhone );
 	wpCli( 'option', 'update', 'woocommerce_coming_soon', oldComingSoon );
 } );
 
@@ -85,6 +88,8 @@ test( 'guest sends an inquiry on classic checkout', async ( { page } ) => {
 	await page.locator( '#billing_last_name' ).fill( orderLabel );
 	await expect( page.locator( '#billing_company' ) ).toBeVisible();
 	await expect( page.locator( '#billing_phone' ) ).toBeVisible();
+	await expect( page.locator( '#billing_phone' ) ).toHaveAttribute( 'required' );
+	await page.locator( '#billing_phone' ).fill( '030123456' );
 	await expect( page.locator( '#billing_address_1, #billing_city, #billing_postcode' ) ).toHaveCount( 0 );
 	const terms = page.getByRole( 'checkbox', { name: /Terms and Conditions and Cancellation Policy/ } );
 	await terms.check();
