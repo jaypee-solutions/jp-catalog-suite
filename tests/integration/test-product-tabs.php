@@ -27,6 +27,46 @@ final class Test_Product_Tabs extends WP_UnitTestCase {
         $this->assertSame( [ 'jps_cs_tab_' . $category_id, 'jps_cs_tab_' . $global_id ], $tab_keys );
     }
 
+    public function test_tab_settings_saved_by_core_control_category_scope_and_priority(): void {
+        $administrator_id = self::factory()->user->create( [ 'role' => 'administrator' ] );
+        wp_set_current_user( $administrator_id );
+        $parent_id = self::factory()->term->create( [ 'taxonomy' => 'product_cat', 'name' => 'Saved scope parent' ] );
+        $child_id = self::factory()->term->create( [ 'taxonomy' => 'product_cat', 'name' => 'Saved scope child', 'parent' => $parent_id ] );
+        $product_id = self::factory()->post->create( [ 'post_type' => 'product', 'post_status' => 'publish' ] );
+        wp_set_object_terms( $product_id, [ $child_id ], 'product_cat' );
+        $global_id = $this->create_tab( 'Global saved test', 'Global public content.', 'all', [], 20 );
+        $tab_id = self::factory()->post->create( [ 'post_type' => 'jps_cs_tab', 'post_status' => 'draft', 'post_title' => 'Saved category tab', 'post_content' => 'Category public content.' ] );
+        $_POST = [
+            'jps_cs_tab_nonce' => wp_create_nonce( 'jps_cs_tab_meta' ),
+            'jps_cs_scope' => 'categories',
+            'jps_cs_categories' => [ (string) $parent_id ],
+            'jps_cs_priority' => '10',
+        ];
+        wp_update_post( [ 'ID' => $tab_id, 'post_status' => 'publish' ] );
+        $_POST = [];
+
+        $product_post = get_post( $product_id );
+        $GLOBALS['product'] = wc_get_product( $product_id );
+        $GLOBALS['post'] = $product_post;
+        setup_postdata( $product_post );
+        $tabs = apply_filters( 'woocommerce_product_tabs', [], $GLOBALS['product'] );
+        wp_reset_postdata();
+        $tab_keys = array_values( array_filter( array_keys( $tabs ), static fn ( string $key ): bool => str_starts_with( $key, 'jps_cs_tab_' ) ) );
+
+        $this->assertSame( [ 'jps_cs_tab_' . $tab_id, 'jps_cs_tab_' . $global_id ], $tab_keys );
+        $this->assertSame( 'categories', get_post_meta( $tab_id, '_jps_cs_scope', true ) );
+        $this->assertSame( [ $parent_id ], get_post_meta( $tab_id, '_jps_cs_categories', true ) );
+        $this->assertSame( '10', get_post_meta( $tab_id, '_jps_cs_priority', true ) );
+    }
+
+    public function test_product_tabs_settings_section_is_reachable(): void {
+        $pages = apply_filters( 'woocommerce_get_settings_pages', [] );
+        $page = current( array_filter( $pages, static fn ( $candidate ): bool => 'jps_cs' === $candidate->get_id() ) );
+
+        $this->assertNotFalse( $page );
+        $this->assertNotEmpty( $page->get_settings_for_section( 'tabs' ) );
+    }
+
     public function test_whitespace_only_tab_content_is_not_rendered(): void {
         $product_id = self::factory()->post->create( [ 'post_type' => 'product', 'post_status' => 'publish' ] );
         $tab_id = $this->create_tab( 'Blank information', '<p>   </p>', 'all', [], 50 );

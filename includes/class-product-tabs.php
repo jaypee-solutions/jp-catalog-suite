@@ -14,7 +14,7 @@ final class Product_Tabs {
     public static function init(): void {
         add_action( 'init', [ self::class, 'register_post_type' ] );
         add_action( 'init', [ self::class, 'register_meta' ] );
-        add_action( 'add_meta_boxes_jps_cs_tab', [ self::class, 'add_meta_box' ] );
+        add_action( 'save_post_jps_cs_tab', [ self::class, 'save_meta' ] );
         add_action( 'admin_enqueue_scripts', [ self::class, 'enqueue_admin_assets' ] );
         add_action( 'rest_api_init', [ self::class, 'restrict_guest_rest_access' ] );
         add_filter( 'woocommerce_product_tabs', [ self::class, 'add_product_tabs' ], 98, 2 );
