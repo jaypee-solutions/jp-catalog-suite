@@ -10,7 +10,7 @@ Variable-length products store the customer's length on each cart item. Shops th
 
 ## Decision
 
-Add `jps_cs_length_pricing_enabled` to the existing Variable length settings section and `_jps_cs_length_price_per_unit` to eligible product metadata. At cart totals priority 20, calculate a fresh unit price times the cart item's length and pass it through `jps_cs_length_item_price`; WooCommerce then multiplies by quantity. Append the product's resolved length unit to normal price HTML at priority 20. Quote mode's later price-hiding filter remains authoritative.
+Add `jps_cs_length_pricing_enabled` to the existing Variable length settings section and `_jps_cs_length_price_per_unit` to eligible product metadata. When both toggles are active, capture the product's current edit-context price as `jps_cs_unit_price` in cart item data. At cart totals priority 20, multiply that captured unit price by the cart item's length and pass it through `jps_cs_length_item_price`; WooCommerce then multiplies by quantity. Append the product's resolved length unit to normal price HTML at priority 20. Quote mode's later price-hiding filter remains authoritative.
 
 ## Consequences
 

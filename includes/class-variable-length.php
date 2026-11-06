@@ -254,10 +254,21 @@ final class Variable_Length {
         }
         $data['jps_cs_length'] = (float) $value;
         $data['jps_cs_length_unit'] = $config['unit'];
+        $pricing_product = self::pricing_product( $product );
+        if ( 'yes' === get_option( 'jps_cs_length_pricing_enabled', 'no' ) && 'yes' === $pricing_product->get_meta( self::META['price_per_unit'], true ) ) {
+            $unit_product = $product;
+            if ( $variation_id ) {
+                $variation_product = wc_get_product( $variation_id );
+                if ( $variation_product instanceof \WC_Product_Variation && $variation_product->get_parent_id() === $product_id ) {
+                    $unit_product = $variation_product;
+                }
+            }
+            $data['jps_cs_unit_price'] = (float) $unit_product->get_price( 'edit' );
+        }
         return $data;
     }
     public static function set_length_prices( \WC_Cart $cart ): void {
-        foreach ( $cart->get_cart() as $cart_item ) {
+        foreach ( $cart->get_cart() as $cart_item_key => $cart_item ) {
             if ( ! isset( $cart_item['jps_cs_length'], $cart_item['data'] ) || ! $cart_item['data'] instanceof \WC_Product ) {
                 continue;
             }
@@ -266,9 +277,11 @@ final class Variable_Length {
             if ( 'yes' !== get_option( 'jps_cs_length_pricing_enabled', 'no' ) || 'yes' !== $pricing_product->get_meta( self::META['price_per_unit'], true ) ) {
                 continue;
             }
-            $price = (float) $product->get_price( 'edit' ) * (float) $cart_item['jps_cs_length'];
+            $unit_price = isset( $cart_item['jps_cs_unit_price'] ) ? (float) $cart_item['jps_cs_unit_price'] : (float) $product->get_price( 'edit' );
+            $cart->cart_contents[ $cart_item_key ]['jps_cs_unit_price'] = $unit_price;
+            $price = $unit_price * (float) $cart_item['jps_cs_length'];
             $price = apply_filters( 'jps_cs_length_item_price', $price, $product, $cart_item );
-            $cart_item['data']->set_price( $price );
+            $product->set_price( $price );
         }
     }
 

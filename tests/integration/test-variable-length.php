@@ -170,13 +170,13 @@ final class Test_Variable_Length extends WP_UnitTestCase {
         update_option( 'jps_cs_length_pricing_enabled', 'yes' );
         $product = $this->product( [ 'max' => 300, 'price_per_unit' => 'yes' ] );
         $product->set_regular_price( '5' );
+        $product->set_sale_price( '3' );
         $product->save();
+        $this->assertSame( 3.0, (float) wc_get_product( $product->get_id() )->get_price( 'edit' ) );
         WC()->cart->empty_cart();
         $_REQUEST['jps_cs_length'] = '120';
         $_POST['jps_cs_length'] = '120';
         $this->assertNotFalse( WC()->cart->add_to_cart( $product->get_id(), 1 ) );
-        $line = reset( WC()->cart->get_cart() );
-        $line['data']->set_price( '3' );
         WC()->cart->calculate_totals();
         $this->assertSame( 360.0, (float) reset( WC()->cart->get_cart() )['data']->get_price() );
         WC()->cart->empty_cart();
@@ -207,7 +207,7 @@ final class Test_Variable_Length extends WP_UnitTestCase {
         remove_filter( 'jps_cs_quote_mode_active', '__return_true' );
         update_option( 'jps_cs_length_pricing_enabled', 'no' );
         WC()->cart->calculate_totals();
-        $this->assertSame( 2.0, (float) reset( WC()->cart->get_cart() )['data']->get_price() );
+        $this->assertSame( 240.0, (float) reset( WC()->cart->get_cart() )['data']->get_price() );
         WC()->cart->empty_cart();
         update_option( 'jps_cs_length_pricing_enabled', 'yes' );
         update_post_meta( $product->get_id(), '_jps_cs_length_price_per_unit', 'no' );
