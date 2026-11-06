@@ -1,0 +1,21 @@
+body.jps-cs-quote-mode .wc-block-components-product-price,
+body.jps-cs-quote-mode .wc-block-cart-item__prices,
+body.jps-cs-quote-mode .wc-block-cart-item__total,
+body.jps-cs-quote-mode .wc-block-components-totals-wrapper,
+body.jps-cs-quote-mode .wc-block-cart__totals-title,
+body.jps-cs-quote-mode .wc-block-components-order-summary-item__individual-prices,
+body.jps-cs-quote-mode .wc-block-components-order-summary-item__total-price,
+body.jps-cs-quote-mode .wc-block-mini-cart__amount,
+body.jps-cs-quote-mode .wc-block-mini-cart__footer-subtotal,
+body.jps-cs-quote-mode .wc-block-components-product-sale-badge,
+body.jps-cs-quote-mode .wc-block-components-sale-badge,
+body.jps-cs-quote-mode .wc-block-order-confirmation-totals-wrapper,
+body.jps-cs-quote-mode .woocommerce-cart-form .product-price,
+body.jps-cs-quote-mode .woocommerce-cart-form .product-subtotal,
+body.jps-cs-quote-mode .cart_totals .shop_table,
+body.jps-cs-quote-mode .woocommerce-checkout-review-order-table .product-total,
+body.jps-cs-quote-mode .woocommerce-checkout-review-order-table tfoot,
+body.jps-cs-quote-mode .woocommerce-mini-cart__total,
+body.jps-cs-quote-mode .woocommerce-table--order-details tfoot {
+    display: none !important;
+}
