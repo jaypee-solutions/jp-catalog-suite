@@ -59,3 +59,5 @@ if ( ! $length_product ) {
 foreach ( [ 'enabled' => 'yes', 'unit' => 'cm', 'min' => '10', 'max' => '300', 'step' => '1' ] as $key => $value ) {
     update_post_meta( $length_product, '_jps_cs_length_' . $key, $value );
 }
+update_option( 'jps_cs_module_length', 'yes' );
+update_option( 'jps_cs_module_quote', 'yes' );

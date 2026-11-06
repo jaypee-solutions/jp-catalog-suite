@@ -89,38 +89,63 @@ final class Variable_Length {
     public static function validate( bool $passed, int $product_id, int $quantity ): bool {
         $product = wc_get_product( $product_id );
         if ( ! $passed || ! $product instanceof \WC_Product_Simple ) {
-            return $passed; }
+            return $passed;
+        }
         $config = self::config( $product );
         if ( ! $config['enabled'] ) {
-            return $passed; }
-        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-        $raw_value = isset( $_REQUEST['jps_cs_length'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['jps_cs_length'] ) ) : '';
-        $value = is_scalar( $raw_value ) ? (string) $raw_value : '';
-        $length = is_numeric( $value ) ? (float) $value : NAN;
-        if ( ! is_finite( $length ) || $length < $config['min'] || $length > $config['max'] ) {
-            // translators: %1$s and %2$s are the inclusive length bounds; %3$s is the unit.
-            wc_add_notice( sprintf( __( 'Please enter a length between %1$s and %2$s %3$s.', 'jp-catalog-suite' ), $config['min'], $config['max'], $config['unit'] ), 'error' );
-            return false;
+            return $passed;
         }
-        $step = max( 0.0000001, $config['step'] );
-        if ( abs( ( ( $length - $config['min'] ) / $step ) - round( ( $length - $config['min'] ) / $step ) ) > 0.00001 ) {
-            // translators: %1$s is the required step size; %2$s is the unit.
-            wc_add_notice( sprintf( __( 'The length must be a multiple of %1$s %2$s.', 'jp-catalog-suite' ), $config['step'], $config['unit'] ), 'error' );
+        $value = self::request_length();
+        $message = self::validation_message( $config, $value );
+        if ( null !== $message ) {
+            wc_add_notice( $message, 'error' );
             return false;
         }
         return true;
     }
 
+    private static function request_length(): string {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce validates product add-to-cart requests.
+        $value = isset( $_POST['jps_cs_length'] ) ? sanitize_text_field( wp_unslash( $_POST['jps_cs_length'] ) ) : '';
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Product add-to-cart data is validated below.
+        if ( '' === $value && isset( $_REQUEST['jps_cs_length'] ) ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Product add-to-cart data is validated below.
+            $value = sanitize_text_field( wp_unslash( $_REQUEST['jps_cs_length'] ) );
+        }
+        return is_scalar( $value ) ? (string) $value : '';
+    }
+
+    private static function validation_message( array $config, string $value ): ?string {
+        $length = is_numeric( $value ) ? (float) $value : NAN;
+        if ( ! is_finite( $length ) || $length < $config['min'] || $length > $config['max'] ) {
+            // translators: %1$s and %2$s are the inclusive length bounds; %3$s is the unit.
+            return sprintf( __( 'Please enter a length between %1$s and %2$s %3$s.', 'jp-catalog-suite' ), $config['min'], $config['max'], $config['unit'] );
+        }
+        $step = max( 0.0000001, $config['step'] );
+        if ( abs( ( ( $length - $config['min'] ) / $step ) - round( ( $length - $config['min'] ) / $step ) ) > 0.00001 ) {
+            // translators: %1$s is the required step size; %2$s is the unit.
+            return sprintf( __( 'The length must be a multiple of %1$s %2$s.', 'jp-catalog-suite' ), $config['step'], $config['unit'] );
+        }
+        return null;
+    }
+
     // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Variation support is explicitly out of scope.
     public static function cart_item_data( array $data, int $product_id, int $variation_id ): array {
         $product = wc_get_product( $product_id );
-        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-        if ( $product instanceof \WC_Product_Simple && self::config( $product )['enabled'] && isset( $_REQUEST['jps_cs_length'] ) ) {
-            // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-            $raw_value = sanitize_text_field( wp_unslash( $_REQUEST['jps_cs_length'] ) );
-            $data['jps_cs_length'] = is_numeric( $raw_value ) ? (float) $raw_value : 0;
-            $data['jps_cs_length_unit'] = self::config( $product )['unit'];
+        if ( ! $product instanceof \WC_Product_Simple ) {
+            return $data;
         }
+        $config = self::config( $product );
+        if ( ! $config['enabled'] ) {
+            return $data;
+        }
+        $value = self::request_length();
+        $message = self::validation_message( $config, $value );
+        if ( null !== $message ) {
+            throw new \Exception( esc_html( $message ) );
+        }
+        $data['jps_cs_length'] = (float) $value;
+        $data['jps_cs_length_unit'] = $config['unit'];
         return $data;
     }
 

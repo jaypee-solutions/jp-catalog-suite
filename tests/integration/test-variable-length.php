@@ -23,13 +23,16 @@ final class Test_Variable_Length extends WP_UnitTestCase {
         $product = $this->product( [ 'max' => 300, 'step' => 1 ] );
         WC()->cart->empty_cart();
         $_REQUEST['jps_cs_length'] = '120';
+        $_POST['jps_cs_length'] = '120';
         $this->assertNotFalse( WC()->cart->add_to_cart( $product->get_id() ) );
         $_REQUEST['jps_cs_length'] = '150';
+        $_POST['jps_cs_length'] = '150';
         $this->assertNotFalse( WC()->cart->add_to_cart( $product->get_id() ) );
         $this->assertCount( 2, WC()->cart->get_cart() );
         $item_data = apply_filters( 'woocommerce_get_item_data', [], reset( WC()->cart->get_cart() ) );
         $this->assertSame( '120 cm', $item_data[0]['display'] );
         $_REQUEST['jps_cs_length'] = '5';
+        $_POST['jps_cs_length'] = '5';
         $this->assertFalse( WC()->cart->add_to_cart( $product->get_id() ) );
         $this->assertNotEmpty( wc_get_notices( 'error' ) );
     }
@@ -39,16 +42,19 @@ final class Test_Variable_Length extends WP_UnitTestCase {
         WC()->cart->empty_cart();
         foreach ( [ '10', '100', '10.5' ] as $valid ) {
             $_REQUEST['jps_cs_length'] = $valid;
+            $_POST['jps_cs_length'] = $valid;
             $this->assertNotFalse( WC()->cart->add_to_cart( $product->get_id() ) );
             WC()->cart->empty_cart();
         }
         foreach ( [ '9.99', '100.01', '10.3' ] as $invalid ) {
             $_REQUEST['jps_cs_length'] = $invalid;
+            $_POST['jps_cs_length'] = $invalid;
             $this->assertFalse( WC()->cart->add_to_cart( $product->get_id() ) );
             wc_clear_notices();
         }
         update_post_meta( $product->get_id(), '_jps_cs_length_step', '0.2' );
         $_REQUEST['jps_cs_length'] = '10.6';
+        $_POST['jps_cs_length'] = '10.6';
         $this->assertNotFalse( WC()->cart->add_to_cart( $product->get_id() ) );
     }
 }
