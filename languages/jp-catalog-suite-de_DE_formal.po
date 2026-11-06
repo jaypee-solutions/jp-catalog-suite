@@ -247,3 +247,50 @@ msgstr "Anfragekorb"
 
 msgid "Continue to inquiry"
 msgstr "Weiter zur Anfrage"
+
+msgid "You do not have permission to view this content."
+msgstr "Sie haben keine Berechtigung, diesen Inhalt anzuzeigen."
+
+msgid "Please {login} or {register} to view this content."
+msgstr "Bitte {login} oder {register}, um diesen Inhalt anzuzeigen."
+
+msgid "log in"
+msgstr "anmelden"
+
+msgid "register"
+msgstr "registrieren"
+
+msgid "Protected notice"
+msgstr "Hinweis für geschützte Inhalte"
+
+msgid "Use {login} and {register} for links."
+msgstr "Verwenden Sie {login} und {register} für Links."
+
+#: blocks/access/edit.js:6 blocks/access/edit.js:34
+msgid "Access"
+msgstr "Zugriff"
+
+#: blocks/access/edit.js:16
+msgid "Access settings"
+msgstr "Zugriffseinstellungen"
+
+#: blocks/access/edit.js:18
+msgid "Show content"
+msgstr "Inhalt anzeigen"
+
+#: blocks/access/edit.js:21
+msgid "Only with access"
+msgstr "Nur mit Zugriff"
+
+#: blocks/access/edit.js:22
+msgid "Only without access"
+msgstr "Nur ohne Zugriff"
+
+#: blocks/access/edit.js:27
+msgid "Show login notice when hidden"
+msgstr "Anmeldehinweis anzeigen, wenn der Inhalt ausgeblendet ist"
+
+#: blocks/access/block.json
+msgctxt "block description"
+msgid "Show content according to visitor access."
+msgstr "Inhalt entsprechend dem Zugriff der Besuchenden anzeigen."
