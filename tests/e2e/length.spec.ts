@@ -34,7 +34,7 @@ test( 'simple variable length product keeps lengths as distinct inquiry lines', 
 	if ( await termsCheckbox.count() ) {
 		await termsCheckbox.check();
 	}
-	await page.locator( '.wc-block-components-checkout-place-order-button' ).first().click();
+	await page.locator( '.wc-block-components-checkout-place-order-button:visible' ).first().click();
 	await expect( page ).toHaveURL( /order-received/ );
 	const orderId = page.url().match( /order-received\/(\d+)/ )?.[ 1 ];
 	expect( orderId ).toBeDefined();

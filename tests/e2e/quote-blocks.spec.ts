@@ -68,8 +68,8 @@ test( 'guest sends a Blocks inquiry which stays listed when Quote mode is off', 
 		if ( await termsCheckbox.count() ) {
 			await termsCheckbox.check();
 		}
-		await expect( page.locator( '.wc-block-components-checkout-place-order-button' ).first() ).toBeVisible();
-		await page.locator( '.wc-block-components-checkout-place-order-button' ).first().click();
+		await expect( page.locator( '.wc-block-components-checkout-place-order-button:visible' ).first() ).toBeVisible();
+		await page.locator( '.wc-block-components-checkout-place-order-button:visible' ).first().click();
 		await expect( page ).toHaveURL( /order-received/ );
 
         await expect( page.locator( 'body' ) ).not.toContainText( '€' );
