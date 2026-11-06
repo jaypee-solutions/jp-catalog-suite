@@ -26,6 +26,7 @@ final class Protected_Files {
             $vars[] = 'jps_cs_file';
             return $vars;
         } );
+        add_filter( 'pre_handle_404', [ self::class, 'handle_file_request' ], 10, 2 );
         add_action( 'template_redirect', [ self::class, 'deliver' ], 1 );
     }
 
@@ -172,6 +173,10 @@ final class Protected_Files {
     }
     public static function attachment_url( string $url, int $id ): string {
         return '1' === get_post_meta( $id, '_jps_cs_protected', true ) ? add_query_arg( 'jps_cs_file', $id, home_url( '/' ) ) : $url; }
+
+    public static function handle_file_request( bool $preempt, \WP_Query $query ): bool {
+        return $preempt || (bool) $query->get( 'jps_cs_file' );
+    }
     public static function deliver(): void {
         $id = absint( get_query_var( 'jps_cs_file' ) );
         if ( ! $id ) {

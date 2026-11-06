@@ -23,6 +23,7 @@ test('product page displays public and protected product tab content by access',
   await expect( fileEntry ).toContainText( 'STP' );
   await expect( fileEntry ).toContainText( '36 B' );
   await expect( fileEntry ).toHaveAttribute( 'href', /jps_cs_file=/ );
+  await expect( fileEntry ).toHaveAttribute( 'href', /product=/ );
   const fileResponse = await page.request.get( await fileEntry.getAttribute( 'href' ) || '' );
   expect( fileResponse.status() ).toBe( 200 );
 });
