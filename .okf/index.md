@@ -18,4 +18,5 @@ okf_version: "0.1"
 * [Price-free Inquiry emails](decisions/0010-price-free-inquiry-emails.md) - Configurable price-free administrator and customer notifications for new Inquiries.
 * [Inquiry checkout fields](decisions/0014-inquiry-checkout-fields.md) - Configurable inquiry checkout details in classic and Blocks checkout.
 * [Price hiding and Blocks compatibility](decisions/0004-price-hiding-and-blocks-compatibility.md) - Price-free customer views with Blocks presentation and the Store API limitation.
+* [Germanized integration](decisions/0005-germanized-integration.md) - Keep Germanized legal notices and checkboxes out of active Quote mode.
 * [Access content caching](decisions/0008-caching.md) - Audience-specific Access block content and logged-in cache bypass.

@@ -109,8 +109,10 @@ test( 'guest sends an inquiry on classic checkout', async ( { page } ) => {
 	await expect( page.locator( '#billing_address_1, #billing_city, #billing_postcode' ) ).toHaveCount( 0 );
 	const terms = page.getByRole( 'checkbox', { name: /Terms and Conditions|Bedingungen|AGB/i } );
 	await selectCheckoutCountry( page, 'DE' );
-	await terms.check();
-	await expect( terms ).toBeChecked();
+	if ( await terms.count() ) {
+		await terms.check();
+		await expect( terms ).toBeChecked();
+	}
 	await expect( page.locator( '#place_order' ) ).toContainText( /Send inquiry|Anfrage absenden/i );
 	await page.locator( '#place_order' ).click();
 	await expect( page ).toHaveURL( /order-received/ );

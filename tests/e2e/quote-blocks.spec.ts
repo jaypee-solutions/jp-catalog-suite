@@ -64,7 +64,10 @@ test( 'guest sends a Blocks inquiry which stays listed when Quote mode is off', 
 		await expect( page.getByLabel( /last name|nachname/i ) ).toHaveAttribute( 'required', '' );
 		await expect( page.getByLabel( /email address|e-?mail-adresse/i ) ).toHaveAttribute( 'required', '' );
 		await page.getByLabel( /last name|nachname/i ).fill( orderLabel );
-		await page.getByRole( 'checkbox', { name: /Terms and Conditions|Bedingungen|AGB/i } ).check();
+		const termsCheckbox = page.getByRole( 'checkbox', { name: /Terms and Conditions|Bedingungen|AGB/i } );
+		if ( await termsCheckbox.count() ) {
+			await termsCheckbox.check();
+		}
 		await expect( page.locator( '.wc-block-components-checkout-place-order-button' ) ).toBeVisible();
 		await page.locator( '.wc-block-components-checkout-place-order-button' ).click();
 		await expect( page ).toHaveURL( /order-received/ );

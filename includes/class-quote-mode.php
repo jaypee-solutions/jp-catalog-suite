@@ -12,6 +12,8 @@ namespace JayPee\CatalogSuite;
 final class Quote_Mode {
 
     public static function init(): void {
+        require_once PLUGIN_DIR . 'includes/class-germanized-integration.php';
+        Germanized_Integration::init();
         Inquiry_Intake::init();
         add_filter( 'woocommerce_is_purchasable', [ self::class, 'is_purchasable' ], 10, 2 );
         add_filter( 'woocommerce_variation_is_purchasable', [ self::class, 'is_variation_purchasable' ], 10, 2 );
@@ -306,7 +308,7 @@ final class Quote_Mode {
     public static function settings(): array {
         return array_merge(
             [
-                [ 'title' => __( 'Quote mode', 'jp-catalog-suite' ), 'type' => 'title', 'id' => 'jps_cs_quote' ],
+                [ 'title' => __( 'Quote mode', 'jp-catalog-suite' ), 'type' => 'title', 'id' => 'jps_cs_quote', 'desc' => __( 'Germanized legal notices and checkout checkboxes are adjusted in Quote mode. The privacy checkbox is kept when enabled in Germanized.', 'jp-catalog-suite' ) ],
                 [ 'title' => __( 'Inquiry basket label', 'jp-catalog-suite' ), 'id' => 'jps_cs_quote_cart_label', 'type' => 'text', 'default' => '', 'placeholder' => __( 'Inquiry basket', 'jp-catalog-suite' ) ],
                 [ 'title' => __( 'Add to inquiry label', 'jp-catalog-suite' ), 'id' => 'jps_cs_quote_add_to_cart_label', 'type' => 'text', 'default' => '', 'placeholder' => __( 'Add to inquiry', 'jp-catalog-suite' ) ],
                 [ 'title' => __( 'Continue to inquiry label', 'jp-catalog-suite' ), 'id' => 'jps_cs_quote_proceed_label', 'type' => 'text', 'default' => '', 'placeholder' => __( 'Continue to inquiry', 'jp-catalog-suite' ) ],
