@@ -19,6 +19,8 @@
     "test:unit": "composer test",
     "test:unit:coverage": "vendor/bin/phpunit --coverage-text",
     "build:release": "scripts/build-release.sh",
+    "i18n:pot": "WP_ENV_HOME=./.wp-env npx --no-install wp-env run cli --env-cwd=wp-content/plugins/$(basename \"$PWD\") wp i18n make-pot . languages/jp-catalog-suite.pot --domain=jp-catalog-suite --exclude=vendor,node_modules,tests,build,.wp-env",
+    "i18n:json": "WP_ENV_HOME=./.wp-env npx --no-install wp-env run cli --env-cwd=wp-content/plugins/$(basename \"$PWD\") wp i18n make-json languages --no-purge",
     "prepare": "husky"
   },
   "devDependencies": {

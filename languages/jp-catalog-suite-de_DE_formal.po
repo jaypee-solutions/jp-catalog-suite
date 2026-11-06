@@ -1,0 +1,32 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: JayPee Solutions Catalog Suite for WooCommerce 0.1.0\n"
+"PO-Revision-Date: 2026-11-06 00:00+0000\n"
+"Last-Translator: JayPee Solutions <support@jaypee.solutions>\n"
+"Language-Team: German\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: de_DE\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Catalog Suite"
+msgstr "Catalog Suite"
+
+msgid "General"
+msgstr "Allgemein"
+
+msgid "Quote mode"
+msgstr "Angebotsmodus"
+
+msgid "Product tabs"
+msgstr "Produkttabs"
+
+msgid "Variable length"
+msgstr "Variable Länge"
+
+msgid "Delete tabs, protected files and the download log when the plugin is deleted. Orders are never deleted."
+msgstr "Tabs, geschützte Dateien und das Download-Protokoll beim Löschen des Plugins löschen. Bestellungen werden niemals gelöscht."
+
+msgid "JayPee Solutions Catalog Suite for WooCommerce requires WooCommerce."
+msgstr "JayPee Solutions Catalog Suite für WooCommerce setzt WooCommerce voraus."

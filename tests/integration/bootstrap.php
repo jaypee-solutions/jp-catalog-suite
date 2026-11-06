@@ -17,7 +17,21 @@ require_once getenv( 'WP_TESTS_DIR' ) . '/includes/functions.php';
 tests_add_filter(
     'muplugins_loaded',
     static function (): void {
+        $woocommerce_file = WP_PLUGIN_DIR . '/woocommerce/woocommerce.php';
+        if ( ! is_readable( $woocommerce_file ) ) {
+            $woocommerce_file = WP_PLUGIN_DIR . '/woocommerce.latest-stable/woocommerce.php';
+        }
+        require_once $woocommerce_file;
         require_once dirname( __DIR__, 2 ) . '/jp-catalog-suite.php';
+    }
+);
+
+tests_add_filter(
+    'setup_theme',
+    static function (): void {
+        \WC_Install::install();
+        $GLOBALS['wp_roles'] = null;
+        wp_roles();
     }
 );
 

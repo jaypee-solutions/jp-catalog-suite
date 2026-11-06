@@ -1,57 +1,35 @@
 # JayPee Solutions Catalog Suite for WooCommerce
 
-JayPee Solutions Catalog Suite for WooCommerce is a WordPress plugin.
-
-Scaffolded from [jaypee-solutions/wp-plugin-template](https://github.com/jaypee-solutions/wp-plugin-template).
-Scaffolding changes (CI, scripts, hooks, lint/test config) arrive as pull requests
-from the `template-update.yml` workflow, which runs `copier update` — edit them in
-the template, not here.
+Quote mode, extended product tabs with access levels and protected files, and customer-entered lengths for WooCommerce.
 
 ## Requirements
 
 - PHP 8.0+
 - WordPress 6.4+
 - WooCommerce 8.0+
-- Composer, Node 22.13+ (wp-env 12), and Docker or Podman (for `wp-env`)
+- Composer, Node 22.13+ (wp-env 12), and Docker or Podman
+
+## Configuration
+
+Open **WooCommerce → Settings → Catalog Suite**. General contains a toggle for each installed module and the optional deletion setting. WooCommerce stores the `jps_cs_module_*` and `jps_cs_uninstall_delete_data` options.
+
+## Uninstall
+
+Plugin options, the `jp_catalog_suite_github_token` update credential, and the `jps_cs_purge_download_log` scheduled hook are always removed. When the uninstall deletion option is enabled, Catalog Suite tabs, protected files and the download log are also removed. Orders are never deleted. Uninstall is single-site only; network-wide uninstall is not handled. Inquiries retain their status and become unavailable in order lists after plugin removal. Bulk-change inquiry statuses before deleting the plugin to preserve their visibility.
 
 ## Development
 
 ```bash
 composer install
-npm install
-
-composer lint          # PHPCS (WordPress Coding Standards)
-composer lint:fix      # PHPCBF
-composer test          # PHPUnit
-
-npm run env:start      # wp-env at http://localhost:8888 (admin / password)
-npm run test:e2e:run   # seed + Playwright
+npm ci
+composer lint
+composer test
+npm run env:start
+npm run test:integration
+npm run test:e2e:run -- --retries 0
 npm run env:stop
 ```
 
-`.husky/pre-commit` runs `composer lint`, `.husky/pre-push` runs `composer test`.
-
 ## Release
 
-1. Bump the version in **both** places in `jp-catalog-suite.php` (the
-   `Version:` header and the `VERSION` constant) — `scripts/check-version.sh`
-   enforces that they agree — and in `readme.txt` (`Stable tag`).
-2. Add the matching `## [X.Y.Z]` section to `CHANGELOG.md`.
-3. Tag and push:
-
-   ```bash
-   git tag vX.Y.Z && git push --tags
-   ```
-
-`.github/workflows/release.yml` lints, tests, builds `build/jp-catalog-suite-vX.Y.Z.zip`
-and publishes it as a GitHub release asset. `scripts/build-release.sh` installs
-the runtime dependencies with `--no-dev` and prefixes them with `php-scoper`, so
-this plugin cannot collide with another JayPee plugin bundling a different
-version of the same library on the same WordPress install.
-
-## Updates
-
-Sites pull updates from GitHub through the Plugin Update Checker. A private
-repository needs a read-only token, pasted under
-**Settings → JayPee Solutions Catalog Suite for WooCommerce Updates**; the "Test token" button there says
-exactly what GitHub answered when a check fails.
+Build the installable archive with `npm run build:release`. Update the version in `jp-catalog-suite.php` and `readme.txt`, add a changelog entry, then tag and push the release.
