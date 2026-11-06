@@ -35,13 +35,19 @@ test( 'guest sends a Blocks inquiry which stays listed when Quote mode is off', 
 		wpCli( 'option', 'update', 'jps_cs_module_quote', 'yes' );
 		const quoteProfile = wpCli( 'post', 'list', '--post_type=product', '--meta_key=_sku', '--meta_value=QP-1', '--field=ID' );
 		const pricedBolt = wpCli( 'post', 'list', '--post_type=product', '--meta_key=_sku', '--meta_value=QP-2', '--field=ID' );
+		await page.goto( '/shop/' );
+		await expect( page.locator( 'body' ) ).not.toContainText( '€' );
 		await page.goto( wpCli( 'post', 'url', pricedBolt ) );
+		await expect( page.locator( 'body' ) ).not.toContainText( '€' );
 		await expect( page.getByRole( 'button', { name: 'Add to inquiry' } ) ).toBeVisible();
 		await page.goto( '/?add-to-cart=' + quoteProfile );
 		await page.goto( '/?add-to-cart=' + pricedBolt );
 		await page.goto( '/cart/' );
+		await expect( page.locator( 'body' ) ).not.toContainText( '€' );
 		await expect( page.getByRole( 'link', { name: 'Continue to inquiry' } ) ).toBeVisible();
 		await page.goto( '/checkout/' );
+		await expect( page.locator( 'body' ) ).not.toContainText( '€' );
+		await expect( page.locator( '.wc-block-checkout__payment-method' ) ).toHaveCount( 0 );
 		await page.getByLabel( 'Country/Region' ).selectOption( 'DE' );
 		await expect( page.getByLabel( 'Postal code' ) ).toBeVisible();
 		await expect( page.locator( '.wc-block-checkout__payment-method' ) ).toHaveCount( 0 );
@@ -57,7 +63,11 @@ test( 'guest sends a Blocks inquiry which stays listed when Quote mode is off', 
 		await page.getByRole( 'button', { name: /send inquiry|buy now|place order/i } ).click();
 		await expect( page ).toHaveURL( /order-received/ );
 
+        await expect( page.locator( 'body' ) ).not.toContainText( '€' );
+
 		await login( page );
+        await page.goto( '/my-account/' );
+        await expect( page.getByRole( 'link', { name: 'Inquiries' } ) ).toBeVisible();
 		await page.goto( '/wp-admin/admin.php?page=wc-orders' );
 		let order = page.locator( '#the-list tr' ).filter( { hasText: orderLabel } );
 		await expect( order ).toContainText( 'Inquiry' );

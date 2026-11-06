@@ -229,3 +229,21 @@ msgstr "Rechnungsadresse"
 
 msgid "Customer details"
 msgstr "Kundendetails"
+
+msgid "Inquiries"
+msgstr "Anfragen"
+
+msgid "Add to inquiry"
+msgstr "Zur Anfrage hinzufügen"
+
+msgid "Send inquiry"
+msgstr "Anfrage absenden"
+
+msgid "Thank you. Your inquiry has been received."
+msgstr "Vielen Dank. Ihre Anfrage ist eingegangen."
+
+msgid "Inquiry basket"
+msgstr "Anfragekorb"
+
+msgid "Continue to inquiry"
+msgstr "Weiter zur Anfrage"

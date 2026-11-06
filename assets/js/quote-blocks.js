@@ -16,6 +16,8 @@
 		wc.blocksCheckout.registerCheckoutFilters( 'jp-catalog-suite', {
 			placeOrderButtonLabel: () => labels.place_order,
 			proceedToCheckoutButtonLabel: () => labels.proceed,
+			cartItemPrice: () => '',
+			subtotalPriceFormat: () => '',
 		} );
 	}
 }( window.wp, window.wc ) );

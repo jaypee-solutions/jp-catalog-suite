@@ -61,6 +61,34 @@ final class Test_Inquiries extends WP_UnitTestCase {
         $this->assertArrayHasKey( 'wc-jps-inquiry', wc_get_order_statuses() );
         $this->assertContains( 'jps-inquiry', apply_filters( 'woocommerce_analytics_settings_default_excluded_order_statuses', [] ) );
     }
+    public function test_product_prices_and_inquiry_totals_are_hidden(): void {
+        $product = new WC_Product_Simple();
+        $product->set_name( 'Priced inquiry product' );
+        $product->set_regular_price( '12.34' );
+        $product->save();
+        $this->assertSame( '', $product->get_price_html() );
+        $this->assertArrayNotHasKey( 'offers', apply_filters( 'woocommerce_structured_data_product', [ 'offers' => [ 'price' => '12.34' ] ], $product ) );
+
+        $order = wc_create_order();
+        $order->add_product( $product );
+        $order->update_meta_data( '_jps_cs_inquiry', 'yes' );
+        $order->save();
+        $this->assertSame( [], apply_filters( 'woocommerce_get_order_item_totals', [ 'total' => [ 'value' => '$12.34' ] ], $order, '' ) );
+        $this->assertSame( '', $order->get_formatted_order_total() );
+        $item = current( $order->get_items() );
+        $this->assertSame( '', apply_filters( 'woocommerce_order_formatted_line_subtotal', '$12.34', $item, $order ) );
+        add_filter( 'jps_cs_quote_mode_active', '__return_false' );
+        $this->assertSame( [], apply_filters( 'woocommerce_get_order_item_totals', [ 'total' => [ 'value' => '$12.34' ] ], $order, '' ) );
+        $this->assertSame( '', $order->get_formatted_order_total() );
+        remove_filter( 'jps_cs_quote_mode_active', '__return_false' );
+    }
+
+    public function test_account_orders_are_labeled_inquiries_without_total_column(): void {
+        $items = apply_filters( 'woocommerce_account_menu_items', [ 'orders' => 'Orders' ] );
+        $this->assertSame( 'Inquiries', $items['orders'] );
+        $columns = apply_filters( 'woocommerce_account_orders_columns', [ 'order-number' => 'Order', 'order-total' => 'Total' ] );
+        $this->assertArrayNotHasKey( 'order-total', $columns );
+    }
 
     public function test_quote_labels_use_translated_defaults_and_saved_overrides(): void {
         update_option( 'jps_cs_quote_place_order_label', '' );

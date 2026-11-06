@@ -15,6 +15,7 @@ extracts it as the GitHub release notes and fails without it.
 - Quote mode supports guest Inquiry checkout without payment, shipping, taxes, or coupons.
 - Quote mode now provides translatable, configurable Inquiry basket and checkout labels in PHP and WooCommerce Blocks.
 - Price-free New inquiry and Inquiry confirmation email notifications with configurable recipients and item details.
+- Quote mode hides customer-facing prices and price offers; existing Inquiry views remain price-free and My Account uses the Inquiries label without totals.
 
 ## [0.1.0] - 2026-11-06
 
