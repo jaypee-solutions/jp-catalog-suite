@@ -134,17 +134,24 @@ final class Protected_Files {
         require_once ABSPATH . 'wp-admin/includes/file.php';
         WP_Filesystem();
         global $wp_filesystem;
+        $metadata = wp_get_attachment_metadata( $id );
+        if ( is_array( $metadata ) ) {
+            foreach ( $metadata['sizes'] ?? [] as $size ) {
+                if ( empty( $size['file'] ) ) {
+                    continue;
+                }
+                $size_path = dirname( $source ) . '/' . basename( $size['file'] );
+                if ( is_file( $size_path ) && ! $wp_filesystem->delete( $size_path ) ) {
+                    $post['errors']['jps_cs_protected']['errors'][] = __( 'The file could not be moved.', 'jp-catalog-suite' );
+                    return $post;
+                }
+            }
+        }
         if ( ! $wp_filesystem->move( $source, $target, true ) ) {
             $post['errors']['jps_cs_protected']['errors'][] = __( 'The file could not be moved.', 'jp-catalog-suite' );
             return $post;
         }
-        $metadata = wp_get_attachment_metadata( $id );
         if ( is_array( $metadata ) ) {
-            foreach ( $metadata['sizes'] ?? [] as $size ) {
-                if ( isset( $size['file'] ) ) {
-                    $wp_filesystem->delete( dirname( $source ) . '/' . $size['file'] );
-                }
-            }
             $metadata['file'] = ltrim( str_replace( $base, '', wp_normalize_path( $target ) ), '/' );
             $metadata['sizes'] = [];
             wp_update_attachment_metadata( $id, $metadata );
