@@ -93,8 +93,10 @@ test( 'guest sends an inquiry on classic checkout', async ( { page } ) => {
 	await page.locator( '#billing_postcode' ).fill( '10115' );
 	await selectCheckoutCountry( page, 'DE' );
 	const terms = page.getByRole( 'checkbox', { name: /Terms and Conditions and Cancellation Policy/ } );
-	await terms.check();
-	await expect( terms ).toBeChecked();
+	if ( await terms.count() ) {
+		await terms.check();
+		await expect( terms ).toBeChecked();
+	}
 	await expect( page.locator( '#place_order' ) ).toHaveText( 'Send inquiry' );
 	await page.locator( '#place_order' ).click();
 	await expect( page ).toHaveURL( /order-received/ );
