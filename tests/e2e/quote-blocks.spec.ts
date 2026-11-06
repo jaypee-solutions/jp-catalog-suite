@@ -29,6 +29,7 @@ async function login( page: Page ): Promise<void> {
 test( 'guest sends a Blocks inquiry which stays listed when Quote mode is off', async ( { page } ) => {
 	const oldQuote = wpCli( 'option', 'get', 'jps_cs_module_quote' );
 	const oldComingSoon = wpCli( 'option', 'get', 'woocommerce_coming_soon' );
+	const oldPhone = wpCli( 'eval', "echo get_option( 'jps_cs_checkout_phone', 'optional' );" );
 	const orderLabel = `Blocks-${ Date.now() }`;
 	try {
 		wpCli( 'option', 'update', 'woocommerce_coming_soon', 'no' );
@@ -39,31 +40,36 @@ test( 'guest sends a Blocks inquiry which stays listed when Quote mode is off', 
 		await expect( page.locator( 'body' ) ).not.toContainText( '€' );
 		await page.goto( wpCli( 'post', 'url', pricedBolt ) );
 		await expect( page.locator( 'body' ) ).not.toContainText( '€' );
-		await expect( page.getByRole( 'button', { name: 'Add to inquiry' } ) ).toBeVisible();
+		await expect( page.locator( '.single_add_to_cart_button' ) ).toBeVisible();
 		await page.goto( '/?add-to-cart=' + quoteProfile );
 		await page.goto( '/?add-to-cart=' + pricedBolt );
 		await page.goto( '/cart/' );
 		await expect( page.locator( 'body' ) ).not.toContainText( '€' );
-		await expect( page.getByRole( 'link', { name: 'Continue to inquiry' } ) ).toBeVisible();
+		await expect( page.getByRole( 'link', { name: /continue to inquiry|weiter zur anfrage/i } ) ).toBeVisible();
+		wpCli( 'option', 'update', 'jps_cs_checkout_phone', 'required' );
 		await page.goto( '/checkout/' );
+		await expect( page.getByLabel( /country\/region|land\/region/i ) ).toBeVisible();
+		await expect( page.getByRole( 'textbox', { name: 'Address', exact: true } ) ).toHaveCount( 0 );
 		await expect( page.locator( 'body' ) ).not.toContainText( '€' );
 		await expect( page.locator( '.wc-block-checkout__payment-method' ) ).toHaveCount( 0 );
-		await page.getByLabel( 'Country/Region' ).selectOption( 'DE' );
-		await expect( page.getByLabel( 'Postal code' ) ).toBeVisible();
 		await expect( page.locator( '.wc-block-checkout__payment-method' ) ).toHaveCount( 0 );
 		await expect( page.locator( 'body' ) ).not.toContainText( /zahlungspflichtig/i );
-		await page.getByLabel( 'Email address' ).fill( `blocks-${ Date.now() }@example.com` );
-		await page.getByLabel( 'First name' ).fill( 'Guest' );
-		await page.getByLabel( 'Last name' ).fill( orderLabel );
-		await page.getByRole( 'textbox', { name: 'Address', exact: true } ).fill( '1 Main Street' );
-		await page.getByLabel( 'City' ).fill( 'Berlin' );
-		await page.getByLabel( 'Postal code' ).fill( '10115' );
-		const termsCheckbox = page.getByRole( 'checkbox', { name: /Terms and Conditions and Cancellation Policy/ } );
+		await expect( page.getByLabel( /company|firma/i ) ).toBeVisible();
+		await expect( page.getByLabel( /phone|telefon/i ) ).toHaveAttribute( 'required', '' );
+		await expect( page.getByLabel( /phone|telefon/i ) ).toBeVisible();
+		await page.getByLabel( /phone|telefon/i ).fill( '030123456' );
+		await page.getByLabel( /email address|e-?mail-adresse/i ).fill( `blocks-${ Date.now() }@example.com` );
+		await page.getByLabel( /first name|vorname/i ).fill( 'Guest' );
+		await expect( page.getByLabel( /first name|vorname/i ) ).toHaveAttribute( 'required', '' );
+		await expect( page.getByLabel( /last name|nachname/i ) ).toHaveAttribute( 'required', '' );
+		await expect( page.getByLabel( /email address|e-?mail-adresse/i ) ).toHaveAttribute( 'required', '' );
+		await page.getByLabel( /last name|nachname/i ).fill( orderLabel );
+		const termsCheckbox = page.getByRole( 'checkbox', { name: /Terms and Conditions|Bedingungen|AGB/i } );
 		if ( await termsCheckbox.count() ) {
 			await termsCheckbox.check();
 		}
-		await expect( page.getByRole( 'button', { name: 'Send inquiry' } ) ).toBeVisible();
-		await page.getByRole( 'button', { name: /send inquiry|buy now|place order/i } ).click();
+		await expect( page.locator( '.wc-block-components-checkout-place-order-button:visible' ).first() ).toBeVisible();
+		await page.locator( '.wc-block-components-checkout-place-order-button:visible' ).first().click();
 		await expect( page ).toHaveURL( /order-received/ );
 
         await expect( page.locator( 'body' ) ).not.toContainText( '€' );
@@ -73,13 +79,14 @@ test( 'guest sends a Blocks inquiry which stays listed when Quote mode is off', 
         await expect( page.getByRole( 'link', { name: 'Inquiries' } ) ).toBeVisible();
 		await page.goto( '/wp-admin/admin.php?page=wc-orders' );
 		let order = page.locator( '#the-list tr' ).filter( { hasText: orderLabel } );
-		await expect( order ).toContainText( 'Inquiry' );
+		await expect( order ).toContainText( /Inquiry|Anfrage/i );
 		wpCli( 'option', 'update', 'jps_cs_module_quote', 'no' );
 		await page.reload();
 		order = page.locator( '#the-list tr' ).filter( { hasText: orderLabel } );
-		await expect( order ).toContainText( 'Inquiry' );
+		await expect( order ).toContainText( /Inquiry|Anfrage/i );
 	} finally {
 		wpCli( 'option', 'update', 'jps_cs_module_quote', oldQuote );
+		wpCli( 'option', 'update', 'jps_cs_checkout_phone', oldPhone );
 		wpCli( 'option', 'update', 'woocommerce_coming_soon', oldComingSoon );
 	}
 } );

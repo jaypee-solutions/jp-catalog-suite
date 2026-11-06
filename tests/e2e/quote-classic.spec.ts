@@ -12,6 +12,8 @@ const ADMIN_PASS = process.env.WP_ADMIN_PASS ?? 'password';
 let oldCart = '';
 let oldCheckout = '';
 let oldQuote = '';
+let oldPhone = '';
+let oldMessage = '';
 let oldComingSoon = '';
 
 async function login( page: Page ): Promise<void> {
@@ -52,8 +54,11 @@ test.beforeAll( () => {
 	oldCart = wpCli( 'option', 'get', 'woocommerce_cart_page_id' );
 	oldCheckout = wpCli( 'option', 'get', 'woocommerce_checkout_page_id' );
 	oldQuote = wpCli( 'option', 'get', 'jps_cs_module_quote' );
+	oldPhone = wpCli( 'eval', "echo get_option( 'jps_cs_checkout_phone', 'optional' );" );
+	oldMessage = wpCli( 'eval', "echo get_option( 'jps_cs_checkout_message', 'yes' );" );
 	oldComingSoon = wpCli( 'option', 'get', 'woocommerce_coming_soon' );
 	wpCli( 'option', 'update', 'woocommerce_coming_soon', 'no' );
+	wpCli( 'option', 'update', 'jps_cs_checkout_phone', 'required' );
 	wpCli( 'option', 'update', 'jps_cs_module_quote', 'yes' );
 	const cart = wpCli( 'post', 'list', '--post_type=page', '--name=classic-cart', '--field=ID' );
 	const checkout = wpCli( 'post', 'list', '--post_type=page', '--name=classic-checkout', '--field=ID' );
@@ -65,6 +70,8 @@ test.afterAll( () => {
 	if ( oldCart ) wpCli( 'option', 'update', 'woocommerce_cart_page_id', oldCart );
 	if ( oldCheckout ) wpCli( 'option', 'update', 'woocommerce_checkout_page_id', oldCheckout );
 	wpCli( 'option', 'update', 'jps_cs_module_quote', oldQuote );
+	wpCli( 'option', 'update', 'jps_cs_checkout_phone', oldPhone );
+	wpCli( 'option', 'update', 'jps_cs_checkout_message', oldMessage );
 	wpCli( 'option', 'update', 'woocommerce_coming_soon', oldComingSoon );
 } );
 
@@ -76,35 +83,44 @@ test( 'guest sends an inquiry on classic checkout', async ( { page } ) => {
 	await expect( page.locator( 'body' ) ).not.toContainText( '€' );
 	await page.goto( wpCli( 'post', 'url', pricedBolt ) );
 	await expect( page.locator( 'body' ) ).not.toContainText( '€' );
-	await expect( page.getByRole( 'button', { name: 'Add to inquiry' } ) ).toBeVisible();
+	await expect( page.locator( '.single_add_to_cart_button' ) ).toBeVisible();
 	await page.goto( '/?add-to-cart=' + quoteProfile );
 	await page.goto( '/?add-to-cart=' + pricedBolt );
 	await page.goto( '/classic-cart/' );
 	await expect( page.locator( 'body' ) ).not.toContainText( '€' );
-	await expect( page.getByRole( 'link', { name: 'Continue to inquiry' } ) ).toBeVisible();
+	await expect( page.getByRole( 'link', { name: /continue to inquiry|weiter zur anfrage/i } ) ).toBeVisible();
 	await page.goto( '/classic-checkout/' );
+	await expect( page.locator( '#order_comments' ) ).toBeVisible();
+	wpCli( 'option', 'update', 'jps_cs_checkout_message', 'no' );
+	await page.reload();
+	await expect( page.locator( '#order_comments' ) ).toHaveCount( 0 );
+	wpCli( 'option', 'update', 'jps_cs_checkout_message', 'yes' );
+	await page.reload();
+	await expect( page.locator( 'body' ) ).not.toContainText( /zahlungspflichtig/i );
 	await expect( page.locator( 'body' ) ).not.toContainText( '€' );
 	await expect( page.locator( '#payment .wc_payment_methods li' ) ).toHaveCount( 0 );
 	await page.locator( '#billing_email' ).fill( `classic-${ Date.now() }@example.com` );
 	await page.locator( '#billing_first_name' ).fill( 'Guest' );
 	await page.locator( '#billing_last_name' ).fill( orderLabel );
-	await page.locator( '#billing_address_1' ).fill( '1 Main Street' );
-	await page.locator( '#billing_city' ).fill( 'Berlin' );
-	await page.locator( '#billing_postcode' ).fill( '10115' );
+	await expect( page.locator( '#billing_company' ) ).toBeVisible();
+	await expect( page.locator( '#billing_phone' ) ).toBeVisible();
+	await expect( page.locator( '#billing_phone' ) ).toHaveAttribute( 'aria-required', 'true' );
+	await page.locator( '#billing_phone' ).fill( '030123456' );
+	await expect( page.locator( '#billing_address_1, #billing_city, #billing_postcode' ) ).toHaveCount( 0 );
+	const terms = page.getByRole( 'checkbox', { name: /Terms and Conditions|Bedingungen|AGB/i } );
 	await selectCheckoutCountry( page, 'DE' );
-	const terms = page.getByRole( 'checkbox', { name: /Terms and Conditions and Cancellation Policy/ } );
 	if ( await terms.count() ) {
 		await terms.check();
 		await expect( terms ).toBeChecked();
 	}
-	await expect( page.locator( '#place_order' ) ).toHaveText( 'Send inquiry' );
+	await expect( page.locator( '#place_order' ) ).toContainText( /Send inquiry|Anfrage absenden/i );
 	await page.locator( '#place_order' ).click();
 	await expect( page ).toHaveURL( /order-received/ );
         await expect( page.locator( 'body' ) ).not.toContainText( '€' );
         await login( page );
         await page.goto( '/my-account/' );
-        await expect( page.getByRole( 'link', { name: 'Inquiries' } ) ).toBeVisible();
+        await expect( page.getByRole( 'link', { name: /Inquiries|Anfragen/i } ) ).toBeVisible();
 	await page.goto( '/wp-admin/admin.php?page=wc-orders' );
-	await expect( page.locator( '#the-list tr' ).filter( { hasText: orderLabel } ) ).toContainText( 'Inquiry' );
+	await expect( page.locator( '#the-list tr' ).filter( { hasText: orderLabel } ) ).toContainText( /Inquiry|Anfrage/i );
 } );
 

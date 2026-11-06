@@ -247,6 +247,24 @@ msgstr "Rechnungsadresse"
 msgid "Customer details"
 msgstr "Kundendetails"
 
+msgid "Optional"
+msgstr "Optional"
+
+msgid "Required"
+msgstr "Erforderlich"
+
+msgid "Hidden"
+msgstr "Ausgeblendet"
+
+msgid "Inquiry checkout fields"
+msgstr "Anfrage-Checkout-Felder"
+
+msgid "Address"
+msgstr "Adresse"
+
+msgid "Order message"
+msgstr "Nachricht zur Anfrage"
+
 msgid "Inquiries"
 msgstr "Anfragen"
 
