@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-06T18:04:30+00:00\n"
+"POT-Creation-Date: 2026-11-06T19:09:10+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: jp-catalog-suite\n"
@@ -93,72 +93,93 @@ msgstr ""
 msgid "Inquiry received."
 msgstr ""
 
-#: includes/class-product-tabs.php:32
+#: includes/class-product-tabs.php:33
 msgid "Sorry, you are not allowed to read product tabs."
 msgstr ""
 
-#: includes/class-product-tabs.php:46
-#: includes/class-product-tabs.php:168
+#: includes/class-product-tabs.php:47
+#: includes/class-product-tabs.php:169
 #: includes/class-settings-page.php:24
 #: includes/class-settings-page.php:41
 msgid "Product tabs"
 msgstr ""
 
-#: includes/class-product-tabs.php:47
+#: includes/class-product-tabs.php:48
 msgid "Product tab"
 msgstr ""
 
-#: includes/class-product-tabs.php:48
+#: includes/class-product-tabs.php:49
 msgid "Add product tab"
 msgstr ""
 
-#: includes/class-product-tabs.php:49
+#: includes/class-product-tabs.php:50
 msgid "Edit product tab"
 msgstr ""
 
-#: includes/class-product-tabs.php:81
+#: includes/class-product-tabs.php:82
 msgid "Tab settings"
 msgstr ""
 
-#: includes/class-product-tabs.php:104
+#: includes/class-product-tabs.php:105
 msgid "Scope"
 msgstr ""
 
-#: includes/class-product-tabs.php:106
+#: includes/class-product-tabs.php:107
 msgid "All products"
 msgstr ""
 
-#: includes/class-product-tabs.php:107
-#: includes/class-product-tabs.php:110
+#: includes/class-product-tabs.php:108
+#: includes/class-product-tabs.php:111
 msgid "Categories"
 msgstr ""
 
-#: includes/class-product-tabs.php:108
-#: includes/class-product-tabs.php:116
+#: includes/class-product-tabs.php:109
+#: includes/class-product-tabs.php:117
 msgid "Products"
 msgstr ""
 
-#: includes/class-product-tabs.php:125
+#: includes/class-product-tabs.php:126
 msgid "Replace global tab"
 msgstr ""
 
-#: includes/class-product-tabs.php:127
+#: includes/class-product-tabs.php:128
 msgid "None"
 msgstr ""
 
-#: includes/class-product-tabs.php:135
+#: includes/class-product-tabs.php:136
+#: includes/class-product-tabs.php:185
 msgid "Priority"
 msgstr ""
 
-#: includes/class-product-tabs.php:174
+#: includes/class-product-tabs.php:178
+msgid "Title"
+msgstr ""
+
+#: includes/class-product-tabs.php:191
+msgid "Hide"
+msgstr ""
+
+#: includes/class-product-tabs.php:204
+msgid "Description"
+msgstr ""
+
+#: includes/class-product-tabs.php:205
+msgid "Additional information"
+msgstr ""
+
+#: includes/class-product-tabs.php:206
+msgid "Reviews"
+msgstr ""
+
+#: includes/class-product-tabs.php:233
 msgid "Tabs"
 msgstr ""
 
-#: includes/class-product-tabs.php:194
+#: includes/class-product-tabs.php:253
 msgid "Hide on this product"
 msgstr ""
 
-#: includes/class-product-tabs.php:203
+#: includes/class-product-tabs.php:262
 msgid "Add product-specific tab"
 msgstr ""
 

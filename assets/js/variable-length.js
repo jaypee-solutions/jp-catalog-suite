@@ -23,10 +23,10 @@
 			if ( ! config || ! config.enabled ) {
 				return;
 			}
+			input.val( config.default );
 			[ 'min', 'max', 'step' ].forEach( function ( key ) {
 				input.attr( key, config[ key ] );
 			} );
-			input.val( config.default );
 		} );
 		form.on( 'reset_data', function () {
 			currentVariationId = null;

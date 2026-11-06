@@ -22,6 +22,7 @@ final class Product_Tabs {
         add_action( 'woocommerce_product_data_panels', [ self::class, 'product_data_panel' ] );
         add_action( 'woocommerce_admin_process_product_object', [ self::class, 'save_product_data' ] );
         add_filter( 'woocommerce_product_tabs', [ self::class, 'add_product_tabs' ], 98, 2 );
+        add_filter( 'woocommerce_product_tabs', [ self::class, 'configure_core_tabs' ], 99 );
     }
 
     public static function restrict_guest_rest_access(): void {
@@ -164,10 +165,68 @@ final class Product_Tabs {
     }
 
     public static function settings(): array {
-        return [
+        $settings = [
             [ 'title' => __( 'Product tabs', 'jp-catalog-suite' ), 'type' => 'title', 'id' => 'jps_cs_tabs_settings' ],
-            [ 'type' => 'sectionend', 'id' => 'jps_cs_tabs_settings' ],
         ];
+        foreach ( self::core_tabs() as $key => $tab ) {
+            $settings[] = [
+                'title' => $tab['label'],
+                'type'  => 'title',
+                'id'    => 'jps_cs_core_tab_' . $key,
+            ];
+            $settings[] = [
+                'title'       => __( 'Title', 'jp-catalog-suite' ),
+                'id'          => 'jps_cs_core_tab_' . $key . '_title',
+                'type'        => 'text',
+                'placeholder' => $tab['label'],
+                'default'     => '',
+            ];
+            $settings[] = [
+                'title'   => __( 'Priority', 'jp-catalog-suite' ),
+                'id'      => 'jps_cs_core_tab_' . $key . '_priority',
+                'type'    => 'number',
+                'default' => '',
+            ];
+            $settings[] = [
+                'title'   => __( 'Hide', 'jp-catalog-suite' ),
+                'id'      => 'jps_cs_core_tab_' . $key . '_hidden',
+                'type'    => 'checkbox',
+                'default' => 'no',
+            ];
+            $settings[] = [ 'type' => 'sectionend', 'id' => 'jps_cs_core_tab_' . $key ];
+        }
+        $settings[] = [ 'type' => 'sectionend', 'id' => 'jps_cs_tabs_settings' ];
+        return $settings;
+    }
+
+    private static function core_tabs(): array {
+        return [
+            'description' => [ 'label' => __( 'Description', 'jp-catalog-suite' ), 'key' => 'description' ],
+            'additional_information' => [ 'label' => __( 'Additional information', 'jp-catalog-suite' ), 'key' => 'additional_information' ],
+            'reviews' => [ 'label' => __( 'Reviews', 'jp-catalog-suite' ), 'key' => 'reviews' ],
+        ];
+    }
+
+    public static function configure_core_tabs( array $tabs ): array {
+        foreach ( self::core_tabs() as $key => $tab ) {
+            if ( 'yes' === get_option( 'jps_cs_core_tab_' . $key . '_hidden', 'no' ) ) {
+                unset( $tabs[ $tab['key'] ] );
+                continue;
+            }
+            if ( ! isset( $tabs[ $tab['key'] ] ) ) {
+                continue;
+            }
+            $title = (string) get_option( 'jps_cs_core_tab_' . $key . '_title', '' );
+            $priority = get_option( 'jps_cs_core_tab_' . $key . '_priority', '' );
+            if ( '' !== $title ) {
+                $tabs[ $tab['key'] ]['title'] = $title;
+            }
+            if ( '' !== (string) $priority && is_numeric( $priority ) ) {
+                $tabs[ $tab['key'] ]['priority'] = (int) $priority;
+            }
+        }
+        uasort( $tabs, static fn ( array $left, array $right ): int => ( $left['priority'] ?? 0 ) <=> ( $right['priority'] ?? 0 ) );
+        return $tabs;
     }
 
     public static function product_data_tab(): void {
