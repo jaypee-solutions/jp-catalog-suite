@@ -58,7 +58,10 @@ test( 'guest sends a Blocks inquiry which stays listed when Quote mode is off', 
 		await page.getByRole( 'textbox', { name: 'Address', exact: true } ).fill( '1 Main Street' );
 		await page.getByLabel( 'City' ).fill( 'Berlin' );
 		await page.getByLabel( 'Postal code' ).fill( '10115' );
-		await page.getByRole( 'checkbox', { name: /Terms and Conditions and Cancellation Policy/ } ).check();
+		const termsCheckbox = page.getByRole( 'checkbox', { name: /Terms and Conditions and Cancellation Policy/ } );
+		if ( await termsCheckbox.count() ) {
+			await termsCheckbox.check();
+		}
 		await expect( page.getByRole( 'button', { name: 'Send inquiry' } ) ).toBeVisible();
 		await page.getByRole( 'button', { name: /send inquiry|buy now|place order/i } ).click();
 		await expect( page ).toHaveURL( /order-received/ );

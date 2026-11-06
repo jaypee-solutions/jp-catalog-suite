@@ -15,4 +15,6 @@
 
 ## 2026-11-06
 * **Variable length**: Added Store API request capture, validation and cart-line preservation.
+* **Germanized integration**: Recorded ADR 0005; suppress Germanized shopmarks and non-kept legal checkboxes only during Quote mode.
+* **Germanized privacy checkbox**: The built-in privacy checkbox is registration-only by default and requires account creation when rendered at checkout.
 * **Access block**: Added audience-specific tab content, registration notices, and logged-in cache bypass guidance.

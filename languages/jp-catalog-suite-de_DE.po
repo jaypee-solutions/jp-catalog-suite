@@ -259,6 +259,8 @@ msgstr "Anfragekorb"
 msgid "Continue to inquiry"
 msgstr "Weiter zur Anfrage"
 
+msgid "Germanized legal notices and checkout checkboxes are adjusted in Quote mode. The privacy checkbox is kept when enabled in Germanized."
+msgstr "Die rechtlichen Hinweise und Kontrollkästchen von Germanized werden im Angebotsmodus angepasst. Das Kontrollkästchen zur Datenschutzerklärung bleibt erhalten, wenn es in Germanized aktiviert ist."
 msgid "You do not have permission to view this content."
 msgstr "Sie haben keine Berechtigung, diesen Inhalt anzuzeigen."
 
