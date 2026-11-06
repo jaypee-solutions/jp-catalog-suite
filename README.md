@@ -19,6 +19,9 @@ Enable **Quote mode** in the Catalog Suite settings to let customers submit inqu
 
 Quote mode provides the translatable default labels **Inquiry basket**, **Add to inquiry**, **Continue to inquiry**, and **Send inquiry**. Set `jps_cs_quote_cart_label`, `jps_cs_quote_add_to_cart_label`, `jps_cs_quote_proceed_label`, and `jps_cs_quote_place_order_label` to override them; an empty value uses the translated default. The `jps_cs_quote_labels` filter adjusts the complete label map. WooCommerce cart and checkout page titles are WordPress page titles; rename those pages separately.
 
+### Germanized compatibility
+
+When Germanized is active and Quote mode is on, its price and legal notices are removed from product, catalog, cart, checkout and order views, and its checkout legal checkboxes are removed except those returned by `jps_cs_germanized_kept_checkboxes` (defaults to `privacy`). The Send inquiry button label is preserved. Germanized-specific controls run only when both plugins are active. German Market is unsupported; integrations should use `jps_cs_inquiry_created` and `jps_cs_quote_mode_active` instead.
 
 ## Inquiry emails
 

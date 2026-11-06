@@ -34,7 +34,10 @@ test( 'simple variable length product keeps lengths as distinct inquiry lines', 
 	await page.getByLabel( 'City' ).fill( 'Berlin' );
 	await page.getByLabel( 'Postal code' ).fill( '10115' );
 	await page.getByLabel( /email address/i ).fill( `length-${ Date.now() }@example.com` );
-	await page.getByRole( 'checkbox', { name: /Terms and Conditions and Cancellation Policy/ } ).check();
+	const termsCheckbox = page.getByRole( 'checkbox', { name: /Terms and Conditions and Cancellation Policy/ } );
+	if ( await termsCheckbox.count() ) {
+		await termsCheckbox.check();
+	}
 	await page.getByRole( 'button', { name: /buy now|place order|send inquiry/i } ).click();
 	await expect( page ).toHaveURL( /order-received/ );
 	const orderId = page.url().match( /order-received\/(\d+)/ )?.[ 1 ];

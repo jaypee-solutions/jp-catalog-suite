@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-06T20:16:59+00:00\n"
+"POT-Creation-Date: 2026-11-06T20:23:47+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: jp-catalog-suite\n"
@@ -34,29 +34,29 @@ msgstr ""
 msgid "JayPee Solutions"
 msgstr ""
 
-#: includes/class-access-block.php:60
+#: includes/class-access-block.php:61
 msgid "You do not have permission to view this content."
 msgstr ""
 
-#: includes/class-access-block.php:76
-#: includes/class-access-block.php:109
+#: includes/class-access-block.php:77
+#: includes/class-access-block.php:110
 msgid "Please {login} or {register} to view this content."
 msgstr ""
 
-#: includes/class-access-block.php:81
+#: includes/class-access-block.php:82
 msgid "log in"
 msgstr ""
 
-#: includes/class-access-block.php:81
+#: includes/class-access-block.php:82
 msgid "register"
 msgstr ""
 
-#: includes/class-access-block.php:108
 #: includes/class-access-block.php:109
+#: includes/class-access-block.php:110
 msgid "Protected notice"
 msgstr ""
 
-#: includes/class-access-block.php:109
+#: includes/class-access-block.php:110
 msgid "Use {login} and {register} for links."
 msgstr ""
 
@@ -243,57 +243,61 @@ msgstr ""
 msgid "The file could not be moved."
 msgstr ""
 
-#: includes/class-protected-files.php:175
+#: includes/class-protected-files.php:176
 msgid "File not found."
 msgstr ""
 
-#: includes/class-protected-files.php:186
+#: includes/class-protected-files.php:187
 msgid "You do not have permission to download this file."
-msgstr ""
-
-#: includes/class-quote-mode.php:46
-#: includes/class-quote-mode.php:224
-msgid "Inquiry basket"
-msgstr ""
-
-#: includes/class-quote-mode.php:47
-#: includes/class-quote-mode.php:225
-msgid "Add to inquiry"
 msgstr ""
 
 #: includes/class-quote-mode.php:48
 #: includes/class-quote-mode.php:226
-msgid "Continue to inquiry"
+msgid "Inquiry basket"
 msgstr ""
 
 #: includes/class-quote-mode.php:49
 #: includes/class-quote-mode.php:227
+msgid "Add to inquiry"
+msgstr ""
+
+#: includes/class-quote-mode.php:50
+#: includes/class-quote-mode.php:228
+msgid "Continue to inquiry"
+msgstr ""
+
+#: includes/class-quote-mode.php:51
+#: includes/class-quote-mode.php:229
 msgid "Send inquiry"
 msgstr ""
 
-#: includes/class-quote-mode.php:72
+#: includes/class-quote-mode.php:74
 msgid "Thank you. Your inquiry has been received."
 msgstr ""
 
-#: includes/class-quote-mode.php:223
+#: includes/class-quote-mode.php:225
 #: includes/class-settings-page.php:23
 #: includes/class-settings-page.php:41
 msgid "Quote mode"
 msgstr ""
 
-#: includes/class-quote-mode.php:224
-msgid "Inquiry basket label"
-msgstr ""
-
 #: includes/class-quote-mode.php:225
-msgid "Add to inquiry label"
+msgid "Germanized legal notices and checkout checkboxes are adjusted in Quote mode. The privacy checkbox is kept when enabled in Germanized."
 msgstr ""
 
 #: includes/class-quote-mode.php:226
-msgid "Continue to inquiry label"
+msgid "Inquiry basket label"
 msgstr ""
 
 #: includes/class-quote-mode.php:227
+msgid "Add to inquiry label"
+msgstr ""
+
+#: includes/class-quote-mode.php:228
+msgid "Continue to inquiry label"
+msgstr ""
+
+#: includes/class-quote-mode.php:229
 msgid "Send inquiry label"
 msgstr ""
 
