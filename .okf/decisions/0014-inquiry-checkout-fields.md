@@ -2,6 +2,8 @@
 type: decision
 title: Inquiry checkout fields
 description: Configurable inquiry checkout details in classic and Blocks checkout.
+tags: [checkout, inquiry]
+timestamp: 2026-11-06T00:00:00Z
 ---
 
 # Inquiry checkout fields
