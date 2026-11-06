@@ -14,6 +14,7 @@ extracts it as the GitHub release notes and fails without it.
 - Global product tabs with all-product or category scope and priority.
 - Quote mode supports guest Inquiry checkout without payment, shipping, taxes, or coupons.
 - Variable products support inheritable variation-specific length limits and server-side validation.
+- Quote mode now provides translatable, configurable Inquiry basket and checkout labels in PHP and WooCommerce Blocks.
 - Price-free New inquiry and Inquiry confirmation email notifications with configurable recipients and item details.
 
 ## [0.1.0] - 2026-11-06

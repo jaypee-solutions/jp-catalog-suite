@@ -118,6 +118,32 @@ msgstr "Abweichender Längenschritt"
 
 msgid "Default length override"
 msgstr "Abweichende Standardlänge"
+msgid "Inquiry basket"
+msgstr "Anfragekorb"
+
+msgid "Add to inquiry"
+msgstr "Zur Anfrage hinzufügen"
+
+msgid "Continue to inquiry"
+msgstr "Weiter zur Anfrage"
+
+msgid "Send inquiry"
+msgstr "Anfrage absenden"
+
+msgid "Inquiry basket label"
+msgstr "Bezeichnung des Anfragekorbs"
+
+msgid "Add to inquiry label"
+msgstr "Bezeichnung für Anfrage hinzufügen"
+
+msgid "Continue to inquiry label"
+msgstr "Bezeichnung für Weiter zur Anfrage"
+
+msgid "Send inquiry label"
+msgstr "Bezeichnung für Anfrage absenden"
+
+msgid "Thank you. Your inquiry has been received."
+msgstr "Vielen Dank. Ihre Anfrage ist eingegangen."
 msgid "New inquiry"
 msgstr "Neue Anfrage"
 

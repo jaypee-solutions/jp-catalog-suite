@@ -1,4 +1,4 @@
-# ADR 0010: Variable-length variation overrides
+# ADR 0013: Variable-length variation overrides
 
 ## Status
 
