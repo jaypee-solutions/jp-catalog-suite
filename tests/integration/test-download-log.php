@@ -42,6 +42,16 @@ final class Test_Download_Log extends WP_UnitTestCase {
                 $this->assertSame( 'stream', $error->getMessage() );
             }
             $this->assertSame( 1, $this->rows( $user ) );
+            $_GET['product'] = '999';
+            try {
+                do_action( 'template_redirect' );
+                $this->fail( 'Invalid product identifiers must not be logged.' );
+            } catch ( RuntimeException $error ) {
+                $this->assertSame( 'stream', $error->getMessage() );
+            }
+            global $wpdb;
+            $product_ids = $wpdb->get_col( $wpdb->prepare( 'SELECT product_id FROM ' . $wpdb->prefix . 'jps_cs_download_log WHERE user_id = %d ORDER BY id', $user ) );
+            $this->assertSame( [ $product, 0 ], array_map( 'intval', $product_ids ) );
         } finally {
             remove_filter( 'jps_cs_file_delivery_method', $stop_delivery );
             unset( $_GET['product'] );
@@ -52,7 +62,7 @@ final class Test_Download_Log extends WP_UnitTestCase {
         $exporters = apply_filters( 'wp_privacy_personal_data_exporters', [] );
         $export = $exporters['jp-catalog-suite-download-log']['callback'];
         $result = call_user_func( $export, get_userdata( $user )->user_email, 1 );
-        $this->assertCount( 1, $result['data'] );
+        $this->assertCount( 2, $result['data'] );
         $erasers = apply_filters( 'wp_privacy_personal_data_erasers', [] );
         $erase = $erasers['jp-catalog-suite-download-log']['callback'];
         call_user_func( $erase, get_userdata( $user )->user_email, 1 );
