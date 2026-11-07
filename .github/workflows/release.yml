@@ -16,6 +16,8 @@ jobs:
 
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress
+      - name: Install gettext
+        run: apk add --no-cache gettext
 
       - name: PHPCS (WordPress Coding Standards)
         run: composer lint

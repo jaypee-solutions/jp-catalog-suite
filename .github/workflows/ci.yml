@@ -17,7 +17,7 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress
       - name: Install gettext
-        run: apt-get update && apt-get install --yes gettext
+        run: apk add --no-cache gettext
       - name: Set up Python and uv
         uses: astral-sh/setup-uv@v6
 

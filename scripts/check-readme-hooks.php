@@ -21,7 +21,7 @@ foreach ($roots as $root) {
     }
 }
 $readmeSource = file_get_contents($readme);
-preg_match_all('/^\|[^\n]*`(jps_cs_[A-Za-z0-9_]+)`/m', $readmeSource, $matches);
+preg_match_all('/^\|[^|]*`(jps_cs_[A-Za-z0-9_]+)`/m', $readmeSource, $matches);
 $documentedHooks = array_fill_keys($matches[1], true);
 $failed = false;
 foreach (array_diff_key($codeHooks, $documentedHooks) as $hook => $_) {
