@@ -3,13 +3,13 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JayPee Solutions Catalog Suite for WooCommerce 0.1.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/t17-length\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/fix-security\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-06T15:08:31+00:00\n"
+"POT-Creation-Date: 2026-11-07T00:35:08+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: jp-catalog-suite\n"
@@ -34,72 +34,392 @@ msgstr ""
 msgid "JayPee Solutions"
 msgstr ""
 
-#: includes/class-inquiries.php:23
-#: includes/class-inquiries.php:34
+#: includes/class-access-block.php:62
+msgid "You do not have permission to view this content."
+msgstr ""
+
+#: includes/class-access-block.php:81
+#: includes/class-access-block.php:115
+msgid "Please {login} or {register} to view this content."
+msgstr ""
+
+#: includes/class-access-block.php:87
+msgid "log in"
+msgstr ""
+
+#: includes/class-access-block.php:87
+msgid "register"
+msgstr ""
+
+#: includes/class-access-block.php:114
+#: includes/class-access-block.php:115
+msgid "Protected notice"
+msgstr ""
+
+#: includes/class-access-block.php:115
+msgid "Use {login} and {register} for links."
+msgstr ""
+
+#: includes/class-download-log.php:86
+#: includes/class-download-log.php:97
+#: includes/class-download-log.php:116
+#: includes/class-download-log.php:132
+#: includes/class-download-log.php:145
+#: includes/class-product-tabs.php:206
+msgid "Download log"
+msgstr ""
+
+#: includes/class-download-log.php:92
+msgid "You do not have permission to view this page."
+msgstr ""
+
+#: includes/class-download-log.php:98
+msgid "User"
+msgstr ""
+
+#: includes/class-download-log.php:98
+#: includes/class-download-log.php:135
+msgid "File"
+msgstr ""
+
+#: includes/class-download-log.php:98
+#: includes/class-download-log.php:136
+#: templates/emails/inquiry-items.php:26
+msgid "Product"
+msgstr ""
+
+#: includes/class-download-log.php:98
+#: includes/class-download-log.php:137
+msgid "Date"
+msgstr ""
+
+#: includes/class-download-log.php:160
+msgid "Catalog Suite Download Log"
+msgstr ""
+
+#: includes/class-download-log.php:160
+msgid "When enabled, the Download log records the user, protected file, optional product and download time. Records are retained for the configured number of days; zero keeps them until erased or deleted with the user account."
+msgstr ""
+
+#: includes/class-email-inquiry-confirmation.php:16
+msgid "Inquiry confirmation"
+msgstr ""
+
+#: includes/class-email-inquiry-confirmation.php:17
+msgid "Sent to the customer when an inquiry is received."
+msgstr ""
+
+#: includes/class-email-inquiry-confirmation.php:19
+msgid "Thank you for your inquiry"
+msgstr ""
+
+#: includes/class-email-inquiry-confirmation.php:20
+msgid "Your inquiry at {site_title}"
+msgstr ""
+
+#: includes/class-email-new-inquiry.php:16
+#: includes/class-email-new-inquiry.php:19
+msgid "New inquiry"
+msgstr ""
+
+#: includes/class-email-new-inquiry.php:17
+msgid "Sent to the shop manager when a customer submits an inquiry."
+msgstr ""
+
+#: includes/class-email-new-inquiry.php:20
+msgid "[{site_title}]: New inquiry #{order_number}"
+msgstr ""
+
+#: includes/class-email-new-inquiry.php:31
+msgid "Recipient(s)"
+msgstr ""
+
+#: includes/class-email-new-inquiry.php:33
+msgid "Enter recipients (comma-separated). Defaults to the site administrator email address."
+msgstr ""
+
+#: includes/class-file-list-block.php:78
+msgid "login required"
+msgstr ""
+
+#: includes/class-inquiries.php:27
+#: includes/class-inquiries.php:38
 msgctxt "Order status"
 msgid "Inquiry"
 msgstr ""
 
 #. translators: %s is the number of inquiries in this order-status count.
-#: includes/class-inquiries.php:28
+#: includes/class-inquiries.php:32
 #, php-format
 msgid "Inquiry <span class=\"count\">(%s)</span>"
 msgid_plural "Inquiries <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-inquiry-intake.php:39
+#: includes/class-inquiries.php:82
+msgid "Inquiries"
+msgstr ""
+
+#: includes/class-inquiry-intake.php:41
 msgid "Inquiry received."
 msgstr ""
 
-#: includes/class-product-tabs.php:29
+#: includes/class-product-tabs.php:35
 msgid "Sorry, you are not allowed to read product tabs."
 msgstr ""
 
-#: includes/class-product-tabs.php:43
-#: includes/class-product-tabs.php:117
+#: includes/class-product-tabs.php:49
+#: includes/class-product-tabs.php:171
 #: includes/class-settings-page.php:24
 #: includes/class-settings-page.php:41
 msgid "Product tabs"
 msgstr ""
 
-#: includes/class-product-tabs.php:44
+#: includes/class-product-tabs.php:50
 msgid "Product tab"
 msgstr ""
 
-#: includes/class-product-tabs.php:45
+#: includes/class-product-tabs.php:51
 msgid "Add product tab"
 msgstr ""
 
-#: includes/class-product-tabs.php:46
+#: includes/class-product-tabs.php:52
 msgid "Edit product tab"
 msgstr ""
 
-#: includes/class-product-tabs.php:76
+#: includes/class-product-tabs.php:84
 msgid "Tab settings"
 msgstr ""
 
-#: includes/class-product-tabs.php:88
+#: includes/class-product-tabs.php:107
 msgid "Scope"
 msgstr ""
 
-#: includes/class-product-tabs.php:90
+#: includes/class-product-tabs.php:109
 msgid "All products"
 msgstr ""
 
-#: includes/class-product-tabs.php:91
-#: includes/class-product-tabs.php:93
+#: includes/class-product-tabs.php:110
+#: includes/class-product-tabs.php:113
 msgid "Categories"
 msgstr ""
 
-#: includes/class-product-tabs.php:99
+#: includes/class-product-tabs.php:111
+#: includes/class-product-tabs.php:119
+msgid "Products"
+msgstr ""
+
+#: includes/class-product-tabs.php:128
+msgid "Replace global tab"
+msgstr ""
+
+#: includes/class-product-tabs.php:130
+msgid "None"
+msgstr ""
+
+#: includes/class-product-tabs.php:138
+#: includes/class-product-tabs.php:187
 msgid "Priority"
 msgstr ""
 
-#: includes/class-quote-mode.php:82
+#: includes/class-product-tabs.php:180
+msgid "Title"
+msgstr ""
+
+#: includes/class-product-tabs.php:193
+msgid "Hide"
+msgstr ""
+
+#: includes/class-product-tabs.php:201
+msgid "Protected files"
+msgstr ""
+
+#: includes/class-product-tabs.php:202
+msgid "Allowed file MIME types"
+msgstr ""
+
+#: includes/class-product-tabs.php:203
+msgid "Automatically protect extensions"
+msgstr ""
+
+#: includes/class-product-tabs.php:204
+msgid "File delivery method"
+msgstr ""
+
+#: includes/class-product-tabs.php:204
+msgid "Automatic"
+msgstr ""
+
+#: includes/class-product-tabs.php:207
+msgid "Enable download log"
+msgstr ""
+
+#: includes/class-product-tabs.php:208
+msgid "Download log retention (days)"
+msgstr ""
+
+#: includes/class-product-tabs.php:208
+msgid "Set to 0 to keep entries until erased or the user is deleted."
+msgstr ""
+
+#: includes/class-product-tabs.php:216
+msgid "Description"
+msgstr ""
+
+#: includes/class-product-tabs.php:217
+msgid "Additional information"
+msgstr ""
+
+#: includes/class-product-tabs.php:218
+msgid "Reviews"
+msgstr ""
+
+#: includes/class-product-tabs.php:245
+msgid "Tabs"
+msgstr ""
+
+#: includes/class-product-tabs.php:265
+msgid "Hide on this product"
+msgstr ""
+
+#: includes/class-product-tabs.php:274
+msgid "Add product-specific tab"
+msgstr ""
+
+#: includes/class-protected-files.php:51
+msgid "Protected files directory access"
+msgstr ""
+
+#: includes/class-protected-files.php:62
+msgid "Protected files are denied by the web server."
+msgstr ""
+
+#: includes/class-protected-files.php:62
+msgid "Protected files may be publicly accessible."
+msgstr ""
+
+#: includes/class-protected-files.php:64
+msgid "Security"
+msgstr ""
+
+#: includes/class-protected-files.php:65
+msgid "The protected uploads directory should return HTTP 403."
+msgstr ""
+
+#: includes/class-protected-files.php:206
+msgid "Protected"
+msgstr ""
+
+#: includes/class-protected-files.php:208
+msgid "Served only to authorized users"
+msgstr ""
+
+#: includes/class-protected-files.php:228
+#: includes/class-protected-files.php:234
+#: includes/class-protected-files.php:250
+msgid "The file could not be moved."
+msgstr ""
+
+#: includes/class-protected-files.php:322
+msgid "Sorry, you are not allowed to view this attachment."
+msgstr ""
+
+#: includes/class-protected-files.php:351
+#: includes/class-protected-files.php:356
+msgid "File not found."
+msgstr ""
+
+#: includes/class-protected-files.php:367
+msgid "You do not have permission to download this file."
+msgstr ""
+
+#: includes/class-quote-mode.php:54
+#: includes/class-quote-mode.php:326
+msgid "Inquiry basket"
+msgstr ""
+
+#: includes/class-quote-mode.php:55
+#: includes/class-quote-mode.php:327
+msgid "Add to inquiry"
+msgstr ""
+
+#: includes/class-quote-mode.php:56
+#: includes/class-quote-mode.php:328
+msgid "Continue to inquiry"
+msgstr ""
+
+#: includes/class-quote-mode.php:57
+#: includes/class-quote-mode.php:329
+msgid "Send inquiry"
+msgstr ""
+
+#: includes/class-quote-mode.php:80
+msgid "Thank you. Your inquiry has been received."
+msgstr ""
+
+#: includes/class-quote-mode.php:191
+#: includes/class-quote-mode.php:314
+#: templates/emails/inquiry-customer-details.php:18
+msgid "Company"
+msgstr ""
+
+#: includes/class-quote-mode.php:191
+#: includes/class-quote-mode.php:315
+#: templates/emails/inquiry-customer-details.php:17
+msgid "Phone"
+msgstr ""
+
+#: includes/class-quote-mode.php:311
+#: includes/class-quote-mode.php:316
+msgid "Optional"
+msgstr ""
+
+#: includes/class-quote-mode.php:311
+#: includes/class-quote-mode.php:316
+msgid "Required"
+msgstr ""
+
+#: includes/class-quote-mode.php:311
+#: includes/class-quote-mode.php:316
+msgid "Hidden"
+msgstr ""
+
+#: includes/class-quote-mode.php:313
+msgid "Inquiry checkout fields"
+msgstr ""
+
+#: includes/class-quote-mode.php:316
+msgid "Address"
+msgstr ""
+
+#: includes/class-quote-mode.php:317
+msgid "Message"
+msgstr ""
+
+#: includes/class-quote-mode.php:325
 #: includes/class-settings-page.php:23
 #: includes/class-settings-page.php:41
 msgid "Quote mode"
+msgstr ""
+
+#: includes/class-quote-mode.php:325
+msgid "Germanized legal notices and checkout checkboxes are adjusted in Quote mode. The privacy checkbox is kept when enabled in Germanized."
+msgstr ""
+
+#: includes/class-quote-mode.php:326
+msgid "Inquiry basket label"
+msgstr ""
+
+#: includes/class-quote-mode.php:327
+msgid "Add to inquiry label"
+msgstr ""
+
+#: includes/class-quote-mode.php:328
+msgid "Continue to inquiry label"
+msgstr ""
+
+#: includes/class-quote-mode.php:329
+msgid "Send inquiry label"
 msgstr ""
 
 #: includes/class-settings-page.php:16
@@ -113,7 +433,7 @@ msgstr ""
 
 #: includes/class-settings-page.php:25
 #: includes/class-settings-page.php:41
-#: includes/class-variable-length.php:60
+#: includes/class-variable-length.php:141
 msgid "Variable length"
 msgstr ""
 
@@ -213,68 +533,211 @@ msgstr ""
 msgid "Open the Updates settings"
 msgstr ""
 
-#: includes/class-variable-length.php:32
+#: includes/class-variable-length.php:44
 msgid "Variable length defaults"
 msgstr ""
 
-#: includes/class-variable-length.php:33
+#: includes/class-variable-length.php:45
+#: includes/class-variable-length.php:143
+msgid "Price per length unit"
+msgstr ""
+
+#: includes/class-variable-length.php:45
+msgid "Allows price per length unit on products; leave off in quote mode"
+msgstr ""
+
+#: includes/class-variable-length.php:46
 msgid "Unit"
 msgstr ""
 
-#: includes/class-variable-length.php:34
-#: includes/class-variable-length.php:62
+#: includes/class-variable-length.php:47
+#: includes/class-variable-length.php:146
 msgid "Minimum length"
 msgstr ""
 
-#: includes/class-variable-length.php:35
-#: includes/class-variable-length.php:62
+#: includes/class-variable-length.php:48
+#: includes/class-variable-length.php:146
 msgid "Maximum length"
 msgstr ""
 
-#: includes/class-variable-length.php:36
-#: includes/class-variable-length.php:62
+#: includes/class-variable-length.php:49
+#: includes/class-variable-length.php:146
 msgid "Length step"
 msgstr ""
 
-#: includes/class-variable-length.php:61
+#: includes/class-variable-length.php:109
+msgid "Minimum length override"
+msgstr ""
+
+#: includes/class-variable-length.php:109
+msgid "Maximum length override"
+msgstr ""
+
+#: includes/class-variable-length.php:109
+msgid "Length step override"
+msgstr ""
+
+#: includes/class-variable-length.php:109
+msgid "Default length override"
+msgstr ""
+
+#: includes/class-variable-length.php:145
 msgid "Length unit"
 msgstr ""
 
-#: includes/class-variable-length.php:61
+#: includes/class-variable-length.php:145
 msgid "Use store default"
 msgstr ""
 
-#: includes/class-variable-length.php:62
+#: includes/class-variable-length.php:146
 msgid "Default length"
 msgstr ""
 
 #. translators: %s is the product's length unit (mm, cm, or m).
-#: includes/class-variable-length.php:86
+#: includes/class-variable-length.php:186
 #, php-format
 msgid "Length (%s)"
 msgstr ""
 
 #. translators: %1$s and %2$s are the inclusive length bounds; %3$s is the unit.
-#: includes/class-variable-length.php:123
+#: includes/class-variable-length.php:288
 #, php-format
 msgid "Please enter a length between %1$s and %2$s %3$s."
 msgstr ""
 
 #. translators: %1$s is the required step size; %2$s is the unit.
-#: includes/class-variable-length.php:128
+#: includes/class-variable-length.php:293
 #, php-format
 msgid "The length must be a multiple of %1$s %2$s."
 msgstr ""
 
-#: includes/class-variable-length.php:157
-#: includes/class-variable-length.php:173
+#: includes/class-variable-length.php:380
+#: includes/class-variable-length.php:396
 msgid "Length"
 msgstr ""
 
-#: includes/class-variable-length.php:186
+#: includes/class-variable-length.php:409
 msgid "Choose length"
 msgstr ""
 
-#: jp-catalog-suite.php:67
+#: jp-catalog-suite.php:71
 msgid "JayPee Solutions Catalog Suite for WooCommerce requires WooCommerce."
+msgstr ""
+
+#: templates/emails/inquiry-confirmation.php:12
+#: templates/emails/plain/inquiry-confirmation.php:13
+msgid "Thank you for your inquiry."
+msgstr ""
+
+#: templates/emails/inquiry-confirmation.php:15
+#: templates/emails/plain/inquiry-confirmation.php:16
+msgid "Your message"
+msgstr ""
+
+#: templates/emails/inquiry-customer-details.php:15
+msgid "Name"
+msgstr ""
+
+#: templates/emails/inquiry-customer-details.php:16
+msgid "Email"
+msgstr ""
+
+#: templates/emails/inquiry-customer-details.php:23
+#: templates/emails/inquiry-customer-details.php:34
+msgid "Customer details"
+msgstr ""
+
+#: templates/emails/inquiry-customer-details.php:28
+#: templates/emails/inquiry-customer-details.php:40
+msgid "Billing address"
+msgstr ""
+
+#: templates/emails/inquiry-items.php:17
+#: templates/emails/inquiry-items.php:27
+msgid "SKU"
+msgstr ""
+
+#: templates/emails/inquiry-items.php:18
+#: templates/emails/inquiry-items.php:28
+msgid "Quantity"
+msgstr ""
+
+#: templates/emails/inquiry-items.php:29
+msgid "Details"
+msgstr ""
+
+#: templates/emails/new-inquiry.php:12
+#: templates/emails/plain/new-inquiry.php:13
+msgid "A customer has submitted an inquiry."
+msgstr ""
+
+#: templates/emails/new-inquiry.php:15
+#: templates/emails/plain/new-inquiry.php:16
+msgid "Customer message"
+msgstr ""
+
+#: blocks/access/edit.js:6
+#: blocks/access/edit.js:34
+msgid "Access"
+msgstr ""
+
+#: blocks/access/edit.js:16
+msgid "Access settings"
+msgstr ""
+
+#: blocks/access/edit.js:18
+msgid "Show content"
+msgstr ""
+
+#: blocks/access/edit.js:21
+msgid "Only with access"
+msgstr ""
+
+#: blocks/access/edit.js:22
+msgid "Only without access"
+msgstr ""
+
+#: blocks/access/edit.js:27
+msgid "Show login notice when hidden"
+msgstr ""
+
+#: blocks/file-list/edit.js:6
+#: blocks/file-list/edit.js:29
+msgid "File list"
+msgstr ""
+
+#: blocks/file-list/edit.js:13
+msgid "Files"
+msgstr ""
+
+#: blocks/file-list/edit.js:17
+msgid "Select files"
+msgstr ""
+
+#: blocks/file-list/edit.js:17
+msgid "Use selected files"
+msgstr ""
+
+#: blocks/file-list/edit.js:24
+msgid "Choose files"
+msgstr ""
+
+#: blocks/access/block.json
+msgctxt "block title"
+msgid "Access"
+msgstr ""
+
+#: blocks/access/block.json
+msgctxt "block description"
+msgid "Show content according to visitor access."
+msgstr ""
+
+#: blocks/file-list/block.json
+msgctxt "block title"
+msgid "File list"
+msgstr ""
+
+#: blocks/file-list/block.json
+msgctxt "block description"
+msgid "Display downloadable files."
 msgstr ""

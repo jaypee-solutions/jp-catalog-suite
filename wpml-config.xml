@@ -13,7 +13,23 @@
         <custom-field action="copy">_jps_cs_length_max</custom-field>
         <custom-field action="copy">_jps_cs_length_step</custom-field>
         <custom-field action="copy">_jps_cs_length_default</custom-field>
+        <custom-field action="copy">_jps_cs_products</custom-field>
+        <custom-field action="copy">_jps_cs_replaces</custom-field>
+        <custom-field action="copy">_jps_cs_hidden_tabs</custom-field>
+        <custom-field action="copy">_jps_cs_length_price_per_unit</custom-field>
     </custom-fields>
-    </custom-fields>
-    <admin-texts></admin-texts>
+    <admin-texts>
+        <key name="jps_cs_quote_cart_label"/>
+        <key name="jps_cs_quote_add_to_cart_label"/>
+        <key name="jps_cs_quote_proceed_label"/>
+        <key name="jps_cs_quote_place_order_label"/>
+        <key name="jps_cs_quote_field_company"/>
+        <key name="jps_cs_quote_field_phone"/>
+        <key name="jps_cs_quote_field_address"/>
+        <key name="jps_cs_quote_field_message"/>
+        <key name="jps_cs_tabs_core_description_title"/>
+        <key name="jps_cs_tabs_core_additional_information_title"/>
+        <key name="jps_cs_tabs_core_reviews_title"/>
+        <key name="jps_cs_protected_notice"/>
+    </admin-texts>
 </wpml-config>

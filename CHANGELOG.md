@@ -11,8 +11,14 @@ extracts it as the GitHub release notes and fails without it.
 ## [Unreleased]
 
 ### Added
-- Global product tabs with all-product or category scope and priority.
 - Quote mode supports guest Inquiry checkout without payment, shipping, taxes, or coupons.
+- Global product tabs with all-product or category scope and priority.
+- Variable-length product inputs with validated cart and order data.
+- Added Germanized compatibility, price-free Inquiry emails and checkout fields, protected product tabs/files, access controls, and opt-in download logging.
+- Variable-length variation overrides, Store API support, and optional price-per-length-unit calculations.
+- Translatable Inquiry labels and customer price hiding.
+- Shop-wide Core tab controls and per-product tab overrides.
+- Inquiry checkout fields configurable for Company, Phone, Address, and Message.
 
 ## [0.1.0] - 2026-11-06
 

@@ -1,0 +1,15 @@
+{
+  "apiVersion": 3,
+  "name": "jp-catalog-suite/access",
+  "title": "Access",
+  "category": "widgets",
+  "icon": "lock",
+  "textdomain": "jp-catalog-suite",
+  "description": "Show content according to visitor access.",
+  "attributes": {
+    "audience": { "type": "string", "default": "authorized" },
+    "showNotice": { "type": "boolean", "default": true }
+  },
+  "usesContext": [ "postId" ],
+  "supports": { "html": false }
+}

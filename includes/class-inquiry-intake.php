@@ -18,6 +18,8 @@ final class Inquiry_Intake {
         add_filter( 'woocommerce_cart_needs_payment', [ self::class, 'cart_needs_payment' ], 10, 2 );
         add_filter( 'woocommerce_order_needs_payment', [ self::class, 'order_needs_payment' ], 10, 3 );
         add_filter( 'woocommerce_valid_order_statuses_for_payment_complete', [ self::class, 'valid_payment_statuses' ], 10, 2 );
+        add_filter( 'woocommerce_account_menu_items', [ Inquiries::class, 'account_menu_items' ] );
+        add_filter( 'woocommerce_account_orders_columns', [ Inquiries::class, 'account_order_columns' ] );
     }
 
     public static function mark_order( \WC_Order $order, array $data = [] ): void {

@@ -54,6 +54,7 @@ msgstr "Längenschritt"
 
 msgid "Default length"
 msgstr "Standardlänge"
+
 msgid "Length (%s)"
 msgstr "Länge (%s)"
 
@@ -68,6 +69,7 @@ msgstr "Länge"
 
 msgid "Choose length"
 msgstr "Länge auswählen"
+
 msgctxt "Order status"
 msgid "Inquiry"
 msgstr "Anfrage"
@@ -77,9 +79,9 @@ msgid_plural "Inquiries <span class=\"count\">(%s)</span>"
 msgstr[0] "Anfrage <span class=\"count\">(%s)</span>"
 msgstr[1] "Anfragen <span class=\"count\">(%s)</span>"
 
-
 msgid "Inquiry received."
 msgstr "Ihre Anfrage ist eingegangen."
+
 msgid "Product tab"
 msgstr "Produkttab"
 
@@ -106,3 +108,333 @@ msgstr "Priorität"
 
 msgid "Sorry, you are not allowed to read product tabs."
 msgstr "Sie dürfen Produkttabs nicht lesen."
+
+msgid "Minimum length override"
+msgstr "Abweichende Mindestlänge"
+
+msgid "Maximum length override"
+msgstr "Abweichende Höchstlänge"
+
+msgid "Length step override"
+msgstr "Abweichender Längenschritt"
+
+msgid "Default length override"
+msgstr "Abweichende Standardlänge"
+
+msgid "Products"
+msgstr "Produkte"
+
+msgid "Replace global tab"
+msgstr "Globalen Tab ersetzen"
+
+msgid "None"
+msgstr "Keiner"
+
+msgid "Tabs"
+msgstr "Tabs"
+
+msgid "Hide on this product"
+msgstr "Bei diesem Produkt ausblenden"
+
+msgid "Add product-specific tab"
+msgstr "Produktspezifischen Tab hinzufügen"
+
+msgid "Title"
+msgstr "Titel"
+
+msgid "Hide"
+msgstr "Ausblenden"
+
+msgid "Description"
+msgstr "Beschreibung"
+
+msgid "Additional information"
+msgstr "Zusätzliche Informationen"
+
+msgid "Reviews"
+msgstr "Bewertungen"
+
+msgid "Inquiry basket"
+msgstr "Anfragekorb"
+
+msgid "Add to inquiry"
+msgstr "Zur Anfrage hinzufügen"
+
+msgid "Continue to inquiry"
+msgstr "Weiter zur Anfrage"
+
+msgid "Send inquiry"
+msgstr "Anfrage absenden"
+
+msgid "Inquiry basket label"
+msgstr "Bezeichnung des Anfragekorbs"
+
+msgid "Add to inquiry label"
+msgstr "Bezeichnung für Anfrage hinzufügen"
+
+msgid "Continue to inquiry label"
+msgstr "Bezeichnung für Weiter zur Anfrage"
+
+msgid "Send inquiry label"
+msgstr "Bezeichnung für Anfrage absenden"
+
+msgid "Thank you. Your inquiry has been received."
+msgstr "Vielen Dank. Ihre Anfrage ist eingegangen."
+
+msgid "New inquiry"
+msgstr "Neue Anfrage"
+
+msgid "Sent to the shop manager when a customer submits an inquiry."
+msgstr "Wird an die Shopverwaltung gesendet, wenn ein Kunde eine Anfrage übermittelt."
+
+msgid "Inquiry confirmation"
+msgstr "Anfragebestätigung"
+
+msgid "Sent to the customer when an inquiry is received."
+msgstr "Wird an den Kunden gesendet, wenn eine Anfrage eingeht."
+
+msgid "Thank you for your inquiry"
+msgstr "Vielen Dank für Ihre Anfrage"
+
+msgid "[{site_title}]: New inquiry #{order_number}"
+msgstr "[{site_title}]: Neue Anfrage #{order_number}"
+
+msgid "Your inquiry at {site_title}"
+msgstr "Ihre Anfrage bei {site_title}"
+
+msgid "Recipient(s)"
+msgstr "Empfänger"
+
+msgid "Enter recipients (comma-separated). Defaults to the site administrator email address."
+msgstr "Geben Sie Empfänger durch Kommas getrennt ein. Standardmäßig wird die E-Mail-Adresse der Website-Administration verwendet."
+
+msgid "SKU"
+msgstr "Artikelnummer"
+
+msgid "Quantity"
+msgstr "Menge"
+
+msgid "Details"
+msgstr "Details"
+
+msgid "A customer has submitted an inquiry."
+msgstr "Ein Kunde hat eine Anfrage übermittelt."
+
+msgid "Thank you for your inquiry."
+msgstr "Vielen Dank für Ihre Anfrage."
+
+msgid "Customer message"
+msgstr "Nachricht des Kunden"
+
+msgid "Your message"
+msgstr "Ihre Nachricht"
+
+msgid "Name"
+msgstr "Name"
+
+msgid "Email"
+msgstr "E-Mail-Adresse"
+
+msgid "Phone"
+msgstr "Telefon"
+
+msgid "Company"
+msgstr "Unternehmen"
+
+msgid "Billing address"
+msgstr "Rechnungsadresse"
+
+msgid "Customer details"
+msgstr "Kundendetails"
+
+msgid "Optional"
+msgstr "Optional"
+
+msgid "Required"
+msgstr "Erforderlich"
+
+msgid "Hidden"
+msgstr "Ausgeblendet"
+
+msgid "Inquiry checkout fields"
+msgstr "Anfrage-Checkout-Felder"
+
+msgid "Address"
+msgstr "Adresse"
+
+msgid "Message"
+msgstr "Nachricht"
+
+msgid "Inquiries"
+msgstr "Anfragen"
+
+msgid "Germanized legal notices and checkout checkboxes are adjusted in Quote mode. The privacy checkbox is kept when enabled in Germanized."
+msgstr "Die rechtlichen Hinweise und Kontrollkästchen von Germanized werden im Angebotsmodus angepasst. Das Kontrollkästchen zur Datenschutzerklärung bleibt erhalten, wenn es in Germanized aktiviert ist."
+
+msgid "You do not have permission to view this content."
+msgstr "Sie haben keine Berechtigung, diesen Inhalt anzuzeigen."
+
+msgid "Please {login} or {register} to view this content."
+msgstr "Bitte {login} oder {register}, um diesen Inhalt anzuzeigen."
+
+msgid "log in"
+msgstr "anmelden"
+
+msgid "register"
+msgstr "registrieren"
+
+msgid "Protected notice"
+msgstr "Hinweis für geschützte Inhalte"
+
+msgid "Use {login} and {register} for links."
+msgstr "Verwenden Sie {login} und {register} für Links."
+
+#: blocks/access/edit.js:6 blocks/access/edit.js:34
+msgid "Access"
+msgstr "Zugriff"
+
+#: blocks/access/edit.js:16
+msgid "Access settings"
+msgstr "Zugriffseinstellungen"
+
+#: blocks/access/edit.js:18
+msgid "Show content"
+msgstr "Inhalt anzeigen"
+
+#: blocks/access/edit.js:21
+msgid "Only with access"
+msgstr "Nur mit Zugriff"
+
+#: blocks/access/edit.js:22
+msgid "Only without access"
+msgstr "Nur ohne Zugriff"
+
+#: blocks/access/edit.js:27
+msgid "Show login notice when hidden"
+msgstr "Anmeldehinweis anzeigen, wenn der Inhalt ausgeblendet ist"
+
+#: blocks/access/block.json
+msgctxt "block description"
+msgid "Show content according to visitor access."
+msgstr "Inhalt entsprechend dem Zugriff der Besuchenden anzeigen."
+
+msgid "Price per length unit"
+msgstr "Preis pro Längeneinheit"
+
+msgid "Allows price per length unit on products; leave off in quote mode"
+msgstr "Ermöglicht die Preisberechnung pro Längeneinheit für Produkte; im Angebotsmodus deaktiviert lassen."
+
+msgid "Protected"
+msgstr "Geschützt"
+
+msgid "Served only to authorized users"
+msgstr "Nur für berechtigte Benutzer verfügbar"
+
+msgid "The file could not be moved."
+msgstr "Die Datei konnte nicht verschoben werden."
+
+msgid "Download log"
+msgstr "Download-Protokoll"
+
+msgid "Enable download log"
+msgstr "Download-Protokoll aktivieren"
+
+msgid "Download log retention (days)"
+msgstr "Aufbewahrungsdauer des Download-Protokolls (Tage)"
+
+msgid "Set to 0 to keep entries until erased or the user is deleted."
+msgstr "Auf 0 setzen, um Einträge bis zur Löschung oder zum Löschen des Benutzers aufzubewahren."
+
+msgid "You do not have permission to view this page."
+msgstr "Sie sind nicht berechtigt, diese Seite anzuzeigen."
+
+msgid "User"
+msgstr "Benutzer"
+
+msgid "File"
+msgstr "Datei"
+
+msgid "Product"
+msgstr "Produkt"
+
+msgid "Date"
+msgstr "Datum"
+
+msgid "Catalog Suite Download Log"
+msgstr "Download-Protokoll der Catalog Suite"
+
+msgid "When enabled, the Download log records the user, protected file, optional product and download time. Records are retained for the configured number of days; zero keeps them until erased or deleted with the user account."
+msgstr "Wenn das Download-Protokoll aktiviert ist, erfasst es den Benutzer, die geschützte Datei, das optionale Produkt und den Downloadzeitpunkt. Die Einträge werden für die konfigurierte Anzahl von Tagen aufbewahrt; bei null bleiben sie erhalten, bis sie gelöscht oder mit dem Benutzerkonto entfernt werden."
+
+msgid "login required"
+msgstr "Anmeldung erforderlich"
+
+#: blocks/file-list/edit.js
+msgid "File list"
+msgstr "Dateiliste"
+
+#: blocks/file-list/edit.js
+msgid "Files"
+msgstr "Dateien"
+
+#: blocks/file-list/edit.js
+msgid "Select files"
+msgstr "Dateien auswählen"
+
+#: blocks/file-list/edit.js
+msgid "Use selected files"
+msgstr "Ausgewählte Dateien verwenden"
+
+#: blocks/file-list/edit.js
+msgid "Choose files"
+msgstr "Dateien auswählen"
+
+msgid "Display downloadable files."
+msgstr "Herunterladbare Dateien anzeigen."
+
+msgctxt "block title"
+msgid "File list"
+msgstr "Dateiliste"
+
+msgctxt "block description"
+msgid "Display downloadable files."
+msgstr "Herunterladbare Dateien anzeigen."
+
+msgid "Protected files"
+msgstr "Geschützte Dateien"
+
+msgid "Allowed file MIME types"
+msgstr "Zulässige MIME-Typen für Dateien"
+
+msgid "Automatically protect extensions"
+msgstr "Dateiendungen automatisch schützen"
+
+msgid "File delivery method"
+msgstr "Methode zur Dateibereitstellung"
+
+msgid "Automatic"
+msgstr "Automatisch"
+
+msgid "File not found."
+msgstr "Datei nicht gefunden."
+
+msgid "You do not have permission to download this file."
+msgstr "Sie sind nicht berechtigt, diese Datei herunterzuladen."
+
+msgid "Protected files directory access"
+msgstr "Zugriff auf das Verzeichnis geschützter Dateien"
+
+msgid "Protected files are denied by the web server."
+msgstr "Der Webserver verweigert den Zugriff auf geschützte Dateien."
+
+msgid "Protected files may be publicly accessible."
+msgstr "Geschützte Dateien könnten öffentlich zugänglich sein."
+
+msgid "Security"
+msgstr "Sicherheit"
+
+msgid "The protected uploads directory should return HTTP 403."
+msgstr "Das Verzeichnis geschützter Uploads sollte den HTTP-Status 403 zurückgeben."
+
+msgid "Sorry, you are not allowed to view this attachment."
+msgstr "Sie sind nicht berechtigt, diesen Anhang anzusehen."

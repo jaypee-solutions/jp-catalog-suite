@@ -12,7 +12,7 @@ JayPee Solutions Catalog Suite for WooCommerce is a WordPress plugin.
 
 == Description ==
 
-JayPee Solutions Catalog Suite for WooCommerce is a WordPress plugin.
+The suite adds price-free Inquiries, configurable checkout fields and emails, global and product-specific tabs, protected content/files with access controls, variable-length products and optional length-based pricing. Administrators configure modules at WooCommerce → Settings → Catalog Suite.
 
 == Installation ==
 

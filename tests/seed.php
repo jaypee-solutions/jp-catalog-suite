@@ -91,6 +91,17 @@ foreach ( [ 'Classic Cart' => '[woocommerce_cart]', 'Classic Checkout' => '[wooc
     }
 }
 
+
+// Ticket #12: Access block and protected notice fixtures.
+$access_tab_id = $tab->ID ?? ( $tab_id ?? 0 );
+if ( $access_tab_id ) {
+    wp_update_post(
+        [
+            'ID' => $access_tab_id,
+            'post_content' => '<p>Public info</p><!-- wp:jp-catalog-suite/access {"audience":"authorized"} --><p>Protected Downloads content.</p><!-- /wp:jp-catalog-suite/access -->',
+        ]
+    );
+}
 WP_CLI::success( 'Seed complete.' );
 // Ticket #17: Variable length tracer bullet on simple products fixtures.
 $length_product = wc_get_product_id_by_sku( 'LB-1' );
@@ -104,4 +115,85 @@ foreach ( [ 'enabled' => 'yes', 'unit' => 'cm', 'min' => '10', 'max' => '300', '
     update_post_meta( $length_product, '_jps_cs_length_' . $key, $value );
 }
 update_option( 'jps_cs_module_length', 'yes' );
+// Ticket #20: Price per length unit fixtures.
+$priced_length_id = wc_get_product_id_by_sku( 'LBP-1' );
+if ( ! $priced_length_id ) {
+    $priced_length = new WC_Product_Simple();
+    $priced_length->set_name( 'Priced Length Bar' );
+    $priced_length->set_sku( 'LBP-1' );
+    $priced_length->set_regular_price( '2' );
+    $priced_length->set_status( 'publish' );
+    $priced_length_id = $priced_length->save();
+}
+foreach ( [ 'enabled' => 'yes', 'unit' => 'cm', 'min' => '10', 'max' => '300', 'step' => '1', 'price_per_unit' => 'yes' ] as $key => $value ) {
+    update_post_meta( $priced_length_id, '_jps_cs_length_' . $key, $value );
+}
 update_option( 'jps_cs_module_quote', 'yes' );
+// Ticket #18: Variable length on variable products fixtures.
+$length_rail = wc_get_product_id_by_sku( 'LR-1' );
+if ( ! $length_rail ) {
+    $variable = new WC_Product_Variable();
+    $variable->set_name( 'Length Rail' );
+    $variable->set_status( 'publish' );
+    $variable->set_sku( 'LR-1' );
+    $attribute = new WC_Product_Attribute();
+    $attribute->set_name( 'Colour' );
+    $attribute->set_options( [ 'Blue', 'Red' ] );
+    $attribute->set_position( 0 );
+    $attribute->set_visible( true );
+    $attribute->set_variation( true );
+    $variable->set_attributes( [ $attribute ] );
+    $variable->save();
+    $length_rail = $variable->get_id();
+    foreach ( [ 'Blue', 'Red' ] as $colour ) {
+        $variation = new WC_Product_Variation();
+        $variation->set_status( 'publish' );
+        $variation->set_parent_id( $length_rail );
+        $variation->set_attributes( [ 'colour' => $colour ] );
+        $variation->set_regular_price( '5' );
+        $variation->save();
+        if ( 'Blue' === $colour ) {
+            update_post_meta( $variation->get_id(), '_jps_cs_length_max', '200' );
+        }
+    }
+    WC_Product_Variable::sync( $length_rail );
+}
+foreach ( [ 'enabled' => 'yes', 'unit' => 'cm', 'min' => '10', 'max' => '300', 'step' => '1' ] as $key => $value ) {
+    update_post_meta( $length_rail, '_jps_cs_length_' . $key, $value );
+}
+
+// Ticket #13: Protected files and download endpoint fixtures.
+require_once dirname( __DIR__ ) . '/includes/class-protected-files.php';
+\JayPee\CatalogSuite\Protected_Files::ensure_directory();
+$protected_path = \JayPee\CatalogSuite\Protected_Files::directory() . '/part.stp';
+if ( ! file_exists( $protected_path ) ) {
+    file_put_contents( $protected_path, 'ISO-10303-21; protected test fixture' );
+}
+$protected_id = get_posts(
+    [
+        'post_type'      => 'attachment',
+        'post_status'    => 'any',
+        'numberposts'    => 1,
+        'title'          => 'part.stp',
+        'fields'         => 'ids',
+    ]
+)[0] ?? 0;
+if ( ! $protected_id ) {
+    $protected_id = wp_insert_attachment(
+        [ 'post_mime_type' => 'application/step', 'post_title' => 'part.stp', 'post_status' => 'inherit' ],
+        $protected_path
+    );
+    update_attached_file( $protected_id, $protected_path );
+    update_post_meta( $protected_id, '_jps_cs_protected', '1' );
+    update_post_meta( $protected_id, '_jps_cs_e2e_fixture', 'part.stp' );
+}
+$file_tabs = get_posts( [ 'post_type' => 'jps_cs_tab', 'post_status' => 'any', 'numberposts' => 1, 'title' => 'Downloads' ] );
+$file_tab = $file_tabs[0] ?? null;
+if ( $file_tab ) {
+    wp_update_post(
+        [
+            'ID'           => $file_tab->ID,
+            'post_content' => '<p>Public info</p><!-- wp:jp-catalog-suite/access {"audience":"authorized"} --><p>Protected Downloads content.</p><!-- wp:jp-catalog-suite/file-list {"ids":[' . $protected_id . ']} /--><!-- /wp:jp-catalog-suite/access -->',
+        ]
+    );
+}

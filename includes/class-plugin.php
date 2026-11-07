@@ -10,7 +10,6 @@ declare( strict_types = 1 );
 namespace JayPee\CatalogSuite;
 
 final class Plugin {
-
     public const MODULES = [
         'quote' => Quote_Mode::class,
         'tabs' => Product_Tabs::class,
@@ -19,6 +18,7 @@ final class Plugin {
 
     public static function init(): void {
         require_once PLUGIN_DIR . 'includes/class-variable-length.php';
+        require_once PLUGIN_DIR . 'includes/class-protected-files.php';
         Inquiries::init();
         add_filter(
             'woocommerce_get_settings_pages',
@@ -28,14 +28,16 @@ final class Plugin {
                 return $pages;
             }
         );
-
         foreach ( self::MODULES as $id => $class ) {
             if ( self::is_module_active( $id ) ) {
                 $class::init();
             }
         }
+        Access_Block::init();
+        File_List_Block::init();
+        Protected_Files::init();
+        Download_Log::init( self::is_module_active( 'tabs' ) );
     }
-
 
     public static function is_module_active( string $id ): bool {
         return 'yes' === get_option( "jps_cs_module_{$id}", 'no' );
@@ -51,7 +53,11 @@ final class Plugin {
         );
     }
 
-    public static function activate(): void {}
+    public static function activate(): void {
+        require_once PLUGIN_DIR . 'includes/class-protected-files.php';
+        Protected_Files::ensure_directory();
+        Download_Log::install_table();
+    }
 
     public static function deactivate(): void {
         wp_clear_scheduled_hook( 'jps_cs_purge_download_log' );
