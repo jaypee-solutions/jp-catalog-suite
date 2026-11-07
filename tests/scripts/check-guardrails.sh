@@ -24,10 +24,10 @@ if "$root/scripts/check-adr.sh" "$adr" "$decisions" "$index" 2>/dev/null; then e
 cp "$adr/0002-second.md" "$decisions/0002-second.md"
 if "$root/scripts/check-adr.sh" "$adr" "$decisions" "$index" 2>/dev/null; then echo 'missing ADR index link was accepted' >&2; exit 1; fi
 mkdir -p "$tmp/pot/includes" "$tmp/pot/templates" "$tmp/pot/blocks" "$tmp/pot/languages"
-printf "<?php __( 'Fixture missing', 'jp-catalog-suite' );\n" > "$tmp/pot/includes/fixture.php"
-: > "$tmp/pot/languages/jp-catalog-suite.pot"
-if php "$root/scripts/check-pot.php" "$tmp/pot" 2>/dev/null; then echo 'missing POT msgid was accepted' >&2; exit 1; fi
-printf 'msgid ""\nmsgid "Fixture missing"\n' > "$tmp/pot/languages/jp-catalog-suite.pot"
+printf "<?php __( 'Fixture missing', 'jp-catalog-suite' ); _n( 'Single fixture', 'Plural fixture', 2, 'jp-catalog-suite' );\n" > "$tmp/pot/includes/fixture.php"
+printf 'msgid ""\nmsgid "Fixture missing"\nmsgid "Single fixture"\n' > "$tmp/pot/languages/jp-catalog-suite.pot"
+if php "$root/scripts/check-pot.php" "$tmp/pot" 2>/dev/null; then echo 'missing plural POT msgid was accepted' >&2; exit 1; fi
+printf 'msgid ""\nmsgid "Fixture missing"\nmsgid "Single fixture"\nmsgid "Plural fixture"\n' > "$tmp/pot/languages/jp-catalog-suite.pot"
 php "$root/scripts/check-pot.php" "$tmp/pot"
 cat > "$tmp/includes/hooks.php" <<'EOT'
 <?php apply_filters( 'jps_cs_fixture_hook', $value );
