@@ -72,7 +72,13 @@ final class Test_Inquiries extends WP_UnitTestCase {
 
     public function test_inquiry_status_is_registered_and_excluded_from_analytics(): void {
         $this->assertArrayHasKey( 'wc-jps-inquiry', wc_get_order_statuses() );
-        $this->assertContains( 'jps-inquiry', apply_filters( 'woocommerce_analytics_settings_default_excluded_order_statuses', [] ) );
+
+        delete_option( 'woocommerce_excluded_report_order_statuses' );
+        $this->assertContains( 'jps-inquiry', get_option( 'woocommerce_excluded_report_order_statuses', [ 'pending', 'failed', 'cancelled' ] ) );
+
+        update_option( 'woocommerce_excluded_report_order_statuses', [ 'pending' ] );
+        $this->assertContains( 'jps-inquiry', get_option( 'woocommerce_excluded_report_order_statuses', [] ) );
+        $this->assertContains( 'pending', get_option( 'woocommerce_excluded_report_order_statuses', [] ) );
     }
     public function test_product_prices_and_inquiry_totals_are_hidden(): void {
         $product = new WC_Product_Simple();

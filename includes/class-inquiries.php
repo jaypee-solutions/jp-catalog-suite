@@ -14,8 +14,8 @@ final class Inquiries {
     public static function init(): void {
         add_filter( 'woocommerce_register_shop_order_post_statuses', [ self::class, 'register_status' ] );
         add_filter( 'wc_order_statuses', [ self::class, 'order_statuses' ] );
-        add_filter( 'woocommerce_analytics_settings_default_excluded_order_statuses', [ self::class, 'excluded_statuses' ] );
-        add_filter( 'option_woocommerce_excluded_report_order_statuses', [ self::class, 'saved_excluded_statuses' ] );
+        add_filter( 'default_option_woocommerce_excluded_report_order_statuses', [ self::class, 'excluded_statuses' ] );
+        add_filter( 'option_woocommerce_excluded_report_order_statuses', [ self::class, 'excluded_statuses' ] );
         add_filter( 'woocommerce_get_order_item_totals', [ self::class, 'order_item_totals' ], 10, 3 );
         add_filter( 'woocommerce_order_formatted_line_subtotal', [ self::class, 'line_subtotal' ], 10, 3 );
         add_filter( 'woocommerce_get_formatted_order_total', [ self::class, 'formatted_order_total' ], 10, 2 );
@@ -49,14 +49,7 @@ final class Inquiries {
         return $result;
     }
 
-    public static function excluded_statuses( array $statuses ): array {
-        if ( ! in_array( 'jps-inquiry', $statuses, true ) ) {
-            $statuses[] = 'jps-inquiry';
-        }
-        return $statuses;
-    }
-
-    public static function saved_excluded_statuses( $statuses ) {
+    public static function excluded_statuses( $statuses ) {
         if ( is_array( $statuses ) && ! in_array( 'jps-inquiry', $statuses, true ) ) {
             $statuses[] = 'jps-inquiry';
         }
