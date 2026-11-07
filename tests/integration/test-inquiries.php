@@ -26,6 +26,19 @@ final class Test_Inquiries extends WP_UnitTestCase {
         $variation->save();
         $this->assertTrue( $variation->is_purchasable() );
     }
+    public function test_disabled_variation_stays_hidden_and_unpurchasable_in_quote_mode(): void {
+        $parent = new WC_Product_Variable();
+        $parent->set_name( 'Published variable' );
+        $parent->set_status( 'publish' );
+        $parent->save();
+        $variation = new WC_Product_Variation();
+        $variation->set_parent_id( $parent->get_id() );
+        $variation->set_status( 'draft' );
+        $variation->save();
+        $this->assertFalse( apply_filters( 'woocommerce_variation_is_visible', false, $variation->get_id(), $parent->get_id(), $variation ) );
+        $this->assertFalse( apply_filters( 'woocommerce_variation_is_purchasable', false, $variation ) );
+    }
+
 
     public function test_marked_order_completes_as_inquiry_without_paid_date_or_stock_reduction(): void {
         $product = new WC_Product_Simple();
@@ -88,6 +101,20 @@ final class Test_Inquiries extends WP_UnitTestCase {
         $this->assertSame( 'Inquiries', $items['orders'] );
         $columns = apply_filters( 'woocommerce_account_orders_columns', [ 'order-number' => 'Order', 'order-total' => 'Total' ] );
         $this->assertArrayNotHasKey( 'order-total', $columns );
+    }
+    public function test_account_labels_and_total_column_are_unchanged_when_quote_mode_is_inactive(): void {
+        add_filter( 'jps_cs_quote_mode_active', '__return_false' );
+        $items = apply_filters( 'woocommerce_account_menu_items', [ 'orders' => 'Orders' ] );
+        $columns = apply_filters( 'woocommerce_account_orders_columns', [ 'order-number' => 'Order', 'order-total' => 'Total' ] );
+        $this->assertSame( 'Orders', $items['orders'] );
+        $this->assertArrayHasKey( 'order-total', $columns );
+        remove_filter( 'jps_cs_quote_mode_active', '__return_false' );
+    }
+
+    public function test_thankyou_filter_accepts_no_order(): void {
+        foreach ( [ false, null ] as $order ) {
+            $this->assertSame( 'Original confirmation', apply_filters( 'woocommerce_thankyou_order_received_text', 'Original confirmation', $order ) );
+        }
     }
 
     public function test_quote_labels_use_translated_defaults_and_saved_overrides(): void {

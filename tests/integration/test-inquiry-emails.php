@@ -49,8 +49,11 @@ final class Test_Inquiry_Emails extends WP_UnitTestCase {
             $this->assertStringContainsString( '120 cm', $mail['message'] );
             $this->assertStringContainsString( 'Buyer', $mail['message'] );
             $this->assertStringContainsString( 'Please send details.', $mail['message'] );
+            $this->assertSame( 1, substr_count( $mail['message'], 'buyer@example.test' ) );
         }
-        $this->assertStringContainsString( 'Reply-To: buyer@example.test', implode( "\n", $this->sent_mail[0]['headers'] ) );
+        $headers = implode( "\n", $this->sent_mail[0]['headers'] );
+        $this->assertSame( 1, preg_match_all( '/^Reply-To:/mi', $headers ) );
+        $this->assertStringContainsString( 'Reply-To: buyer@example.test', $headers );
     }
 
 
@@ -115,6 +118,30 @@ final class Test_Inquiry_Emails extends WP_UnitTestCase {
 
         $this->assertCount( 0, $this->sent_mail );
     }
+    public function test_admin_status_change_emails_keep_inquiry_prices_hidden(): void {
+        $this->capture_mail();
+        set_current_screen( 'edit-shop_order' );
+        $product = new WC_Product_Simple();
+        $product->set_name( 'Admin inquiry product' );
+        $product->set_regular_price( '19.99' );
+        $product->save();
+        $order = wc_create_order();
+        $order->add_product( $product, 1 );
+        $order->set_billing_email( 'admin-test@example.test' );
+        $order->update_meta_data( '_jps_cs_inquiry', 'yes' );
+        $order->set_status( 'pending' );
+        $order->save();
+        $order->update_status( 'processing' );
+        if ( empty( $this->sent_mail ) ) {
+            WC()->mailer()->get_emails()['WC_Email_Customer_Processing_Order']->trigger( $order->get_id(), $order );
+        }
+        $this->assertNotEmpty( $this->sent_mail );
+        foreach ( $this->sent_mail as $mail ) {
+            $this->assertStringNotContainsString( '19.99', $mail['message'] );
+        }
+        set_current_screen( 'front' );
+    }
+
 
     private function capture_mail(): void {
         WC()->mailer()->get_emails();

@@ -262,8 +262,8 @@ msgstr "Anfrage-Checkout-Felder"
 msgid "Address"
 msgstr "Adresse"
 
-msgid "Order message"
-msgstr "Nachricht zur Anfrage"
+msgid "Message"
+msgstr "Nachricht"
 
 msgid "Inquiries"
 msgstr "Anfragen"
@@ -399,6 +399,7 @@ msgstr "Dateiliste"
 msgctxt "block description"
 msgid "Display downloadable files."
 msgstr "Herunterladbare Dateien anzeigen."
+
 msgid "Protected files"
 msgstr "Geschützte Dateien"
 

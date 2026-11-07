@@ -26,3 +26,4 @@ okf_version: "0.1"
 * [Download log privacy](decisions/0019-download-log-privacy.md) - Minimal user/file/product records, configurable retention and privacy tools.
 * [Protected-file hosting requirements](references/hosting-requirements.md) - Upload limits, Traefik, X-Sendfile, nginx and Varnish deployment guidance.
 * [Security hardening](decisions/0020-security-hardening.md) - Protected-file routing, access policy, Download-log lifecycle and length validation boundaries.
+* [Persisted names and Quote mode ownership](decisions/0021-persisted-names-and-quote-mode-gating.md) - Canonical persisted names, canonical hidden-tab metadata, and Quote module lifecycle ownership.

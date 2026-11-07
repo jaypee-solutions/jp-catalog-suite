@@ -54,11 +54,10 @@ test.beforeAll( () => {
 	oldCart = wpCli( 'option', 'get', 'woocommerce_cart_page_id' );
 	oldCheckout = wpCli( 'option', 'get', 'woocommerce_checkout_page_id' );
 	oldQuote = wpCli( 'option', 'get', 'jps_cs_module_quote' );
-	oldPhone = wpCli( 'eval', "echo get_option( 'jps_cs_checkout_phone', 'optional' );" );
-	oldMessage = wpCli( 'eval', "echo get_option( 'jps_cs_checkout_message', 'yes' );" );
+	oldPhone = wpCli( 'eval', "echo get_option( 'jps_cs_quote_field_phone', 'optional' );" );
+	oldMessage = wpCli( 'eval', "echo get_option( 'jps_cs_quote_field_message', 'yes' );" );
 	oldComingSoon = wpCli( 'option', 'get', 'woocommerce_coming_soon' );
 	wpCli( 'option', 'update', 'woocommerce_coming_soon', 'no' );
-	wpCli( 'option', 'update', 'jps_cs_checkout_phone', 'required' );
 	wpCli( 'option', 'update', 'jps_cs_module_quote', 'yes' );
 	const cart = wpCli( 'post', 'list', '--post_type=page', '--name=classic-cart', '--field=ID' );
 	const checkout = wpCli( 'post', 'list', '--post_type=page', '--name=classic-checkout', '--field=ID' );
@@ -70,8 +69,8 @@ test.afterAll( () => {
 	if ( oldCart ) wpCli( 'option', 'update', 'woocommerce_cart_page_id', oldCart );
 	if ( oldCheckout ) wpCli( 'option', 'update', 'woocommerce_checkout_page_id', oldCheckout );
 	wpCli( 'option', 'update', 'jps_cs_module_quote', oldQuote );
-	wpCli( 'option', 'update', 'jps_cs_checkout_phone', oldPhone );
-	wpCli( 'option', 'update', 'jps_cs_checkout_message', oldMessage );
+	wpCli( 'option', 'update', 'jps_cs_quote_field_phone', oldPhone );
+	wpCli( 'option', 'update', 'jps_cs_quote_field_message', oldMessage );
 	wpCli( 'option', 'update', 'woocommerce_coming_soon', oldComingSoon );
 } );
 
@@ -90,11 +89,14 @@ test( 'guest sends an inquiry on classic checkout', async ( { page } ) => {
 	await expect( page.locator( 'body' ) ).not.toContainText( '€' );
 	await expect( page.getByRole( 'link', { name: /continue to inquiry|weiter zur anfrage/i } ) ).toBeVisible();
 	await page.goto( '/classic-checkout/' );
+	await expect( page.locator( '#billing_phone' ) ).not.toHaveAttribute( 'aria-required', 'true' );
+	wpCli( 'option', 'update', 'jps_cs_quote_field_phone', 'required' );
+	await page.reload();
 	await expect( page.locator( '#order_comments' ) ).toBeVisible();
-	wpCli( 'option', 'update', 'jps_cs_checkout_message', 'no' );
+	wpCli( 'option', 'update', 'jps_cs_quote_field_message', 'no' );
 	await page.reload();
 	await expect( page.locator( '#order_comments' ) ).toHaveCount( 0 );
-	wpCli( 'option', 'update', 'jps_cs_checkout_message', 'yes' );
+	wpCli( 'option', 'update', 'jps_cs_quote_field_message', 'yes' );
 	await page.reload();
 	await expect( page.locator( 'body' ) ).not.toContainText( /zahlungspflichtig/i );
 	await expect( page.locator( 'body' ) ).not.toContainText( '€' );

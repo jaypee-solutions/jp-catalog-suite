@@ -20,7 +20,6 @@ final class Plugin {
         require_once PLUGIN_DIR . 'includes/class-variable-length.php';
         require_once PLUGIN_DIR . 'includes/class-protected-files.php';
         Inquiries::init();
-        Inquiry_Emails::init();
         add_filter(
             'woocommerce_get_settings_pages',
             static function ( array $pages ): array {

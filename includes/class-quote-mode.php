@@ -15,6 +15,7 @@ final class Quote_Mode {
         require_once PLUGIN_DIR . 'includes/class-germanized-integration.php';
         Germanized_Integration::init();
         Inquiry_Intake::init();
+        Inquiry_Emails::init();
         add_filter( 'woocommerce_is_purchasable', [ self::class, 'is_purchasable' ], 10, 2 );
         add_filter( 'woocommerce_variation_is_purchasable', [ self::class, 'is_variation_purchasable' ], 10, 2 );
         add_filter( 'woocommerce_variation_is_visible', [ self::class, 'is_variation_visible' ], 10, 4 );
@@ -75,8 +76,8 @@ final class Quote_Mode {
         return self::is_active() ? self::labels()['place_order'] : $text;
     }
 
-    public static function thankyou_text( string $text, \WC_Order $order ): string {
-        return Inquiries::is_inquiry( $order ) ? __( 'Thank you. Your inquiry has been received.', 'jp-catalog-suite' ) : $text;
+    public static function thankyou_text( string $text, $order = null ): string {
+        return $order instanceof \WC_Order && Inquiries::is_inquiry( $order ) ? __( 'Thank you. Your inquiry has been received.', 'jp-catalog-suite' ) : $text;
     }
 
     public static function woocommerce_translation( string $translation, string $text ): string {
@@ -113,6 +114,7 @@ final class Quote_Mode {
         if ( wp_script_is( 'wc-blocks-checkout', 'registered' ) ) {
             ( new Quote_Blocks_Integration() )->register_script();
             wp_enqueue_script( 'jps-cs-quote-blocks' );
+            wp_add_inline_script( 'jps-cs-quote-blocks', 'window.jpsCsQuoteLabels=' . wp_json_encode( self::labels() ) . ';', 'before' );
         }
     }
 
@@ -133,7 +135,7 @@ final class Quote_Mode {
 
     public static function is_variation_purchasable( bool $purchasable, \WC_Product_Variation $variation ): bool {
         $parent = wc_get_product( $variation->get_parent_id() );
-        if ( ! $parent || 'publish' !== $parent->get_status() || ! self::applies_to( $variation ) ) {
+        if ( ! $parent || 'publish' !== $parent->get_status() || 'publish' !== $variation->get_status() || ! self::applies_to( $variation ) ) {
             return $purchasable;
         }
         return '' !== $variation->get_price( 'edit' ) ? $purchasable : true;
@@ -142,9 +144,8 @@ final class Quote_Mode {
     public static function is_variation_visible( bool $visible, int $variation_id, int $parent_id, \WC_Product_Variation $variation ): bool {
         unset( $variation_id );
         $parent = wc_get_product( $parent_id );
-        return $parent && 'publish' === $parent->get_status() && self::applies_to( $variation ) ? true : $visible;
+        return $parent && 'publish' === $parent->get_status() && 'publish' === $variation->get_status() && self::applies_to( $variation ) ? true : $visible;
     }
-
     public static function set_missing_prices_to_zero( $cart ): void {
         foreach ( $cart->get_cart() as $item ) {
             if ( '' === $item['data']->get_price( 'edit' ) && self::applies_to( $item['data'] ) ) {
@@ -161,7 +162,9 @@ final class Quote_Mode {
         $store_api = function_exists( 'WC' ) && WC() && method_exists( WC(), 'is_store_api_request' ) && WC()->is_store_api_request();
         $store_api = $store_api || ( defined( 'REST_REQUEST' ) && REST_REQUEST && isset( $_SERVER['REQUEST_URI'] ) && 0 === strpos( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), '/wp-json/wc/store/' ) );
         $frontend_request = ! is_admin() && ! ( defined( 'REST_REQUEST' ) && REST_REQUEST );
-        if ( self::is_active() && ( $frontend_request || wp_doing_ajax() || $store_api ) ) {
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- WooCommerce's wc-ajax request marker selects a public frontend calculation, not a state change.
+        $admin_ajax = wp_doing_ajax() && isset( $_GET['wc-ajax'] );
+        if ( self::is_active() && ( $frontend_request || $admin_ajax || $store_api ) ) {
             return false;
         }
         return $enabled;
@@ -177,7 +180,7 @@ final class Quote_Mode {
         }
 
         foreach ( [ 'company', 'phone' ] as $field ) {
-            $setting = get_option( "jps_cs_checkout_{$field}", 'optional' );
+            $setting = get_option( "jps_cs_quote_field_{$field}", 'optional' );
             $key     = "billing_{$field}";
             if ( 'hidden' === $setting ) {
                 unset( $fields['billing'][ $key ] );
@@ -195,12 +198,12 @@ final class Quote_Mode {
                 $fields['billing'][ $key ]['required'] = 'required' === $setting;
             }
         }
-        if ( 'hidden' === get_option( 'jps_cs_checkout_address', 'hidden' ) ) {
+        if ( 'hidden' === get_option( 'jps_cs_quote_field_address', 'hidden' ) ) {
             foreach ( [ 'billing_address_1', 'billing_address_2', 'billing_city', 'billing_state', 'billing_postcode' ] as $key ) {
                 unset( $fields['billing'][ $key ] );
             }
         }
-        if ( 'no' === get_option( 'jps_cs_checkout_message', 'yes' ) ) {
+        if ( 'no' === get_option( 'jps_cs_quote_field_message', 'yes' ) ) {
             unset( $fields['order']['order_comments'] );
         }
         $fields['billing']['billing_first_name']['required'] = true;
@@ -209,12 +212,12 @@ final class Quote_Mode {
         return $fields;
     }
 
-    public static function blocks_company_field() {
-        return self::is_active() ? get_option( 'jps_cs_checkout_company', 'optional' ) : null;
+    public static function blocks_company_field( $pre ) {
+        return self::is_active() ? get_option( 'jps_cs_quote_field_company', 'optional' ) : $pre;
     }
 
-    public static function blocks_phone_field() {
-        return self::is_active() ? get_option( 'jps_cs_checkout_phone', 'optional' ) : null;
+    public static function blocks_phone_field( $pre ) {
+        return self::is_active() ? get_option( 'jps_cs_quote_field_phone', 'optional' ) : $pre;
     }
 
     public static function country_locale( array $locale ): array {
@@ -222,7 +225,7 @@ final class Quote_Mode {
             return $locale;
         }
 
-        $address = get_option( 'jps_cs_checkout_address', 'hidden' );
+        $address = get_option( 'jps_cs_quote_field_address', 'hidden' );
         foreach ( $locale as &$country ) {
             foreach ( [ 'address_1', 'address_2', 'city', 'state', 'postcode', 'country' ] as $field ) {
                 $country[ $field ]           = $country[ $field ] ?? [];
@@ -240,7 +243,7 @@ final class Quote_Mode {
             return $fields;
         }
 
-        $address = get_option( 'jps_cs_checkout_address', 'hidden' );
+        $address = get_option( 'jps_cs_quote_field_address', 'hidden' );
         foreach ( [ 'address_1', 'address_2', 'city', 'state', 'postcode' ] as $field ) {
             if ( isset( $fields[ $field ] ) ) {
                 $fields[ $field ]['required'] = 'required' === $address;
@@ -307,12 +310,12 @@ final class Quote_Mode {
     private static function checkout_settings(): array {
         $options = [ 'optional' => __( 'Optional', 'jp-catalog-suite' ), 'required' => __( 'Required', 'jp-catalog-suite' ), 'hidden' => __( 'Hidden', 'jp-catalog-suite' ) ];
         return [
-            [ 'title' => __( 'Inquiry checkout fields', 'jp-catalog-suite' ), 'type' => 'title', 'id' => 'jps_cs_checkout_fields' ],
-            [ 'title' => __( 'Company', 'jp-catalog-suite' ), 'id' => 'jps_cs_checkout_company', 'type' => 'select', 'default' => 'optional', 'options' => $options ],
-            [ 'title' => __( 'Phone', 'jp-catalog-suite' ), 'id' => 'jps_cs_checkout_phone', 'type' => 'select', 'default' => 'optional', 'options' => $options ],
-            [ 'title' => __( 'Address', 'jp-catalog-suite' ), 'id' => 'jps_cs_checkout_address', 'type' => 'select', 'default' => 'hidden', 'options' => [ 'hidden' => __( 'Hidden', 'jp-catalog-suite' ), 'optional' => __( 'Optional', 'jp-catalog-suite' ), 'required' => __( 'Required', 'jp-catalog-suite' ) ] ],
-            [ 'title' => __( 'Order message', 'jp-catalog-suite' ), 'id' => 'jps_cs_checkout_message', 'type' => 'checkbox', 'default' => 'yes' ],
-            [ 'type' => 'sectionend', 'id' => 'jps_cs_checkout_fields' ],
+            [ 'title' => __( 'Inquiry checkout fields', 'jp-catalog-suite' ), 'type' => 'title', 'id' => 'jps_cs_quote_fields' ],
+            [ 'title' => __( 'Company', 'jp-catalog-suite' ), 'id' => 'jps_cs_quote_field_company', 'type' => 'select', 'default' => 'optional', 'options' => $options ],
+            [ 'title' => __( 'Phone', 'jp-catalog-suite' ), 'id' => 'jps_cs_quote_field_phone', 'type' => 'select', 'default' => 'optional', 'options' => $options ],
+            [ 'title' => __( 'Address', 'jp-catalog-suite' ), 'id' => 'jps_cs_quote_field_address', 'type' => 'select', 'default' => 'hidden', 'options' => [ 'hidden' => __( 'Hidden', 'jp-catalog-suite' ), 'optional' => __( 'Optional', 'jp-catalog-suite' ), 'required' => __( 'Required', 'jp-catalog-suite' ) ] ],
+            [ 'title' => __( 'Message', 'jp-catalog-suite' ), 'id' => 'jps_cs_quote_field_message', 'type' => 'checkbox', 'default' => 'yes' ],
+            [ 'type' => 'sectionend', 'id' => 'jps_cs_quote_fields' ],
         ];
     }
 
