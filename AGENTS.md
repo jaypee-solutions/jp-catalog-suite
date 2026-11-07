@@ -15,3 +15,11 @@ Default five roles; each label string equals its role name (`needs-triage`, `nee
 ### Domain docs
 
 Single-context: `GLOSSARY.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
+
+## Reviewing
+
+Reviewing: read `CODING_STANDARDS.md`.
+
+## Build conventions
+
+See `docs/agents/conventions.md`.

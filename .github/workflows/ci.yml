@@ -16,6 +16,11 @@ jobs:
 
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress
+      - name: Set up Python and uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Validate OKF
+        run: uv run .agents/skills/okf-validate/scripts/okf_validate.py .okf
 
       - name: PHPCS (WordPress Coding Standards)
         run: composer lint
