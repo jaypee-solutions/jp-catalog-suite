@@ -5,16 +5,16 @@ declare( strict_types = 1 );
 
 final class Test_Protected_Files extends WP_UnitTestCase {
     public function test_protected_upload_uses_denied_directory_and_endpoint(): void {
-        $tmp = wp_tempnam( 'part.stp' );
-        file_put_contents( $tmp, 'STEP fixture' );
-        $upload = [ 'name' => 'part.stp', 'type' => 'application/step', 'tmp_name' => $tmp, 'error' => 0, 'size' => filesize( $tmp ) ];
-        $result = wp_handle_sideload( $upload, [ 'test_form' => false, 'test_type' => true ] );
-        $this->assertArrayNotHasKey( 'error', $result, isset( $result['error'] ) ? $result['error'] : '' );
+        wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
+        $uploads = wp_upload_dir();
+        $source = trailingslashit( $uploads['basedir'] ) . 'non-handle-' . wp_generate_password( 8, false, false ) . '.stp';
+        file_put_contents( $source, 'STEP fixture' );
+        $attachment = wp_insert_attachment( [ 'post_mime_type' => 'application/step', 'post_title' => 'part.stp', 'post_status' => 'inherit' ], $source );
+        $result = [ 'file' => get_attached_file( $attachment ) ];
         $this->assertSame( [ $result['file'] ], glob( dirname( $result['file'] ) . '/*' ) );
         $this->assertStringContainsString( '/jps-cs-protected/', $result['file'] );
-        $protected_dir = wp_upload_dir()['basedir'] . '/jps-cs-protected';
+        $protected_dir = $uploads['basedir'] . '/jps-cs-protected';
         $this->assertStringContainsString( 'Require all denied', file_get_contents( $protected_dir . '/.htaccess' ) );
-        $attachment = wp_insert_attachment( [ 'post_mime_type' => 'application/step', 'post_title' => 'part.stp', 'post_status' => 'inherit' ], $result['file'] );
         $this->assertSame( '1', get_post_meta( $attachment, '_jps_cs_protected', true ) );
         $this->assertStringContainsString( 'jps_cs_file=' . $attachment, wp_get_attachment_url( $attachment ) );
         $this->assertStringContainsString( 'jps_cs_file=' . $attachment, get_the_guid( $attachment ) );
@@ -48,13 +48,15 @@ final class Test_Protected_Files extends WP_UnitTestCase {
             wp_set_current_user( 0 );
         }
         $this->assertSame( [ 'attachment_id' => $attachment ], $context );
+        wp_delete_file( $result['file'] );
     }
     public function test_media_editor_protects_and_unprotects_non_image_attachment(): void {
         require_once ABSPATH . 'wp-admin/includes/media.php';
         $uploads = wp_upload_dir();
         $directory = $uploads['basedir'] . '/2026/11';
         wp_mkdir_p( $directory );
-        $source = $directory . '/toggle.pdf';
+        $prefix = 'toggle-' . wp_generate_password( 8, false, false );
+        $source = $directory . '/' . $prefix . '.pdf';
         file_put_contents( $source, 'PDF fixture' );
         $size = $directory . '/toggle-150x150.pdf';
         file_put_contents( $size, 'Intermediate size' );
@@ -81,13 +83,13 @@ final class Test_Protected_Files extends WP_UnitTestCase {
         file_put_contents( $source, 'Existing public file' );
         $errors = $this->save_media_attachment( $attachment, [] );
         $this->assertNull( $errors );
-        $public = $uploads['basedir'] . '/2026/11/toggle-1.pdf';
+        $public = $directory . '/' . $prefix . '-1.pdf';
         $this->assertNotSame( '1', get_post_meta( $attachment, '_jps_cs_protected', true ) );
         $this->assertFileExists( $public );
         $this->assertSame( 'Existing public file', file_get_contents( $source ) );
         $this->assertSame( 'PDF fixture', file_get_contents( $public ) );
         $this->assertFileDoesNotExist( $protected );
-        $this->assertSame( $uploads['baseurl'] . '/2026/11/toggle-1.pdf', wp_get_attachment_url( $attachment ) );
+        $this->assertSame( $uploads['baseurl'] . '/2026/11/' . $prefix . '-1.pdf', wp_get_attachment_url( $attachment ) );
         set_query_var( 'jps_cs_file', $attachment );
         $redirect = static function ( $location, $status ) {
             throw new RuntimeException( $location . '|' . $status );
@@ -97,11 +99,13 @@ final class Test_Protected_Files extends WP_UnitTestCase {
             do_action( 'template_redirect' );
             $this->fail( 'A stored endpoint link must redirect after unprotection.' );
         } catch ( RuntimeException $error ) {
-            $this->assertSame( $uploads['baseurl'] . '/2026/11/toggle-1.pdf|302', $error->getMessage() );
+            $this->assertSame( $uploads['baseurl'] . '/2026/11/' . $prefix . '-1.pdf|302', $error->getMessage() );
         } finally {
             remove_filter( 'wp_redirect', $redirect, 10 );
             set_query_var( 'jps_cs_file', 0 );
         }
+        wp_delete_file( $source );
+        wp_delete_file( $public );
         $_POST = [];
         wp_set_current_user( 0 );
     }

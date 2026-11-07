@@ -201,12 +201,29 @@ final class Variable_Length {
         if ( ( ! $product instanceof \WC_Product_Simple && ! $product instanceof \WC_Product_Variable ) || ! self::config( $product )['enabled'] ) {
             return $data;
         }
-        $message = self::validation_message( self::config( $product ), self::request_length() );
+        $config = self::config( $product );
+        if ( $product instanceof \WC_Product_Variable ) {
+            $attributes = [];
+            foreach ( (array) $request->get_param( 'variation' ) as $attribute ) {
+                if ( is_array( $attribute ) && isset( $attribute['attribute'], $attribute['value'] ) ) {
+                    $name = sanitize_key( (string) $attribute['attribute'] );
+                    $attributes[ str_starts_with( $name, 'attribute_' ) ? $name : 'attribute_' . $name ] = wc_clean( (string) $attribute['value'] );
+                }
+            }
+            if ( $attributes ) {
+                $variation_id = \WC_Data_Store::load( 'product' )->find_matching_product_variation( $product, $attributes );
+                $variation = wc_get_product( $variation_id );
+                if ( $variation instanceof \WC_Product_Variation ) {
+                    $config = self::variation_config( $product, $variation );
+                }
+            }
+        }
+        $message = self::validation_message( $config, self::request_length() );
         if ( null !== $message ) {
             throw new \Exception( esc_html( $message ) );
         }
         $data['cart_item_data']['jps_cs_length'] = (float) self::request_length();
-        $data['cart_item_data']['jps_cs_length_unit'] = self::config( $product )['unit'];
+        $data['cart_item_data']['jps_cs_length_unit'] = $config['unit'];
         return $data;
     }
     public static function clear_store_api_length(): void {

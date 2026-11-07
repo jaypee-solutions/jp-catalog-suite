@@ -31,6 +31,7 @@ final class Protected_Files {
         add_filter( 'wp_get_attachment_url', [ self::class, 'attachment_url' ], 10, 2 );
         add_filter( 'get_the_guid', [ self::class, 'attachment_guid' ], 10, 2 );
         add_filter( 'rest_attachment_query', [ self::class, 'rest_query' ], 10, 2 );
+        add_filter( 'rest_pre_dispatch', [ self::class, 'rest_pre_dispatch' ], 10, 3 );
         add_filter( 'rest_prepare_attachment', [ self::class, 'rest_attachment' ], 10, 3 );
         add_action( 'template_redirect', [ self::class, 'attachment_page' ], 0 );
         add_filter( 'query_vars', static function ( array $vars ): array {
@@ -296,19 +297,31 @@ final class Protected_Files {
     }
 
     // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Required by the REST attachment response filter.
-    public static function rest_attachment( \WP_REST_Response $response, \WP_Post $post, \WP_REST_Request $request ) {
+    public static function rest_attachment( \WP_REST_Response $response, \WP_Post $post, \WP_REST_Request $request ): \WP_REST_Response {
         if ( '1' === get_post_meta( $post->ID, '_jps_cs_protected', true ) ) {
-            if ( ! current_user_can( 'upload_files' ) ) {
-                return new \WP_Error( 'rest_forbidden', __( 'Sorry, you are not allowed to view this attachment.', 'jp-catalog-suite' ), [ 'status' => 404 ] );
-            }
-            $data = $response->get_data();
+            $data = (array) $response->get_data();
             $data['guid'] = '';
             if ( isset( $data['media_details'] ) ) {
+                $data['media_details'] = (array) $data['media_details'];
                 unset( $data['media_details']['file'] );
             }
             $response->set_data( $data );
         }
         return $response;
+    }
+
+    // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Required by the REST pre-dispatch filter.
+    public static function rest_pre_dispatch( $result, \WP_REST_Server $server, \WP_REST_Request $request ) {
+        if ( null !== $result || 'GET' !== $request->get_method() || current_user_can( 'upload_files' ) ) {
+            return $result;
+        }
+        $route_id = preg_match( '~/(\\d+)/?$~', $request->get_route(), $matches ) ? (int) $matches[1] : 0;
+        $request_id = $request->get_param( 'id' );
+        $id = absint( $request_id ? $request_id : $route_id );
+        if ( $id && 'attachment' === get_post_type( $id ) && '1' === get_post_meta( $id, '_jps_cs_protected', true ) ) {
+            return new \WP_Error( 'rest_forbidden', __( 'Sorry, you are not allowed to view this attachment.', 'jp-catalog-suite' ), [ 'status' => 404 ] );
+        }
+        return $result;
     }
 
     public static function attachment_page(): void {
@@ -328,7 +341,10 @@ final class Protected_Files {
         $id = absint( get_query_var( 'jps_cs_file' ) );
         if ( ! $id ) {
             return;
-        } nocache_headers();
+        }
+        if ( ! headers_sent() ) {
+            nocache_headers();
+        }
         $attachment = get_post( $id );
         if ( ! $attachment || 'attachment' !== $attachment->post_type ) {
             status_header( 404 );
@@ -370,20 +386,24 @@ final class Protected_Files {
             $type = 'application/octet-stream';
         }
         $name = sanitize_file_name( basename( $path ) );
-        header( 'Content-Type: ' . $type );
-        header( 'Content-Disposition: attachment; filename="' . $name . '"; filename*=UTF-8\'\'' . rawurlencode( basename( $path ) ) );
-        header( 'X-Content-Type-Options: nosniff' );
-        header( 'Cache-Control: private, no-store' );
+        if ( ! headers_sent() ) {
+            header( 'Content-Type: ' . $type );
+            header( 'Content-Disposition: attachment; filename="' . $name . '"; filename*=UTF-8\'\'' . rawurlencode( basename( $path ) ) );
+            header( 'X-Content-Type-Options: nosniff' );
+            header( 'Cache-Control: private, no-store' );
+        }
         $method = (string) get_option( 'jps_cs_files_delivery', 'auto' );
         if ( 'auto' === $method ) {
             $method = function_exists( 'apache_get_modules' ) && in_array( 'mod_xsendfile', apache_get_modules(), true ) ? 'xsendfile' : 'php'; }
         $method = (string) apply_filters( 'jps_cs_file_delivery_method', $method, $id );
         $modules = function_exists( 'apache_get_modules' ) ? apache_get_modules() : [];
-        if ( 'xsendfile' === $method && in_array( 'mod_xsendfile', $modules, true ) ) {
+        if ( ! headers_sent() && 'xsendfile' === $method && in_array( 'mod_xsendfile', $modules, true ) ) {
             header( 'X-Sendfile: ' . $path );
             exit;
         }
-        header( 'Content-Length: ' . filesize( $path ) );
+        if ( ! headers_sent() ) {
+            header( 'Content-Length: ' . filesize( $path ) );
+        }
         while ( ob_get_level() ) {
             ob_end_clean();
         }
