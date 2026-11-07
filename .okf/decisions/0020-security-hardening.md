@@ -1,3 +1,14 @@
+---
+type: decision
+title: Protected-file lifecycle and API hardening
+description: Hardens protected-file storage and delivery, access hooks, privacy logging, and length validation.
+timestamp: 2026-11-07T00:00:00Z
+tags:
+  - security
+  - protected-files
+  - variable-length
+---
+
 # ADR 0020: Protected-file lifecycle and API hardening
 
 ## Status
