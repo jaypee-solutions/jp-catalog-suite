@@ -48,7 +48,7 @@ final class Test_Product_Tabs extends WP_UnitTestCase {
         $category_tab = $this->create_tab( 'Category tab for override', 'Category content.', 'categories', [ $category_id ], 20 );
         $hidden_tab = $this->create_tab( 'Hidden global tab', 'Hidden content.', 'all', [], 30 );
         $product_tab = self::factory()->post->create( [ 'post_type' => 'jps_cs_tab', 'post_status' => 'draft', 'post_title' => 'Replacing product tab', 'post_content' => 'Replacement content.' ] );
-        $_POST = [ 'jps_cs_tab_nonce' => wp_create_nonce( 'jps_cs_tab_meta' ), 'jps_cs_scope' => 'products', 'jps_cs_products' => [ (string) $product_id ], 'jps_cs_replace_tab' => (string) $all_tab, 'jps_cs_priority' => '' ];
+        $_POST = [ 'jps_cs_tab_nonce' => wp_create_nonce( 'jps_cs_tab_meta' ), 'jps_cs_scope' => 'products', 'jps_cs_products' => [ (string) $product_id ], 'jps_cs_replaces' => (string) $all_tab, 'jps_cs_priority' => '' ];
         wp_update_post( [ 'ID' => $product_tab, 'post_status' => 'publish' ] );
         $_POST = [];
         $product = wc_get_product( $product_id );
@@ -61,7 +61,7 @@ final class Test_Product_Tabs extends WP_UnitTestCase {
         $this->assertSame( [ $hidden_tab ], get_post_meta( $product_id, '_jps_cs_hidden_tabs', true ) );
         $this->assertSame( 'products', get_post_meta( $product_tab, '_jps_cs_scope', true ) );
         $this->assertSame( [ $product_id ], get_post_meta( $product_tab, '_jps_cs_products', true ) );
-        $this->assertSame( $all_tab, (int) get_post_meta( $product_tab, '_jps_cs_replace_tab', true ) );
+        $this->assertSame( $all_tab, (int) get_post_meta( $product_tab, '_jps_cs_replaces', true ) );
         $GLOBALS['post'] = get_post( $product_id );
         ob_start();
         do_action( 'woocommerce_product_data_panels' );
@@ -75,6 +75,22 @@ final class Test_Product_Tabs extends WP_UnitTestCase {
         $guest_panel = ob_get_clean();
         $this->assertStringNotContainsString( 'jps_cs_product=' . $product_id, $guest_panel );
     }
+    public function test_replacement_inherits_global_priority_even_when_global_is_hidden_first(): void {
+        wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
+        $product_id = self::factory()->post->create( [ 'post_type' => 'product', 'post_status' => 'publish' ] );
+        $replacement_id = self::factory()->post->create( [ 'post_type' => 'jps_cs_tab', 'post_status' => 'draft', 'post_title' => 'Priority replacement', 'post_content' => 'Replacement content.' ] );
+        $global_id = $this->create_tab( 'Priority source', 'Global content.', 'all', [], 13 );
+        $_POST = [ 'jps_cs_tab_nonce' => wp_create_nonce( 'jps_cs_tab_meta' ), 'jps_cs_scope' => 'products', 'jps_cs_products' => [ (string) $product_id ], 'jps_cs_replaces' => (string) $global_id, 'jps_cs_priority' => '' ];
+        wp_update_post( [ 'ID' => $replacement_id, 'post_status' => 'publish', 'post_date' => '2000-01-01 00:00:00' ] );
+        $_POST = [ '_jps_cs_hidden_tabs' => [ (string) $global_id ] ];
+        $product = wc_get_product( $product_id );
+        do_action( 'woocommerce_admin_process_product_object', $product );
+        $product->save();
+        $_POST = [];
+        $tabs = $this->tabs_for_product( $product_id );
+        $this->assertSame( 13, $tabs[ 'jps_cs_tab_' . $replacement_id ]['priority'] );
+    }
+
 
     public function test_product_tab_creation_link_and_editor_preselect_product_scope(): void {
         wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
@@ -129,13 +145,13 @@ final class Test_Product_Tabs extends WP_UnitTestCase {
             require_once WC_ABSPATH . 'includes/admin/class-wc-admin-settings.php';
         }
         $_POST = [
-            'jps_cs_core_tab_description_title' => 'Overview',
-            'jps_cs_core_tab_description_priority' => '',
-            'jps_cs_core_tab_additional_information_title' => '',
-            'jps_cs_core_tab_additional_information_priority' => '',
-            'jps_cs_core_tab_additional_information_hidden' => '1',
-            'jps_cs_core_tab_reviews_title' => '',
-            'jps_cs_core_tab_reviews_priority' => '5',
+            'jps_cs_tabs_core_description_title' => 'Overview',
+            'jps_cs_tabs_core_description_priority' => '',
+            'jps_cs_tabs_core_additional_information_title' => '',
+            'jps_cs_tabs_core_additional_information_priority' => '',
+            'jps_cs_tabs_core_additional_information_hidden' => '1',
+            'jps_cs_tabs_core_reviews_title' => '',
+            'jps_cs_tabs_core_reviews_priority' => '5',
             '_wpnonce' => wp_create_nonce( 'woocommerce-settings' ),
         ];
         $_REQUEST = $_POST;
@@ -157,11 +173,46 @@ final class Test_Product_Tabs extends WP_UnitTestCase {
         $tab_id = $this->create_tab( 'Blank information', '<p>   </p>', 'all', [], 50 );
         $this->assertArrayNotHasKey( 'jps_cs_tab_' . $tab_id, $this->tabs_for_product( $product_id ) );
     }
+    public function test_tab_output_preserves_editor_embeds(): void {
+        wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
+        $product_id = self::factory()->post->create( [ 'post_type' => 'product', 'post_status' => 'publish' ] );
+        $tab_id = $this->create_tab( 'Embedded tab', '<iframe src="https://example.com/embed"></iframe>', 'all', [], 50 );
+        $GLOBALS['post'] = get_post( $product_id );
+        setup_postdata( $GLOBALS['post'] );
+        $tabs = apply_filters( 'woocommerce_product_tabs', [], wc_get_product( $product_id ) );
+        ob_start();
+        $tabs[ 'jps_cs_tab_' . $tab_id ]['callback']();
+        $output = ob_get_clean();
+        wp_reset_postdata();
+        $this->assertStringContainsString( '<iframe src="https://example.com/embed">', $output );
+    }
+
+    public function test_product_editor_tabs_filter_adds_the_reachable_panel(): void {
+        $tabs = apply_filters( 'woocommerce_product_data_tabs', [] );
+        $this->assertSame( 'jps-cs-product-tabs', $tabs['jps_cs_tabs']['target'] );
+    }
+
+    public function test_logged_in_customer_cannot_read_tab_or_revisions_through_rest(): void {
+        $tab_id = $this->create_tab( 'Private customer REST check', 'Secret customer tab body.', 'all', [], 50 );
+        $customer_id = self::factory()->user->create( [ 'role' => 'customer' ] );
+        wp_set_current_user( $customer_id );
+        foreach ( [ '/wp/v2/jps_cs_tab/' . $tab_id, '/wp/v2/jps_cs_tab/' . $tab_id . '/revisions', '/wp/v2/JPS_CS_TAB/' . $tab_id ] as $route ) {
+            $response = rest_get_server()->dispatch( new WP_REST_Request( 'GET', $route ) );
+            $data = $response->get_data();
+            $this->assertGreaterThanOrEqual( 400, $response->get_status(), $route );
+            $this->assertStringNotContainsString( 'Secret customer tab body.', wp_json_encode( $data ) );
+        }
+    }
+
 
     public function test_guest_cannot_read_tab_content_through_rest(): void {
         wp_set_current_user( 0 );
         $tab_id = $this->create_tab( 'Private REST check', 'Secret tab body.', 'all', [], 50 );
-        $response = rest_get_server()->dispatch( new WP_REST_Request( 'GET', '/wp/v2/jps_cs_tab/' . $tab_id ) );
+        $request = new WP_REST_Request( 'GET', '/wp/v2/jps_cs_tab/' . $tab_id );
+        $this->assertFalse( is_user_logged_in() );
+        $this->assertFalse( current_user_can( 'edit_posts' ) );
+        $this->assertSame( '/wp/v2/jps_cs_tab/' . $tab_id, $request->get_route() );
+        $response = rest_get_server()->dispatch( $request );
         $data = $response->get_data();
         $this->assertTrue( $response->get_status() >= 400 || ! str_contains( $data['content']['rendered'] ?? '', 'Secret tab body.' ) );
     }

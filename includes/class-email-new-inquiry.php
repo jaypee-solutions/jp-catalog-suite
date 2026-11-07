@@ -59,7 +59,7 @@ final class Email_New_Inquiry extends \WC_Email {
     }
 
     public function get_headers(): string {
-        $headers = parent::get_headers();
+        $headers = preg_replace( '/^Reply-to:.*\r\n/mi', '', parent::get_headers() );
         $reply_to = $this->object ? sanitize_email( $this->object->get_billing_email() ) : '';
         if ( $reply_to && is_email( $reply_to ) ) {
             $headers .= 'Reply-To: ' . $reply_to . "\r\n";

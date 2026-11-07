@@ -262,8 +262,8 @@ msgstr "Anfrage-Checkout-Felder"
 msgid "Address"
 msgstr "Adresse"
 
-msgid "Order message"
-msgstr "Nachricht zur Anfrage"
+msgid "Message"
+msgstr "Nachricht"
 
 msgid "Inquiries"
 msgstr "Anfragen"

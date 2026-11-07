@@ -1,6 +1,6 @@
 ( function ( wp, wc ) {
 	const settings = wc.wcSettings.getSetting( 'jp-catalog-suite_data', {} );
-	const labels = settings.labels || {};
+	const labels = settings.labels || window.jpsCsQuoteLabels || {};
 	const map = {
 		Cart: labels.cart,
 		'View cart': labels.cart,
@@ -16,8 +16,6 @@
 		wc.blocksCheckout.registerCheckoutFilters( 'jp-catalog-suite', {
 			placeOrderButtonLabel: () => labels.place_order,
 			proceedToCheckoutButtonLabel: () => labels.proceed,
-			cartItemPrice: () => '',
-			subtotalPriceFormat: () => '',
 		} );
 	}
 }( window.wp, window.wc ) );

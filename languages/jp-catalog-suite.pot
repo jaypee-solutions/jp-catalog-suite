@@ -3,13 +3,13 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JayPee Solutions Catalog Suite for WooCommerce 0.1.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/t21-release\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/fix-review\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-06T22:44:04+00:00\n"
+"POT-Creation-Date: 2026-11-06T23:45:30+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: jp-catalog-suite\n"
@@ -60,44 +60,44 @@ msgstr ""
 msgid "Use {login} and {register} for links."
 msgstr ""
 
-#: includes/class-download-log.php:80
-#: includes/class-download-log.php:91
-#: includes/class-download-log.php:110
-#: includes/class-download-log.php:126
-#: includes/class-download-log.php:139
-#: includes/class-product-tabs.php:204
+#: includes/class-download-log.php:84
+#: includes/class-download-log.php:95
+#: includes/class-download-log.php:114
+#: includes/class-download-log.php:130
+#: includes/class-download-log.php:143
+#: includes/class-product-tabs.php:206
 msgid "Download log"
 msgstr ""
 
-#: includes/class-download-log.php:86
+#: includes/class-download-log.php:90
 msgid "You do not have permission to view this page."
 msgstr ""
 
-#: includes/class-download-log.php:92
+#: includes/class-download-log.php:96
 msgid "User"
 msgstr ""
 
-#: includes/class-download-log.php:92
-#: includes/class-download-log.php:129
+#: includes/class-download-log.php:96
+#: includes/class-download-log.php:133
 msgid "File"
 msgstr ""
 
-#: includes/class-download-log.php:92
-#: includes/class-download-log.php:130
+#: includes/class-download-log.php:96
+#: includes/class-download-log.php:134
 #: templates/emails/inquiry-items.php:26
 msgid "Product"
 msgstr ""
 
-#: includes/class-download-log.php:92
-#: includes/class-download-log.php:131
+#: includes/class-download-log.php:96
+#: includes/class-download-log.php:135
 msgid "Date"
 msgstr ""
 
-#: includes/class-download-log.php:154
+#: includes/class-download-log.php:158
 msgid "Catalog Suite Download Log"
 msgstr ""
 
-#: includes/class-download-log.php:154
+#: includes/class-download-log.php:158
 msgid "When enabled, the Download log records the user, protected file, optional product and download time. Records are retained for the configured number of days; zero keeps them until erased or deleted with the user account."
 msgstr ""
 
@@ -142,147 +142,147 @@ msgstr ""
 msgid "login required"
 msgstr ""
 
-#: includes/class-inquiries.php:28
-#: includes/class-inquiries.php:39
+#: includes/class-inquiries.php:27
+#: includes/class-inquiries.php:38
 msgctxt "Order status"
 msgid "Inquiry"
 msgstr ""
 
 #. translators: %s is the number of inquiries in this order-status count.
-#: includes/class-inquiries.php:33
+#: includes/class-inquiries.php:32
 #, php-format
 msgid "Inquiry <span class=\"count\">(%s)</span>"
 msgid_plural "Inquiries <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-inquiries.php:83
+#: includes/class-inquiries.php:82
 msgid "Inquiries"
 msgstr ""
 
-#: includes/class-inquiry-intake.php:39
+#: includes/class-inquiry-intake.php:41
 msgid "Inquiry received."
 msgstr ""
 
-#: includes/class-product-tabs.php:33
+#: includes/class-product-tabs.php:35
 msgid "Sorry, you are not allowed to read product tabs."
 msgstr ""
 
-#: includes/class-product-tabs.php:47
-#: includes/class-product-tabs.php:169
+#: includes/class-product-tabs.php:49
+#: includes/class-product-tabs.php:171
 #: includes/class-settings-page.php:24
 #: includes/class-settings-page.php:41
 msgid "Product tabs"
 msgstr ""
 
-#: includes/class-product-tabs.php:48
+#: includes/class-product-tabs.php:50
 msgid "Product tab"
 msgstr ""
 
-#: includes/class-product-tabs.php:49
+#: includes/class-product-tabs.php:51
 msgid "Add product tab"
 msgstr ""
 
-#: includes/class-product-tabs.php:50
+#: includes/class-product-tabs.php:52
 msgid "Edit product tab"
 msgstr ""
 
-#: includes/class-product-tabs.php:82
+#: includes/class-product-tabs.php:84
 msgid "Tab settings"
 msgstr ""
 
-#: includes/class-product-tabs.php:105
+#: includes/class-product-tabs.php:107
 msgid "Scope"
 msgstr ""
 
-#: includes/class-product-tabs.php:107
+#: includes/class-product-tabs.php:109
 msgid "All products"
 msgstr ""
 
-#: includes/class-product-tabs.php:108
-#: includes/class-product-tabs.php:111
+#: includes/class-product-tabs.php:110
+#: includes/class-product-tabs.php:113
 msgid "Categories"
 msgstr ""
 
-#: includes/class-product-tabs.php:109
-#: includes/class-product-tabs.php:117
+#: includes/class-product-tabs.php:111
+#: includes/class-product-tabs.php:119
 msgid "Products"
 msgstr ""
 
-#: includes/class-product-tabs.php:126
+#: includes/class-product-tabs.php:128
 msgid "Replace global tab"
 msgstr ""
 
-#: includes/class-product-tabs.php:128
+#: includes/class-product-tabs.php:130
 msgid "None"
 msgstr ""
 
-#: includes/class-product-tabs.php:136
-#: includes/class-product-tabs.php:185
+#: includes/class-product-tabs.php:138
+#: includes/class-product-tabs.php:187
 msgid "Priority"
 msgstr ""
 
-#: includes/class-product-tabs.php:178
+#: includes/class-product-tabs.php:180
 msgid "Title"
 msgstr ""
 
-#: includes/class-product-tabs.php:191
+#: includes/class-product-tabs.php:193
 msgid "Hide"
 msgstr ""
 
-#: includes/class-product-tabs.php:199
+#: includes/class-product-tabs.php:201
 msgid "Protected files"
 msgstr ""
 
-#: includes/class-product-tabs.php:200
+#: includes/class-product-tabs.php:202
 msgid "Allowed file MIME types"
 msgstr ""
 
-#: includes/class-product-tabs.php:201
+#: includes/class-product-tabs.php:203
 msgid "Automatically protect extensions"
 msgstr ""
 
-#: includes/class-product-tabs.php:202
+#: includes/class-product-tabs.php:204
 msgid "File delivery method"
 msgstr ""
 
-#: includes/class-product-tabs.php:202
+#: includes/class-product-tabs.php:204
 msgid "Automatic"
 msgstr ""
 
-#: includes/class-product-tabs.php:205
+#: includes/class-product-tabs.php:207
 msgid "Enable download log"
 msgstr ""
 
-#: includes/class-product-tabs.php:206
+#: includes/class-product-tabs.php:208
 msgid "Download log retention (days)"
 msgstr ""
 
-#: includes/class-product-tabs.php:206
+#: includes/class-product-tabs.php:208
 msgid "Set to 0 to keep entries until erased or the user is deleted."
 msgstr ""
 
-#: includes/class-product-tabs.php:214
+#: includes/class-product-tabs.php:216
 msgid "Description"
 msgstr ""
 
-#: includes/class-product-tabs.php:215
+#: includes/class-product-tabs.php:217
 msgid "Additional information"
 msgstr ""
 
-#: includes/class-product-tabs.php:216
+#: includes/class-product-tabs.php:218
 msgid "Reviews"
 msgstr ""
 
-#: includes/class-product-tabs.php:243
+#: includes/class-product-tabs.php:245
 msgid "Tabs"
 msgstr ""
 
-#: includes/class-product-tabs.php:263
+#: includes/class-product-tabs.php:265
 msgid "Hide on this product"
 msgstr ""
 
-#: includes/class-product-tabs.php:272
+#: includes/class-product-tabs.php:274
 msgid "Add product-specific tab"
 msgstr ""
 
@@ -308,92 +308,92 @@ msgstr ""
 msgid "You do not have permission to download this file."
 msgstr ""
 
-#: includes/class-quote-mode.php:53
-#: includes/class-quote-mode.php:312
+#: includes/class-quote-mode.php:54
+#: includes/class-quote-mode.php:326
 msgid "Inquiry basket"
 msgstr ""
 
-#: includes/class-quote-mode.php:54
-#: includes/class-quote-mode.php:313
+#: includes/class-quote-mode.php:55
+#: includes/class-quote-mode.php:327
 msgid "Add to inquiry"
 msgstr ""
 
-#: includes/class-quote-mode.php:55
-#: includes/class-quote-mode.php:314
+#: includes/class-quote-mode.php:56
+#: includes/class-quote-mode.php:328
 msgid "Continue to inquiry"
 msgstr ""
 
-#: includes/class-quote-mode.php:56
-#: includes/class-quote-mode.php:315
+#: includes/class-quote-mode.php:57
+#: includes/class-quote-mode.php:329
 msgid "Send inquiry"
 msgstr ""
 
-#: includes/class-quote-mode.php:79
+#: includes/class-quote-mode.php:80
 msgid "Thank you. Your inquiry has been received."
 msgstr ""
 
-#: includes/class-quote-mode.php:184
-#: includes/class-quote-mode.php:300
+#: includes/class-quote-mode.php:191
+#: includes/class-quote-mode.php:314
 #: templates/emails/inquiry-customer-details.php:18
 msgid "Company"
 msgstr ""
 
-#: includes/class-quote-mode.php:184
-#: includes/class-quote-mode.php:301
+#: includes/class-quote-mode.php:191
+#: includes/class-quote-mode.php:315
 #: templates/emails/inquiry-customer-details.php:17
 msgid "Phone"
 msgstr ""
 
-#: includes/class-quote-mode.php:297
-#: includes/class-quote-mode.php:302
+#: includes/class-quote-mode.php:311
+#: includes/class-quote-mode.php:316
 msgid "Optional"
 msgstr ""
 
-#: includes/class-quote-mode.php:297
-#: includes/class-quote-mode.php:302
+#: includes/class-quote-mode.php:311
+#: includes/class-quote-mode.php:316
 msgid "Required"
 msgstr ""
 
-#: includes/class-quote-mode.php:297
-#: includes/class-quote-mode.php:302
+#: includes/class-quote-mode.php:311
+#: includes/class-quote-mode.php:316
 msgid "Hidden"
 msgstr ""
 
-#: includes/class-quote-mode.php:299
+#: includes/class-quote-mode.php:313
 msgid "Inquiry checkout fields"
 msgstr ""
 
-#: includes/class-quote-mode.php:302
+#: includes/class-quote-mode.php:316
 msgid "Address"
 msgstr ""
 
-#: includes/class-quote-mode.php:303
-msgid "Order message"
+#: includes/class-quote-mode.php:317
+msgid "Message"
 msgstr ""
 
-#: includes/class-quote-mode.php:311
+#: includes/class-quote-mode.php:325
 #: includes/class-settings-page.php:23
 #: includes/class-settings-page.php:41
 msgid "Quote mode"
 msgstr ""
 
-#: includes/class-quote-mode.php:311
+#: includes/class-quote-mode.php:325
 msgid "Germanized legal notices and checkout checkboxes are adjusted in Quote mode. The privacy checkbox is kept when enabled in Germanized."
 msgstr ""
 
-#: includes/class-quote-mode.php:312
+#: includes/class-quote-mode.php:326
 msgid "Inquiry basket label"
 msgstr ""
 
-#: includes/class-quote-mode.php:313
+#: includes/class-quote-mode.php:327
 msgid "Add to inquiry label"
 msgstr ""
 
-#: includes/class-quote-mode.php:314
+#: includes/class-quote-mode.php:328
 msgid "Continue to inquiry label"
 msgstr ""
 
-#: includes/class-quote-mode.php:315
+#: includes/class-quote-mode.php:329
 msgid "Send inquiry label"
 msgstr ""
 

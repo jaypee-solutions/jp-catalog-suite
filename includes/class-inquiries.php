@@ -19,8 +19,7 @@ final class Inquiries {
         add_filter( 'woocommerce_get_order_item_totals', [ self::class, 'order_item_totals' ], 10, 3 );
         add_filter( 'woocommerce_order_formatted_line_subtotal', [ self::class, 'line_subtotal' ], 10, 3 );
         add_filter( 'woocommerce_get_formatted_order_total', [ self::class, 'formatted_order_total' ], 10, 2 );
-        add_filter( 'woocommerce_account_menu_items', [ self::class, 'account_menu_items' ] );
-        add_filter( 'woocommerce_account_orders_columns', [ self::class, 'account_order_columns' ] );
+        // Account labels belong to Quote mode and are registered by Inquiry_Intake.
     }
 
     public static function register_status( array $statuses ): array {
@@ -66,16 +65,16 @@ final class Inquiries {
 
     public static function order_item_totals( array $totals, \WC_Order $order, string $tax_display ): array {
         unset( $tax_display );
-        return self::is_inquiry( $order ) && ( ! is_admin() || doing_action( 'woocommerce_email_before_order_table' ) ) ? [] : $totals;
+        return self::is_inquiry( $order ) && ( ! is_admin() || doing_action( 'woocommerce_email_order_details' ) ) ? [] : $totals;
     }
 
     public static function line_subtotal( string $subtotal, \WC_Order_Item_Product $item, \WC_Order $order ): string {
         unset( $item );
-        return self::is_inquiry( $order ) && ( ! is_admin() || doing_action( 'woocommerce_email_before_order_table' ) ) ? '' : $subtotal;
+        return self::is_inquiry( $order ) && ( ! is_admin() || doing_action( 'woocommerce_email_order_details' ) ) ? '' : $subtotal;
     }
 
     public static function formatted_order_total( string $total, \WC_Order $order ): string {
-        return self::is_inquiry( $order ) && ( ! is_admin() || doing_action( 'woocommerce_email_before_order_table' ) ) ? '' : $total;
+        return self::is_inquiry( $order ) && ( ! is_admin() || doing_action( 'woocommerce_email_order_details' ) ) ? '' : $total;
     }
 
     public static function account_menu_items( array $items ): array {
