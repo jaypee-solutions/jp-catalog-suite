@@ -259,6 +259,13 @@ final class Test_Protected_Files extends WP_UnitTestCase {
         $request = new WP_REST_Request( 'GET', '/wp/v2/media/' . $attachment );
         $response = rest_get_server()->dispatch( $request );
         $this->assertGreaterThanOrEqual( 400, $response->get_status() );
+        wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
+        update_attached_file( $attachment, __FILE__ );
+        wp_update_attachment_metadata( $attachment, [ 'file' => 'private/REST-secret.stp', 'sizes' => [] ] );
+        $response = rest_get_server()->dispatch( $request );
+        $data = (array) $response->get_data();
+        $this->assertSame( '', $data['guid'] );
+        $this->assertArrayNotHasKey( 'file', (array) $data['media_details'] );
     }
     public function test_site_health_reports_when_protected_directory_returns_403(): void {
         $mock = static function ( $preempt, array $args, string $url ) {

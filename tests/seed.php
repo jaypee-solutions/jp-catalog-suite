@@ -193,7 +193,7 @@ if ( $file_tab ) {
     wp_update_post(
         [
             'ID'           => $file_tab->ID,
-            'post_content' => '<p>Public info</p><!-- wp:jp-catalog-suite/access {"mode":"only-with-access"} --><p>Protected Downloads content.</p><!-- wp:jp-catalog-suite/file-list {"files":[' . $protected_id . ']} /--><!-- /wp:jp-catalog-suite/access -->',
+            'post_content' => '<p>Public info</p><!-- wp:jp-catalog-suite/access {"audience":"authorized"} --><p>Protected Downloads content.</p><!-- wp:jp-catalog-suite/file-list {"ids":[' . $protected_id . ']} /--><!-- /wp:jp-catalog-suite/access -->',
         ]
     );
 }
