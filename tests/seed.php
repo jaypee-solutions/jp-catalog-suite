@@ -98,7 +98,7 @@ if ( $access_tab_id ) {
     wp_update_post(
         [
             'ID' => $access_tab_id,
-            'post_content' => '<p>Public info</p><!-- wp:jp-catalog-suite/access {"mode":"only-with-access"} --><p>Protected Downloads content.</p><!-- /wp:jp-catalog-suite/access -->',
+            'post_content' => '<p>Public info</p><!-- wp:jp-catalog-suite/access {"audience":"authorized"} --><p>Protected Downloads content.</p><!-- /wp:jp-catalog-suite/access -->',
         ]
     );
 }
