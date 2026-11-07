@@ -13,6 +13,7 @@ final class Test_Protected_Files extends WP_UnitTestCase {
         $result = [ 'file' => get_attached_file( $attachment ) ];
         $this->assertSame( [ $result['file'] ], glob( dirname( $result['file'] ) . '/*' ) );
         $this->assertStringContainsString( '/jps-cs-protected/', $result['file'] );
+        $this->assertMatchesRegularExpression( '~jps-cs-protected/[A-Za-z0-9]{20}/~', $result['file'] );
         $protected_dir = $uploads['basedir'] . '/jps-cs-protected';
         $this->assertStringContainsString( 'Require all denied', file_get_contents( $protected_dir . '/.htaccess' ) );
         $this->assertSame( '1', get_post_meta( $attachment, '_jps_cs_protected', true ) );
@@ -258,6 +259,22 @@ final class Test_Protected_Files extends WP_UnitTestCase {
         $request = new WP_REST_Request( 'GET', '/wp/v2/media/' . $attachment );
         $response = rest_get_server()->dispatch( $request );
         $this->assertGreaterThanOrEqual( 400, $response->get_status() );
+    }
+    public function test_site_health_reports_when_protected_directory_returns_403(): void {
+        $mock = static function ( $preempt, array $args, string $url ) {
+            if ( str_ends_with( $url, '/jps-cs-protected/index.php' ) ) {
+                return [ 'headers' => [], 'body' => '', 'response' => [ 'code' => 403, 'message' => 'Forbidden' ], 'cookies' => [] ];
+            }
+            return $preempt;
+        };
+        add_filter( 'pre_http_request', $mock, 10, 3 );
+        try {
+            $tests = apply_filters( 'site_status_tests', [] );
+            $check = call_user_func( $tests['direct']['jps_cs_protected_directory']['test'] );
+            $this->assertSame( 'good', $check['status'] );
+        } finally {
+            remove_filter( 'pre_http_request', $mock, 10 );
+        }
     }
     private function save_media_attachment( int $id, array $fields ): ?array {
         require_once ABSPATH . 'wp-admin/includes/media.php';
