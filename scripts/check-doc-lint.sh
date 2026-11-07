@@ -8,7 +8,7 @@ msgfmt -c -o /dev/null languages/jp-catalog-suite-de_DE.po
 msgfmt -c -o /dev/null languages/jp-catalog-suite-de_DE_formal.po
 cmp -s languages/jp-catalog-suite-de_DE.po languages/jp-catalog-suite-de_DE_formal.po || { echo 'German formal catalog must be byte-identical to de_DE.' >&2; exit 1; }
 if command -v uv >/dev/null 2>&1; then
-    uv run "$PWD/.agents/skills/okf-validate/scripts/okf_validate.py" .okf
+    uv run scripts/okf-validate.py .okf
 else
     echo 'Skipping OKF validation: uv is not installed.'
 fi

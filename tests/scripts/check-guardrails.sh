@@ -20,9 +20,11 @@ printf '[decision](decisions/0001-first.md)\n' > "$index"
 cp "$adr/0001-first.md" "$adr/0001-second.md"; cp "$adr/0001-first.md" "$decisions/0001-second.md"; printf '[decision](decisions/0001-second.md)\n' >> "$index"
 if "$root/scripts/check-adr.sh" "$adr" "$decisions" "$index" 2>/dev/null; then echo 'duplicate ADR number was accepted' >&2; exit 1; fi
 rm "$adr/0001-second.md" "$decisions/0001-second.md"; sed 's/0001/0002/g' "$adr/0001-first.md" > "$adr/0002-second.md"
+printf '[decision](decisions/0002-second.md)\n' >> "$index"
 if "$root/scripts/check-adr.sh" "$adr" "$decisions" "$index" 2>/dev/null; then echo 'missing ADR mirror was accepted' >&2; exit 1; fi
 cp "$adr/0002-second.md" "$decisions/0002-second.md"
-if "$root/scripts/check-adr.sh" "$adr" "$decisions" "$index" 2>/dev/null; then echo 'missing ADR index link was accepted' >&2; exit 1; fi
+grep -v '0002-second' "$index" > "$tmp/index-without-second.md"
+if "$root/scripts/check-adr.sh" "$adr" "$decisions" "$tmp/index-without-second.md" 2>/dev/null; then echo 'missing ADR index link was accepted' >&2; exit 1; fi
 mkdir -p "$tmp/pot/includes" "$tmp/pot/templates" "$tmp/pot/blocks" "$tmp/pot/languages"
 printf "<?php __( 'Fixture missing', 'jp-catalog-suite' ); _n( 'Single fixture', 'Plural fixture', 2, 'jp-catalog-suite' );\n" > "$tmp/pot/includes/fixture.php"
 printf 'msgid ""\nmsgid "Fixture missing"\nmsgid "Single fixture"\n' > "$tmp/pot/languages/jp-catalog-suite.pot"
@@ -36,6 +38,7 @@ printf '| `jps_cs_fixture_hook` (filter) |\n' > "$tmp/README.md"
 "$root/scripts/check-readme-hooks.sh" "$tmp/README.md" "$tmp/includes"
 printf '| `jps_cs_stale_hook` (action) |\n' >> "$tmp/README.md"
 if "$root/scripts/check-readme-hooks.sh" "$tmp/README.md" "$tmp/includes" 2>/dev/null; then echo 'stale hook was accepted' >&2; exit 1; fi
-printf '| `jps_cs_fixture_hook` (filter) |\n| `jps_cs_missing_hook` (action) |\n' > "$tmp/README.md"
+printf "<?php do_action( 'jps_cs_missing_hook' );\n" >> "$tmp/includes/hooks.php"
+printf '| `jps_cs_fixture_hook` (filter) |\n' > "$tmp/README.md"
 if "$root/scripts/check-readme-hooks.sh" "$tmp/README.md" "$tmp/includes" 2>/dev/null; then echo 'undocumented hook was accepted' >&2; exit 1; fi
 echo 'Guardrail checker fixtures passed.'

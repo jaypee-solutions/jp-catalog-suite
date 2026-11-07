@@ -10,7 +10,8 @@
 
 ## Done criterion
 
-- `composer lint` also checks ADR mirrors/index links, README hook documentation, POT coverage, German catalogs, and OKF conformance.
+`composer lint` checks ADR mirrors/index links, README hook documentation, POT coverage, German catalogs, and OKF conformance when `uv` is installed; `composer test` also runs the guardrail fixtures.
+
 A run is green when PHPUnit prints `OK (N tests, M assertions)` and exits 0. The integration bootstrap exits 1 when a test or handler reaches `exit()`/`die()` before PHPUnit finishes.
 
 ## Integration tests

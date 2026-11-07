@@ -16,7 +16,7 @@ foreach ($files as $file) {
     $tokens = token_get_all(file_get_contents($file));
     for ($i = 0; $i < count($tokens); $i++) {
         $token = $tokens[$i];
-        if (!is_array($token) || $token[0] !== T_STRING || !in_array($token[1], ['__', '_e', 'esc_html__', '_x', '_n'], true)) continue;
+        if (!is_array($token) || $token[0] !== T_STRING || !in_array($token[1], ['__', '_e', 'esc_html__', 'esc_html_e', '_x', '_n'], true)) continue;
         $j = $i + 1;
         while (isset($tokens[$j]) && is_array($tokens[$j]) && in_array($tokens[$j][0], [T_WHITESPACE, T_COMMENT, T_DOC_COMMENT], true)) $j++;
         if (($tokens[$j] ?? null) !== '(') continue;
