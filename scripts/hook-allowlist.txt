@@ -1,0 +1,191 @@
+# Hook names check-hook-names.sh accepts without finding them in the WordPress/WooCommerce source.
+#
+# One fnmatch pattern per line (`*` matches any text). The source lookup ignores
+# definitions whose only dynamic part is trailing (do_action( "edit_{$taxonomy}" )),
+# because they would vouch for every typo. List those families here, as narrowly as
+# the family allows; never a whole namespace (`wp_*`, `admin_*`, `woocommerce_*`).
+#
+# Your own prefix (jp_catalog_suite_) is always accepted and needs no entry. Add other
+# prefixes you own (a companion plugin, a vendored library) as `acme_*` lines.
+
+# Plugin Update Checker (vendored under vendor/, so not in the WordPress source).
+puc_manual_check_message-*
+
+# Options and transients: {$option} / {$transient} is any name.
+option_*
+pre_option_*
+default_option_*
+add_option_*
+update_option_*
+pre_update_option_*
+sanitize_option_*
+site_option_*
+pre_site_option_*
+update_site_option_*
+transient_*
+pre_transient_*
+set_transient_*
+pre_set_transient_*
+site_transient_*
+pre_site_transient_*
+set_site_transient_*
+pre_set_site_transient_*
+
+# Translation: {$domain} is the text domain.
+gettext_*
+ngettext_*
+
+# Admin screens: {$hook_suffix}, {$screen->id} or {$action} is any registered page.
+admin_action_*
+admin_head-*
+admin_footer-*
+admin_print_scripts-*
+admin_print_styles-*
+admin_print_footer_scripts-*
+load-*
+bulk_actions-*
+handle_bulk_actions-*
+views_*
+set_screen_option_*
+add_meta_boxes_*
+network_admin_edit_*
+admin_post_*
+wp_ajax_*
+media_upload_*
+login_form_*
+
+# Plugins: {$plugin} is `folder/file.php`.
+activate_*
+deactivate_*
+plugin_action_links_*
+network_admin_plugin_action_links_*
+after_plugin_row_*
+in_plugin_update_message-*
+update_plugins_*
+auto_update_*
+
+# Posts, post types and taxonomies: {$post_type} / {$taxonomy} is any registered name.
+save_post_*
+registered_post_type_*
+registered_taxonomy_*
+post_type_labels_*
+taxonomy_labels_*
+create_*
+created_*
+edit_*
+edited_*
+delete_*
+saved_*
+# Post status transitions: {$old_status}_to_{$new_status} for every status.
+new_to_*
+draft_to_*
+auto-draft_to_*
+pending_to_*
+publish_to_*
+future_to_*
+private_to_*
+trash_to_*
+inherit_to_*
+
+# REST API: {$post_type} is any registered name.
+rest_prepare_*
+rest_insert_*
+rest_after_insert_*
+rest_pre_insert_*
+rest_delete_*
+
+# Front end, blocks and Customizer.
+shortcode_atts_*
+do_feed_*
+get_template_part_*
+render_block_*
+current_theme_supports-*
+customize_sanitize_*
+customize_value_*
+customize_preview_*
+customize_save_*
+customize_update_*
+customize_validate_*
+requests-*
+
+# WooCommerce data objects: WC_Data::get_hook_prefix() builds woocommerce_{object type}_get_{prop}.
+woocommerce_product_get_*
+woocommerce_product_variation_get_*
+woocommerce_order_get_*
+woocommerce_order_refund_get_*
+woocommerce_order_item_get_*
+woocommerce_coupon_get_*
+woocommerce_customer_get_*
+woocommerce_customer_download_get_*
+woocommerce_customer_download_log_get_*
+woocommerce_shipping_zone_get_*
+woocommerce_payment_token_cc_get_*
+woocommerce_payment_token_echeck_get_*
+woocommerce_admin-note_get_*
+woocommerce_stock_notification_get_*
+woocommerce_pre_delete_*
+woocommerce_before_delete_*
+woocommerce_delete_*
+woocommerce_trash_*
+
+# WooCommerce settings pages and fields: {$current_tab} / {$current_section} / {$field type}.
+woocommerce_settings_*
+woocommerce_get_settings_*
+woocommerce_get_sections_*
+woocommerce_sections_*
+woocommerce_before_settings_*
+woocommerce_after_settings_*
+woocommerce_update_options_*
+woocommerce_update_option_*
+woocommerce_admin_field_*
+woocommerce_admin_settings_sanitize_option_*
+woocommerce_shipping_instance_form_fields_*
+woocommerce_admin_status_content_*
+
+# WooCommerce products, orders and checkout.
+woocommerce_process_product_meta_*
+woocommerce_product_export_*_column_*
+woocommerce_order_action_*
+woocommerce_order_status_*
+woocommerce_payment_complete_order_status_*
+woocommerce_thankyou_*
+woocommerce_receipt_*
+woocommerce_form_field_*
+woocommerce_process_checkout_field_*
+woocommerce_process_myaccount_field_*
+woocommerce_add_to_cart_handler_*
+woocommerce_store_api_product_quantity_*
+woocommerce_taxonomy_args_*
+woocommerce_taxonomy_objects_*
+woocommerce_get_image_size_*
+woocommerce_download_file_*
+default_checkout_*
+wc_ajax_*
+woocommerce_api_*
+
+# WooCommerce emails: {$this->id} is the email's ID.
+woocommerce_email_recipient_*
+woocommerce_email_cc_recipient_*
+woocommerce_email_bcc_recipient_*
+woocommerce_email_enabled_*
+woocommerce_email_subject_*
+woocommerce_email_heading_*
+woocommerce_email_additional_content_*
+
+# WooCommerce My Account and Analytics.
+woocommerce_my_account_my_orders_column_*
+woocommerce_account_downloads_column_*
+woocommerce_account_payment_methods_column_*
+woocommerce_before_edit_address_form_*
+woocommerce_after_edit_address_form_*
+woocommerce_analytics_clauses_*
+
+# Germanized for WooCommerce (pinned in .wp-env.json):
+# do_action( 'woocommerce_gzd_registered_legal_checkboxes', $this ) in includes/class-wc-gzd-legal-checkbox-manager.php:926.
+woocommerce_gzd_registered_legal_checkboxes
+
+# This plugin's own hooks. The own prefix is jps_cs_, not jp_catalog_suite_, so they are listed by exact name.
+# jps_cs_purge_download_log: cron event scheduled with wp_schedule_event() in includes/class-download-log.php:31.
+# jps_cs_before_file_delivery: do_action() in includes/class-protected-files.php:383.
+jps_cs_purge_download_log
+jps_cs_before_file_delivery

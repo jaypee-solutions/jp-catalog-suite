@@ -83,11 +83,33 @@ composer install
 npm ci
 composer lint
 composer test
+composer hooks:check
 npm run env:start
 npm run test:integration
 npm run test:e2e:run -- --retries 0
 npm run env:stop
 ```
+
+
+Linked git worktrees get their own deterministic wp-env ports (8900–8999); the main
+checkout keeps 8888/8889. `WP_ENV_PORT`, `WP_ENV_TESTS_PORT`, `WP_ENV_URL`,
+`WP_ENV_TESTS_URL` and `WP_ENV_HOME` override them. wp-env, integration and E2E commands
+queue per plugin (`E2E_LOCK_DIR` moves the queue, `E2E_LOCK_DISABLE=1` turns it off);
+`npm run test:e2e:ui` leaves the queue once the site is ready. If a site that does not
+serve this checkout answers on the port, the E2E runner stops instead of testing it.
+Seed shared site data in `tests/seed.php` idempotently: stable slugs or SKUs, create only
+when absent. Specs import `test`/`expect` from `./support/fixtures`, `wpCli` from
+`./support/wp-cli` and `withOptions` from `./support/options`, which restores every
+changed option even when a test fails.
+
+`composer lint` also validates `languages/*.po` with `msgfmt -c` and checks that every
+`add_action`/`add_filter` name is fired by WordPress or WooCommerce, starts with
+`jp_catalog_suite_` or `jps_cs_` (the plugin's hook prefix, allowlisted), or matches a pattern in `scripts/hook-allowlist.txt`, where
+third-party hooks go. The hook check reads the source from the wp-env cache and skips
+until `npm run env:start` has downloaded it; CI fetches it.
+
+`npm install` runs Husky, which points Git at `.husky/`; `composer hooks:check` verifies
+that. `.husky/pre-commit` runs `composer lint`; `.husky/pre-push` runs `composer test`.
 
 ## Release
 
