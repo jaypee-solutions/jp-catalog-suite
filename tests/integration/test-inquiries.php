@@ -141,4 +141,78 @@ final class Test_Inquiries extends WP_UnitTestCase {
             apply_filters( 'woocommerce_thankyou_order_received_text', 'Original confirmation', $order )
         );
     }
+
+    private function confirmation_order( bool $inquiry ): WC_Order {
+        $order = wc_create_order();
+        if ( $inquiry ) {
+            $order->update_meta_data( '_jps_cs_inquiry', 'yes' );
+        }
+        $order->save();
+        return $order;
+    }
+
+    /** Makes WooCommerce treat the request as the order-received endpoint for $order. */
+    private function open_confirmation_page( ?WC_Order $order ): void {
+        global $wp;
+        unset( $wp->query_vars['order-received'] );
+        if ( $order ) {
+            $wp->query_vars['order-received'] = (string) $order->get_id();
+        }
+    }
+
+    public function tear_down(): void {
+        $this->open_confirmation_page( null );
+        parent::tear_down();
+    }
+
+    public function test_inquiry_confirmation_heading_says_inquiry_received(): void {
+        $inquiry = $this->confirmation_order( true );
+        $purchase = $this->confirmation_order( false );
+
+        $this->assertSame( 'Inquiry received', apply_filters( 'woocommerce_thankyou_order_received_title', 'Order received', $inquiry ) );
+        $this->assertSame( 'Order received', apply_filters( 'woocommerce_thankyou_order_received_title', 'Order received', $purchase ) );
+        foreach ( [ false, null ] as $no_order ) {
+            $this->assertSame( 'Order received', apply_filters( 'woocommerce_thankyou_order_received_title', 'Order received', $no_order ) );
+        }
+
+        $this->open_confirmation_page( $inquiry );
+        $this->assertSame( 'Inquiry received', apply_filters( 'woocommerce_endpoint_order-received_title', 'Order received', 'order-received', '' ) );
+        $this->open_confirmation_page( $purchase );
+        $this->assertSame( 'Order received', apply_filters( 'woocommerce_endpoint_order-received_title', 'Order received', 'order-received', '' ) );
+    }
+
+    public function test_inquiry_confirmation_rows_use_inquiry_wording_only_on_an_inquiry_page(): void {
+        $inquiry = $this->confirmation_order( true );
+        $purchase = $this->confirmation_order( false );
+        $original = [ 'Order #:', 'Order number:', 'Order details' ];
+
+        // phpcs:disable WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.NonSingularStringLiteralText -- The test reads WooCommerce's own strings.
+        $this->open_confirmation_page( $inquiry );
+        $this->assertSame( 'Inquiry #:', __( 'Order #:', 'woocommerce' ) );
+        $this->assertSame( 'Inquiry number:', __( 'Order number:', 'woocommerce' ) );
+        $this->assertSame( 'Inquiry details', __( 'Order details', 'woocommerce' ) );
+        $this->assertSame( 'Date:', __( 'Date:', 'woocommerce' ), 'Other WooCommerce strings stay untouched.' );
+
+        foreach ( [ $purchase, null ] as $page ) {
+            $this->open_confirmation_page( $page );
+            foreach ( $original as $text ) {
+                $this->assertSame( $text, __( $text, 'woocommerce' ) );
+            }
+        }
+        // phpcs:enable WordPress.WP.I18n.TextDomainMismatch, WordPress.WP.I18n.NonSingularStringLiteralText
+    }
+
+    public function test_order_details_heading_of_the_blocks_confirmation_page_says_inquiry_details(): void {
+        // WooCommerce bakes this heading into a block pattern at registration, before any order is known.
+        $heading  = '<!-- wp:heading {"level":2} --><h2 class="wp-block-heading">Order details</h2><!-- /wp:heading -->';
+        $inquiry  = $this->confirmation_order( true );
+        $purchase = $this->confirmation_order( false );
+
+        $this->open_confirmation_page( $inquiry );
+        $this->assertStringContainsString( '>Inquiry details<', do_blocks( $heading ) );
+        $this->assertStringContainsString( '>Shipping<', do_blocks( '<!-- wp:heading --><h2 class="wp-block-heading">Shipping</h2><!-- /wp:heading -->' ) );
+
+        $this->open_confirmation_page( $purchase );
+        $this->assertStringContainsString( '>Order details<', do_blocks( $heading ) );
+    }
 }

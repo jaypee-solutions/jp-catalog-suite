@@ -438,3 +438,15 @@ msgstr "Das Verzeichnis geschützter Uploads sollte den HTTP-Status 403 zurückg
 
 msgid "Sorry, you are not allowed to view this attachment."
 msgstr "Sie sind nicht berechtigt, diesen Anhang anzusehen."
+
+msgid "Inquiry received"
+msgstr "Anfrage eingegangen"
+
+msgid "Inquiry #:"
+msgstr "Anfrage-Nr.:"
+
+msgid "Inquiry number:"
+msgstr "Anfragenummer:"
+
+msgid "Inquiry details"
+msgstr "Anfragedetails"
