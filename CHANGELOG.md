@@ -10,6 +10,8 @@ extracts it as the GitHub release notes and fails without it.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-09
+
 ### Added
 - Quote mode supports guest Inquiry checkout without payment, shipping, taxes, or coupons.
 - Global product tabs with all-product or category scope and priority.
@@ -20,6 +22,9 @@ extracts it as the GitHub release notes and fails without it.
 - Shop-wide Core tab controls and per-product tab overrides.
 - Inquiry checkout fields configurable for Company, Phone, Address, and Message.
 - Added lint checks for ADR mirrors, README hook references, translation catalog coverage, formal German catalog identity, and OKF conformance.
+
+### Fixed
+- Inquiries are excluded from WooCommerce Analytics for stores that never saved the excluded-statuses setting.
 
 ## [0.1.0] - 2026-11-06
 
