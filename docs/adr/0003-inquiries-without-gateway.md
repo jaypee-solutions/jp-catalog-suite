@@ -1,7 +1,7 @@
 # Inquiries without gateway
 
 ## Status
-Accepted
+Accepted; scope amended by ADR 0022
 
 ## Context
 Inquiry checkout must work through WooCommerce classic and Store API checkout without payment while preserving standard stock and backorder rules.

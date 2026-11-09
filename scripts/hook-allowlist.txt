@@ -189,3 +189,5 @@ woocommerce_gzd_registered_legal_checkboxes
 # jps_cs_before_file_delivery: do_action() in includes/class-protected-files.php:383.
 jps_cs_purge_download_log
 jps_cs_before_file_delivery
+# jps_cs_quote_accepted: do_action() in includes/class-quotes.php (handle_accept).
+jps_cs_quote_accepted
