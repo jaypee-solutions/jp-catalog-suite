@@ -450,3 +450,84 @@ msgstr "Anfragenummer:"
 
 msgid "Inquiry details"
 msgstr "Anfragedetails"
+
+msgctxt "Order status"
+msgid "Quote sent"
+msgstr "Angebot gesendet"
+
+msgid "Quote sent <span class=\"count\">(%s)</span>"
+msgid_plural "Quotes sent <span class=\"count\">(%s)</span>"
+msgstr[0] "Angebot gesendet <span class=\"count\">(%s)</span>"
+msgstr[1] "Angebote gesendet <span class=\"count\">(%s)</span>"
+
+msgid "Send quote to customer"
+msgstr "Angebot an Kunden senden"
+
+msgid "Quote"
+msgstr "Angebot"
+
+msgid "Valid until"
+msgstr "Gültig bis"
+
+msgid "Message to the customer"
+msgstr "Nachricht an den Kunden"
+
+msgid "Your quote"
+msgstr "Ihr Angebot"
+
+msgid "Your quote for inquiry #{order_number} at {site_title}"
+msgstr "Ihr Angebot zu Anfrage #{order_number} bei {site_title}"
+
+msgid "Thank you for your inquiry. Here is our quote."
+msgstr "Vielen Dank für Ihre Anfrage. Hier ist unser Angebot."
+
+msgid "This quote is valid until %s."
+msgstr "Dieses Angebot ist gültig bis %s."
+
+msgid "This quote expired on %s."
+msgstr "Dieses Angebot ist am %s abgelaufen."
+
+msgid "Accept quote"
+msgstr "Angebot annehmen"
+
+msgid "Review and accept this quote in your account: %s"
+msgstr "Prüfen Sie dieses Angebot und nehmen Sie es in Ihrem Konto an: %s"
+
+msgid "Reply to this email to accept this quote."
+msgstr "Antworten Sie auf diese E-Mail, um das Angebot anzunehmen."
+
+msgid "Price"
+msgstr "Preis"
+
+msgid "Quote accepted"
+msgstr "Angebot angenommen"
+
+msgid "[{site_title}]: Quote #{order_number} accepted"
+msgstr "[{site_title}]: Angebot #{order_number} angenommen"
+
+msgid "The customer has accepted quote #%s."
+msgstr "Der Kunde hat das Angebot #%s angenommen."
+
+msgid "Quote sent to the customer."
+msgstr "Angebot an den Kunden gesendet."
+
+msgid "Revised quote sent to the customer."
+msgstr "Überarbeitetes Angebot an den Kunden gesendet."
+
+msgid "Quote not sent: the Quote email is disabled or the inquiry has no valid billing email."
+msgstr "Angebot nicht gesendet: Die Angebots-E-Mail ist deaktiviert oder die Anfrage hat keine gültige Rechnungs-E-Mail-Adresse."
+
+msgid "Quote accepted by the customer."
+msgstr "Angebot vom Kunden angenommen."
+
+msgid "Thank you. You have accepted the quote."
+msgstr "Vielen Dank. Sie haben das Angebot angenommen."
+
+msgid "This quote can no longer be accepted."
+msgstr "Dieses Angebot kann nicht mehr angenommen werden."
+
+msgid "Sent to the customer when you send a quote from an inquiry."
+msgstr "Wird an den Kunden gesendet, wenn Sie aus einer Anfrage ein Angebot senden."
+
+msgid "Sent to the shop manager when a customer accepts a quote."
+msgstr "Wird an den Shop-Verantwortlichen gesendet, wenn ein Kunde ein Angebot annimmt."

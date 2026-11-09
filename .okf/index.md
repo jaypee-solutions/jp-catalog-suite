@@ -27,3 +27,4 @@ okf_version: "0.1"
 * [Protected-file hosting requirements](references/hosting-requirements.md) - Upload limits, Traefik, X-Sendfile, nginx and Varnish deployment guidance.
 * [Security hardening](decisions/0020-security-hardening.md) - Protected-file routing, access policy, Download-log lifecycle and length validation boundaries.
 * [Persisted names and Quote mode ownership](decisions/0021-persisted-names-and-quote-mode-gating.md) - Canonical persisted names, canonical hidden-tab metadata, and Quote module lifecycle ownership.
+* [Quotes from Inquiries](decisions/0022-quotes-from-inquiries.md) - Priced Quote sent from an Inquiry (`jps-quote`), accepted by the customer in My Account.

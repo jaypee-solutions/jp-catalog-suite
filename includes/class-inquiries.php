@@ -35,43 +35,67 @@ final class Inquiries {
             // translators: %s is the number of inquiries in this order-status count.
             'label_count'               => _n_noop( 'Inquiry <span class="count">(%s)</span>', 'Inquiries <span class="count">(%s)</span>', 'jp-catalog-suite' ),
         ];
+        $statuses['wc-jps-quote'] = [
+            'label'                     => _x( 'Quote sent', 'Order status', 'jp-catalog-suite' ),
+            'public'                    => false,
+            'exclude_from_search'       => false,
+            'show_in_admin_all_list'    => true,
+            // translators: %s is the number of quotes in this order-status count.
+            'label_count'               => _n_noop( 'Quote sent <span class="count">(%s)</span>', 'Quotes sent <span class="count">(%s)</span>', 'jp-catalog-suite' ),
+        ];
         return $statuses;
     }
 
     public static function order_statuses( array $statuses ): array {
-        $label = _x( 'Inquiry', 'Order status', 'jp-catalog-suite' );
+        $inquiry = _x( 'Inquiry', 'Order status', 'jp-catalog-suite' );
+        $quote   = _x( 'Quote sent', 'Order status', 'jp-catalog-suite' );
         $result = [];
         foreach ( $statuses as $key => $value ) {
             $result[ $key ] = $value;
             if ( 'wc-pending' === $key ) {
-                $result['wc-jps-inquiry'] = $label;
+                $result['wc-jps-inquiry'] = $inquiry;
+                $result['wc-jps-quote']   = $quote;
             }
         }
         if ( ! isset( $result['wc-jps-inquiry'] ) ) {
-            $result['wc-jps-inquiry'] = $label;
+            $result['wc-jps-inquiry'] = $inquiry;
+            $result['wc-jps-quote']   = $quote;
         }
         return $result;
     }
 
     public static function excluded_statuses( $statuses ) {
-        if ( is_array( $statuses ) && ! in_array( 'jps-inquiry', $statuses, true ) ) {
-            $statuses[] = 'jps-inquiry';
+        if ( ! is_array( $statuses ) ) {
+            return $statuses;
+        }
+        foreach ( [ 'jps-inquiry', 'jps-quote' ] as $status ) {
+            if ( ! in_array( $status, $statuses, true ) ) {
+                $statuses[] = $status;
+            }
         }
         return $statuses;
     }
 
     public static function order_item_totals( array $totals, \WC_Order $order, string $tax_display ): array {
         unset( $tax_display );
-        return self::is_inquiry( $order ) && ( ! is_admin() || doing_action( 'woocommerce_email_order_details' ) ) ? [] : $totals;
+        return self::hides_prices( $order ) ? [] : $totals;
     }
 
     public static function line_subtotal( string $subtotal, \WC_Order_Item_Product $item, \WC_Order $order ): string {
         unset( $item );
-        return self::is_inquiry( $order ) && ( ! is_admin() || doing_action( 'woocommerce_email_order_details' ) ) ? '' : $subtotal;
+        return self::hides_prices( $order ) ? '' : $subtotal;
     }
 
     public static function formatted_order_total( string $total, \WC_Order $order ): string {
-        return self::is_inquiry( $order ) && ( ! is_admin() || doing_action( 'woocommerce_email_order_details' ) ) ? '' : $total;
+        return self::hides_prices( $order ) ? '' : $total;
+    }
+
+    public static function quote_sent( \WC_Order $order ): bool {
+        return '' !== (string) $order->get_meta( '_jps_cs_quote_sent' );
+    }
+
+    private static function hides_prices( \WC_Order $order ): bool {
+        return self::is_inquiry( $order ) && ! self::quote_sent( $order ) && ( ! is_admin() || doing_action( 'woocommerce_email_order_details' ) );
     }
 
     public static function account_menu_items( array $items ): array {

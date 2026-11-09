@@ -40,6 +40,7 @@ require_once __DIR__ . '/includes/class-inquiry-intake.php';
 require_once __DIR__ . '/includes/class-quote-mode.php';
 require_once __DIR__ . '/includes/class-product-tabs.php';
 require_once __DIR__ . '/includes/class-inquiry-emails.php';
+require_once __DIR__ . '/includes/class-quotes.php';
 require_once __DIR__ . '/includes/class-access-block.php';
 require_once __DIR__ . '/includes/class-download-log.php';
 require_once __DIR__ . '/includes/class-file-list-block.php';

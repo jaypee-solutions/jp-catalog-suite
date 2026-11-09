@@ -15,8 +15,12 @@ A non-binding request for an offer that a customer submits in quote mode; legall
 _Avoid_: quote, order, request for quote, Bestellung
 
 **Quote**:
-The seller's priced offer in reply to an inquiry (DE: Angebot); outside this plugin's scope.
+The seller's priced offer in reply to an inquiry (DE: Angebot); the shop manager sends it from the inquiry, and a logged-in customer can accept it in My Account.
 _Avoid_: using it for the customer's inquiry
+
+**Quote acceptance**:
+The customer's confirmation of a sent Quote; the inquiry becomes an on-hold order.
+_Avoid_: order confirmation
 
 **Inquiry basket**:
 The cart while quote mode is active (DE: Anfragekorb).
