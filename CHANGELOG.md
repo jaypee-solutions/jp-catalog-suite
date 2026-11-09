@@ -10,6 +10,12 @@ extracts it as the GitHub release notes and fails without it.
 
 ## [Unreleased]
 
+### Added
+- User guide with a task-based tutorial for every feature (`docs/guide/`).
+
+### Fixed
+- Variable length: the minimum and maximum default lengths are validated as the submitted pair, so inverted values are rejected and moving both bounds together is accepted.
+
 ## [0.2.0] - 2026-11-09
 
 ### Added

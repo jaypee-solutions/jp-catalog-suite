@@ -2,6 +2,10 @@
 
 Quote mode, extended product tabs with access levels and protected files, and customer-entered lengths for WooCommerce.
 
+## User guide
+
+Task-based tutorials for every feature are in the [user guide](docs/guide/README.md): [getting started](docs/guide/getting-started.md), [Quote mode](docs/guide/quote-mode.md), [product tabs](docs/guide/product-tabs.md), [protected files](docs/guide/protected-files.md) and [variable length](docs/guide/variable-length.md).
+
 ## Requirements
 
 - PHP 8.0+
