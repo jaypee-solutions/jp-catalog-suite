@@ -73,6 +73,8 @@ test( 'guest sends a Blocks inquiry which stays listed when Quote mode is off', 
 		await expect( page.locator( '.wc-block-components-checkout-place-order-button:visible' ).first() ).toBeVisible();
 		await page.locator( '.wc-block-components-checkout-place-order-button:visible' ).first().click();
 		await expect( page ).toHaveURL( /order-received/ );
+		await expect( page.locator( 'body' ) ).toContainText( /Inquiry received|Anfrage eingegangen/ );
+		await expect( page.locator( 'body' ) ).not.toContainText( /Order received|Bestellung eingegangen|Order #|Bestell-Nr/ );
 
         await expect( page.locator( 'body' ) ).not.toContainText( '€' );
 

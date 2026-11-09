@@ -21,6 +21,9 @@ $wp_rewrite->init();
 $wp_rewrite->flush_rules();
 require_once ABSPATH . 'wp-admin/includes/misc.php';
 save_mod_rewrite_rules();
+// WP-CLI does not register WooCommerce's endpoints, so the flush above leaves the
+// order-received rule out. Queue a flush for the next frontend request, which does.
+update_option( 'woocommerce_queue_flush_rewrite_rules', 'yes' );
 
 require_once ABSPATH . 'wp-admin/includes/plugin.php';
 WP_CLI::runcommand( 'i18n make-mo ' . escapeshellarg( dirname( __DIR__ ) . '/languages' ) );
