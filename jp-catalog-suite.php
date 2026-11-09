@@ -39,6 +39,8 @@ require_once __DIR__ . '/includes/class-inquiries.php';
 require_once __DIR__ . '/includes/class-inquiry-intake.php';
 require_once __DIR__ . '/includes/class-quote-mode.php';
 require_once __DIR__ . '/includes/class-product-tabs.php';
+require_once __DIR__ . '/includes/class-tab-admin.php';
+require_once __DIR__ . '/includes/class-tab-migration.php';
 require_once __DIR__ . '/includes/class-inquiry-emails.php';
 require_once __DIR__ . '/includes/class-quotes.php';
 require_once __DIR__ . '/includes/class-access-block.php';

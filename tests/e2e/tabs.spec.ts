@@ -41,5 +41,5 @@ test('product editor exposes the Tabs panel controls to an administrator', async
   await page.goto(`/wp-admin/post.php?post=${productId}&action=edit`);
   await page.locator('a[href="#jps-cs-product-tabs"]').click();
   await expect(page.locator('#jps-cs-product-tabs input[name="_jps_cs_hidden_tabs[]"]')).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Add product-specific tab' })).toBeVisible();
+  await expect(page.locator('#jps-cs-product-tabs .jps-cs-tab-open', { hasText: 'Add tab' })).toBeVisible();
 });

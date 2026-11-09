@@ -28,7 +28,7 @@ final class Test_Product_Tabs extends WP_UnitTestCase {
         wp_set_object_terms( $product_id, [ $child_id ], 'product_cat' );
         $global_id = $this->create_tab( 'Global saved test', 'Global public content.', 'all', [], 20 );
         $tab_id = self::factory()->post->create( [ 'post_type' => 'jps_cs_tab', 'post_status' => 'draft', 'post_title' => 'Saved category tab', 'post_content' => 'Category public content.' ] );
-        $_POST = [ 'jps_cs_tab_nonce' => wp_create_nonce( 'jps_cs_tab_meta' ), 'jps_cs_scope' => 'categories', 'jps_cs_categories' => [ (string) $parent_id ], 'jps_cs_priority' => '10', 'jps_cs_products' => [] ];
+        $_POST = [ 'jps_cs_tab_nonce' => wp_create_nonce( 'jps_cs_tab_meta' ), 'jps_cs_scope' => 'categories', 'jps_cs_target' => (string) $parent_id, 'jps_cs_priority' => '10' ];
         wp_update_post( [ 'ID' => $tab_id, 'post_status' => 'publish' ] );
         $_POST = [];
         $this->assertSame( [ 'jps_cs_tab_' . $tab_id, 'jps_cs_tab_' . $global_id ], $this->tab_keys( $this->tabs_for_product( $product_id ) ) );
@@ -48,7 +48,7 @@ final class Test_Product_Tabs extends WP_UnitTestCase {
         $category_tab = $this->create_tab( 'Category tab for override', 'Category content.', 'categories', [ $category_id ], 20 );
         $hidden_tab = $this->create_tab( 'Hidden global tab', 'Hidden content.', 'all', [], 30 );
         $product_tab = self::factory()->post->create( [ 'post_type' => 'jps_cs_tab', 'post_status' => 'draft', 'post_title' => 'Replacing product tab', 'post_content' => 'Replacement content.' ] );
-        $_POST = [ 'jps_cs_tab_nonce' => wp_create_nonce( 'jps_cs_tab_meta' ), 'jps_cs_scope' => 'products', 'jps_cs_products' => [ (string) $product_id ], 'jps_cs_replaces' => (string) $all_tab, 'jps_cs_priority' => '' ];
+        $_POST = [ 'jps_cs_tab_nonce' => wp_create_nonce( 'jps_cs_tab_meta' ), 'jps_cs_scope' => 'products', 'jps_cs_target' => (string) $product_id, 'jps_cs_replaces' => (string) $all_tab, 'jps_cs_priority' => '' ];
         wp_update_post( [ 'ID' => $product_tab, 'post_status' => 'publish' ] );
         $_POST = [];
         $product = wc_get_product( $product_id );
@@ -68,19 +68,20 @@ final class Test_Product_Tabs extends WP_UnitTestCase {
         $panel = ob_get_clean();
         $this->assertMatchesRegularExpression( '/name="_jps_cs_hidden_tabs\[\]" value="' . $hidden_tab . '"\s+checked/', $panel );
         $this->assertStringContainsString( 'name="_jps_cs_hidden_tabs[]" value="' . $category_tab . '"', $panel );
-        $this->assertStringContainsString( 'post-new.php?post_type=jps_cs_tab&#038;jps_cs_product=' . $product_id, $panel );
+        $this->assertStringContainsString( 'jps_cs_scope=products&#038;jps_cs_target=' . $product_id, $panel );
+        $this->assertStringContainsString( 'Replaced by Replacing product tab', $panel );
         wp_set_current_user( 0 );
         ob_start();
         do_action( 'woocommerce_product_data_panels' );
         $guest_panel = ob_get_clean();
-        $this->assertStringNotContainsString( 'jps_cs_product=' . $product_id, $guest_panel );
+        $this->assertStringNotContainsString( 'jps_cs_target=' . $product_id, $guest_panel );
     }
     public function test_replacement_inherits_global_priority_even_when_global_is_hidden_first(): void {
         wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
         $product_id = self::factory()->post->create( [ 'post_type' => 'product', 'post_status' => 'publish' ] );
         $replacement_id = self::factory()->post->create( [ 'post_type' => 'jps_cs_tab', 'post_status' => 'draft', 'post_title' => 'Priority replacement', 'post_content' => 'Replacement content.' ] );
         $global_id = $this->create_tab( 'Priority source', 'Global content.', 'all', [], 13 );
-        $_POST = [ 'jps_cs_tab_nonce' => wp_create_nonce( 'jps_cs_tab_meta' ), 'jps_cs_scope' => 'products', 'jps_cs_products' => [ (string) $product_id ], 'jps_cs_replaces' => (string) $global_id, 'jps_cs_priority' => '' ];
+        $_POST = [ 'jps_cs_tab_nonce' => wp_create_nonce( 'jps_cs_tab_meta' ), 'jps_cs_scope' => 'products', 'jps_cs_target' => (string) $product_id, 'jps_cs_replaces' => (string) $global_id, 'jps_cs_priority' => '' ];
         wp_update_post( [ 'ID' => $replacement_id, 'post_status' => 'publish', 'post_date' => '2000-01-01 00:00:00' ] );
         $_POST = [ '_jps_cs_hidden_tabs' => [ (string) $global_id ] ];
         $product = wc_get_product( $product_id );
@@ -92,25 +93,137 @@ final class Test_Product_Tabs extends WP_UnitTestCase {
     }
 
 
-    public function test_product_tab_creation_link_and_editor_preselect_product_scope(): void {
+    public function test_new_tab_editor_preselects_owner_and_prefills_the_replaced_tab(): void {
         wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
         $product_id = self::factory()->post->create( [ 'post_type' => 'product', 'post_status' => 'publish' ] );
-        $GLOBALS['post'] = get_post( $product_id );
-        ob_start();
-        do_action( 'woocommerce_product_data_panels' );
-        $panel = ob_get_clean();
-        $this->assertStringContainsString( 'post-new.php?post_type=jps_cs_tab&#038;jps_cs_product=' . $product_id, $panel );
-        $_GET['jps_cs_product'] = (string) $product_id;
-        $tab = get_post( self::factory()->post->create( [ 'post_type' => 'jps_cs_tab', 'post_status' => 'draft' ] ) );
+        $global_id = $this->create_tab( 'Global to replace', '<p>Global body.</p>', 'all', [], 20 );
+        $_GET = [ 'jps_cs_scope' => 'products', 'jps_cs_target' => (string) $product_id, 'jps_cs_replaces' => (string) $global_id ];
+        $tab = get_post( self::factory()->post->create( [ 'post_type' => 'jps_cs_tab', 'post_status' => 'auto-draft' ] ) );
         $GLOBALS['post'] = $tab;
         set_current_screen( 'post' );
         do_action( 'add_meta_boxes_jps_cs_tab', $tab );
         ob_start();
         do_meta_boxes( 'jps_cs_tab', 'side', $tab );
         $markup = ob_get_clean();
-        unset( $_GET['jps_cs_product'] );
-        $this->assertMatchesRegularExpression( '/<option value="products"\s+selected(?:="selected")?/', $markup );
-        $this->assertMatchesRegularExpression( '/<option value="' . $product_id . '"\s+selected/', $markup );
+        $title = apply_filters( 'default_title', '', $tab );
+        $content = apply_filters( 'default_content', '', $tab );
+        $_GET = [];
+        $this->assertStringContainsString( 'name="jps_cs_scope" value="products"', $markup );
+        $this->assertStringContainsString( 'name="jps_cs_target" value="' . $product_id . '"', $markup );
+        $this->assertMatchesRegularExpression( '/<option value="' . $global_id . '"\s+selected/', $markup );
+        $this->assertSame( 'Global to replace', $title );
+        $this->assertSame( '<p>Global body.</p>', $content );
+    }
+
+    public function test_saving_ignores_a_missing_owner(): void {
+        wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
+        $category_id = self::factory()->term->create( [ 'taxonomy' => 'product_cat', 'name' => 'Owner kept' ] );
+        $tab_id = $this->create_tab( 'Owned tab', 'Owned content.', 'categories', [ $category_id ], 10 );
+        $_POST = [ 'jps_cs_tab_nonce' => wp_create_nonce( 'jps_cs_tab_meta' ), 'jps_cs_scope' => 'products', 'jps_cs_target' => '999999', 'jps_cs_priority' => '10' ];
+        wp_update_post( [ 'ID' => $tab_id, 'post_title' => 'Owned tab renamed' ] );
+        $_POST = [];
+        $this->assertSame( 'categories', get_post_meta( $tab_id, '_jps_cs_scope', true ) );
+        $this->assertSame( [ $category_id ], get_post_meta( $tab_id, '_jps_cs_categories', true ) );
+    }
+
+    public function test_category_screen_lists_own_and_inherited_tabs(): void {
+        wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
+        $parent_id = self::factory()->term->create( [ 'taxonomy' => 'product_cat', 'name' => 'Parent' ] );
+        $child_id = self::factory()->term->create( [ 'taxonomy' => 'product_cat', 'name' => 'Child', 'parent' => $parent_id ] );
+        $this->create_tab( 'Child own tab', 'Child content.', 'categories', [ $child_id ], 10 );
+        $this->create_tab( 'Parent inherited tab', 'Parent content.', 'categories', [ $parent_id ], 20 );
+        ob_start();
+        do_action( 'product_cat_edit_form_fields', get_term( $child_id, 'product_cat' ), 'product_cat' );
+        $markup = ob_get_clean();
+        $this->assertStringContainsString( 'Child own tab', $markup );
+        $this->assertStringContainsString( 'Parent category: Parent', $markup );
+        $this->assertStringContainsString( 'Parent inherited tab', $markup );
+        $this->assertStringContainsString( 'jps_cs_scope=categories&#038;jps_cs_target=' . $child_id, $markup );
+    }
+
+    public function test_trash_endpoint_requires_delete_capability(): void {
+        add_filter( 'wp_doing_ajax', '__return_true' );
+        add_filter(
+            'wp_die_ajax_handler',
+            static fn (): callable => static function ( $message = '' ): void {
+                throw new WPDieException( is_scalar( $message ) ? (string) $message : '' );
+            }
+        );
+        $tab_id = $this->create_tab( 'Tab to trash', 'Content.', 'all', [], 10 );
+        $trash = function () use ( $tab_id ): void {
+            $_POST = [ 'nonce' => wp_create_nonce( 'jps_cs_tab_manager' ), 'tab_id' => (string) $tab_id ];
+            $_REQUEST = $_POST;
+            ob_start();
+            try {
+                do_action( 'wp_ajax_jps_cs_trash_tab' );
+            } catch ( WPDieException $exception ) {
+                unset( $exception );
+            } finally {
+                ob_end_clean();
+                $_POST = [];
+                $_REQUEST = [];
+            }
+        };
+        wp_set_current_user( self::factory()->user->create( [ 'role' => 'customer' ] ) );
+        $trash();
+        $this->assertSame( 'publish', get_post_status( $tab_id ) );
+        wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
+        $trash();
+        $this->assertSame( 'trash', get_post_status( $tab_id ) );
+    }
+
+    public function test_migration_splits_multi_owner_tabs_without_duplicates(): void {
+        delete_option( 'jps_cs_tabs_single_owner_migrated' );
+        $category_a = self::factory()->term->create( [ 'taxonomy' => 'product_cat', 'name' => 'Split A' ] );
+        $category_b = self::factory()->term->create( [ 'taxonomy' => 'product_cat', 'name' => 'Split B' ] );
+        $in_both = self::factory()->post->create( [ 'post_type' => 'product', 'post_status' => 'publish' ] );
+        $in_b_only = self::factory()->post->create( [ 'post_type' => 'product', 'post_status' => 'publish' ] );
+        $in_both_plain = self::factory()->post->create( [ 'post_type' => 'product', 'post_status' => 'publish' ] );
+        wp_set_object_terms( $in_both, [ $category_a, $category_b ], 'product_cat' );
+        wp_set_object_terms( $in_both_plain, [ $category_a, $category_b ], 'product_cat' );
+        wp_set_object_terms( $in_b_only, [ $category_b ], 'product_cat' );
+        $split_id = $this->create_tab( 'Split me', 'Split body.', 'categories', [ $category_a, $category_b ], 10 );
+        $replacing_id = $this->create_tab( 'Replacing split', 'Replacement body.', 'products', [], 20 );
+        update_post_meta( $replacing_id, '_jps_cs_products', [ $in_both, $in_b_only ] );
+        update_post_meta( $replacing_id, '_jps_cs_replaces', $split_id );
+        // Firing admin_init outside wp-admin also runs core's privacy-policy registration, which flags that.
+        $this->setExpectedIncorrectUsage( 'wp_add_privacy_policy_content' );
+        remove_action( 'admin_init', 'wp_admin_headers' );
+        do_action( 'admin_init' );
+        $copies = get_posts( [ 'post_type' => 'jps_cs_tab', 'post_status' => 'publish', 'title' => 'Split me', 'exclude' => [ $split_id ], 'numberposts' => -1 ] );
+        $this->assertCount( 1, $copies );
+        $copy_id = $copies[0]->ID;
+        $this->assertSame( [ $category_a ], get_post_meta( $split_id, '_jps_cs_categories', true ) );
+        $this->assertSame( [ $category_b ], get_post_meta( $copy_id, '_jps_cs_categories', true ) );
+        $this->assertSame( 'Split body.', $copies[0]->post_content );
+        $replacement_copies = get_posts( [ 'post_type' => 'jps_cs_tab', 'post_status' => 'publish', 'title' => 'Replacing split', 'exclude' => [ $replacing_id ], 'numberposts' => -1 ] );
+        $this->assertCount( 1, $replacement_copies );
+        $replacement_copy_id = $replacement_copies[0]->ID;
+        $this->assertSame( [ $in_both ], get_post_meta( $replacing_id, '_jps_cs_products', true ) );
+        $this->assertSame( [ $in_b_only ], get_post_meta( $replacement_copy_id, '_jps_cs_products', true ) );
+        $this->assertSame( $split_id, (int) get_post_meta( $replacing_id, '_jps_cs_replaces', true ) );
+        $this->assertSame( $copy_id, (int) get_post_meta( $replacement_copy_id, '_jps_cs_replaces', true ) );
+        $this->assertSame( [ 'jps_cs_tab_' . $split_id ], $this->tab_keys( $this->tabs_for_product( $in_both_plain ) ) );
+        $this->assertSame( [ $copy_id ], get_post_meta( $in_both_plain, '_jps_cs_hidden_tabs', true ) );
+        $this->assertSame( [ 'jps_cs_tab_' . $replacing_id ], $this->tab_keys( $this->tabs_for_product( $in_both ) ) );
+        $this->assertSame( [ 'jps_cs_tab_' . $replacement_copy_id ], $this->tab_keys( $this->tabs_for_product( $in_b_only ) ) );
+        $tab_count = count( get_posts( [ 'post_type' => 'jps_cs_tab', 'post_status' => 'any', 'numberposts' => -1, 'fields' => 'ids' ] ) );
+        do_action( 'admin_init' );
+        $this->assertCount( $tab_count, get_posts( [ 'post_type' => 'jps_cs_tab', 'post_status' => 'any', 'numberposts' => -1, 'fields' => 'ids' ] ) );
+    }
+
+    public function test_deleting_a_product_or_category_deletes_its_tabs(): void {
+        $product_id = self::factory()->post->create( [ 'post_type' => 'product', 'post_status' => 'publish' ] );
+        $category_id = self::factory()->term->create( [ 'taxonomy' => 'product_cat', 'name' => 'Deleted with tabs' ] );
+        $product_tab = $this->create_tab( 'Product-owned tab', 'Content.', 'products', [], 10 );
+        update_post_meta( $product_tab, '_jps_cs_products', [ $product_id ] );
+        $category_tab = $this->create_tab( 'Category-owned tab', 'Content.', 'categories', [ $category_id ], 10 );
+        $shop_wide_tab = $this->create_tab( 'Shop-wide tab', 'Content.', 'all', [], 10 );
+        wp_delete_post( $product_id, true );
+        wp_delete_term( $category_id, 'product_cat' );
+        $this->assertNull( get_post( $product_tab ) );
+        $this->assertNull( get_post( $category_tab ) );
+        $this->assertNotNull( get_post( $shop_wide_tab ) );
     }
 
     public function test_tab_settings_meta_box_is_registered(): void {

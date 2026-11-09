@@ -29,11 +29,11 @@ _Avoid_: cart, Warenkorb (in customer-facing text)
 ### Product tabs
 
 **Global tab**:
-A tab shown on all products, or on all products in chosen categories.
+A tab shown on all products, or on the products of one category and its subcategories.
 _Avoid_: shared tab, default tab
 
 **Product tab**:
-A tab assigned to specific products, one or several.
+A tab belonging to one product.
 _Avoid_: custom tab, local tab
 
 **Core tab**:

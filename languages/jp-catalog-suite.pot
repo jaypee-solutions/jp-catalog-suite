@@ -3,13 +3,13 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JayPee Solutions Catalog Suite for WooCommerce 0.2.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/jp-catalog-suite\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/product-tabs-in-produkt-management-area\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-09T21:32:41+00:00\n"
+"POT-Creation-Date: 2026-11-09T22:15:22+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: jp-catalog-suite\n"
@@ -65,7 +65,7 @@ msgstr ""
 #: includes/class-download-log.php:116
 #: includes/class-download-log.php:132
 #: includes/class-download-log.php:145
-#: includes/class-product-tabs.php:206
+#: includes/class-product-tabs.php:107
 msgid "Download log"
 msgstr ""
 
@@ -229,126 +229,90 @@ msgstr ""
 msgid "Inquiry received."
 msgstr ""
 
-#: includes/class-product-tabs.php:35
+#: includes/class-product-tabs.php:30
 msgid "Sorry, you are not allowed to read product tabs."
 msgstr ""
 
-#: includes/class-product-tabs.php:49
-#: includes/class-product-tabs.php:171
+#: includes/class-product-tabs.php:44
+#: includes/class-product-tabs.php:71
 #: includes/class-settings-page.php:24
 #: includes/class-settings-page.php:41
 msgid "Product tabs"
 msgstr ""
 
-#: includes/class-product-tabs.php:50
+#: includes/class-product-tabs.php:45
 msgid "Product tab"
 msgstr ""
 
-#: includes/class-product-tabs.php:51
+#: includes/class-product-tabs.php:46
 msgid "Add product tab"
 msgstr ""
 
-#: includes/class-product-tabs.php:52
+#: includes/class-product-tabs.php:47
 msgid "Edit product tab"
 msgstr ""
 
-#: includes/class-product-tabs.php:84
-msgid "Tab settings"
+#: includes/class-product-tabs.php:72
+msgid "Shop-wide tabs"
 msgstr ""
 
-#: includes/class-product-tabs.php:107
-msgid "Scope"
-msgstr ""
-
-#: includes/class-product-tabs.php:109
-msgid "All products"
-msgstr ""
-
-#: includes/class-product-tabs.php:110
-#: includes/class-product-tabs.php:113
-msgid "Categories"
-msgstr ""
-
-#: includes/class-product-tabs.php:111
-#: includes/class-product-tabs.php:119
-msgid "Products"
-msgstr ""
-
-#: includes/class-product-tabs.php:128
-msgid "Replace global tab"
-msgstr ""
-
-#: includes/class-product-tabs.php:130
-msgid "None"
-msgstr ""
-
-#: includes/class-product-tabs.php:138
-#: includes/class-product-tabs.php:187
-msgid "Priority"
-msgstr ""
-
-#: includes/class-product-tabs.php:180
+#: includes/class-product-tabs.php:81
+#: includes/class-tab-admin.php:160
 msgid "Title"
 msgstr ""
 
-#: includes/class-product-tabs.php:193
+#: includes/class-product-tabs.php:88
+#: includes/class-tab-admin.php:162
+#: includes/class-tab-admin.php:466
+msgid "Priority"
+msgstr ""
+
+#: includes/class-product-tabs.php:94
 msgid "Hide"
 msgstr ""
 
-#: includes/class-product-tabs.php:201
+#: includes/class-product-tabs.php:102
 msgid "Protected files"
 msgstr ""
 
-#: includes/class-product-tabs.php:202
+#: includes/class-product-tabs.php:103
 msgid "Allowed file MIME types"
 msgstr ""
 
-#: includes/class-product-tabs.php:203
+#: includes/class-product-tabs.php:104
 msgid "Automatically protect extensions"
 msgstr ""
 
-#: includes/class-product-tabs.php:204
+#: includes/class-product-tabs.php:105
 msgid "File delivery method"
 msgstr ""
 
-#: includes/class-product-tabs.php:204
+#: includes/class-product-tabs.php:105
 msgid "Automatic"
 msgstr ""
 
-#: includes/class-product-tabs.php:207
+#: includes/class-product-tabs.php:108
 msgid "Enable download log"
 msgstr ""
 
-#: includes/class-product-tabs.php:208
+#: includes/class-product-tabs.php:109
 msgid "Download log retention (days)"
 msgstr ""
 
-#: includes/class-product-tabs.php:208
+#: includes/class-product-tabs.php:109
 msgid "Set to 0 to keep entries until erased or the user is deleted."
 msgstr ""
 
-#: includes/class-product-tabs.php:216
+#: includes/class-product-tabs.php:117
 msgid "Description"
 msgstr ""
 
-#: includes/class-product-tabs.php:217
+#: includes/class-product-tabs.php:118
 msgid "Additional information"
 msgstr ""
 
-#: includes/class-product-tabs.php:218
+#: includes/class-product-tabs.php:119
 msgid "Reviews"
-msgstr ""
-
-#: includes/class-product-tabs.php:245
-msgid "Tabs"
-msgstr ""
-
-#: includes/class-product-tabs.php:265
-msgid "Hide on this product"
-msgstr ""
-
-#: includes/class-product-tabs.php:274
-msgid "Add product-specific tab"
 msgstr ""
 
 #: includes/class-protected-files.php:51
@@ -495,31 +459,31 @@ msgstr ""
 msgid "Message to the customer"
 msgstr ""
 
-#: includes/class-quotes.php:98
+#: includes/class-quotes.php:99
 msgid "Send quote to customer"
 msgstr ""
 
-#: includes/class-quotes.php:109
+#: includes/class-quotes.php:110
 msgid "Quote not sent: the Quote email is disabled or the inquiry has no valid billing email."
 msgstr ""
 
-#: includes/class-quotes.php:114
+#: includes/class-quotes.php:115
 msgid "Revised quote sent to the customer."
 msgstr ""
 
-#: includes/class-quotes.php:117
+#: includes/class-quotes.php:118
 msgid "Quote sent to the customer."
 msgstr ""
 
-#: includes/class-quotes.php:183
+#: includes/class-quotes.php:185
 msgid "Quote accepted by the customer."
 msgstr ""
 
-#: includes/class-quotes.php:185
+#: includes/class-quotes.php:187
 msgid "Thank you. You have accepted the quote."
 msgstr ""
 
-#: includes/class-quotes.php:187
+#: includes/class-quotes.php:189
 msgid "This quote can no longer be accepted."
 msgstr ""
 
@@ -541,6 +505,130 @@ msgstr ""
 #: includes/class-settings-page.php:51
 #: includes/class-settings-page.php:55
 msgid "Delete tabs, protected files and the download log when the plugin is deleted. Orders are never deleted."
+msgstr ""
+
+#: includes/class-tab-admin.php:139
+msgid "Move this tab to the trash?"
+msgstr ""
+
+#: includes/class-tab-admin.php:142
+msgid "Close"
+msgstr ""
+
+#: includes/class-tab-admin.php:143
+msgid "Tab editor"
+msgstr ""
+
+#: includes/class-tab-admin.php:155
+msgid "No tabs yet."
+msgstr ""
+
+#: includes/class-tab-admin.php:161
+msgid "Shown on"
+msgstr ""
+
+#: includes/class-tab-admin.php:163
+msgid "Status"
+msgstr ""
+
+#: includes/class-tab-admin.php:164
+msgid "Actions"
+msgstr ""
+
+#: includes/class-tab-admin.php:181
+msgid "Add tab"
+msgstr ""
+
+#: includes/class-tab-admin.php:197
+#: includes/class-tab-admin.php:262
+#: includes/class-tab-admin.php:295
+#: includes/class-tab-admin.php:437
+msgid "All products"
+msgstr ""
+
+#: includes/class-tab-admin.php:218
+msgid "Edit"
+msgstr ""
+
+#: includes/class-tab-admin.php:224
+msgid "Delete"
+msgstr ""
+
+#: includes/class-tab-admin.php:236
+msgid "This product"
+msgstr ""
+
+#. translators: %s: title of the replaced tab.
+#: includes/class-tab-admin.php:240
+#, php-format
+msgid "Replaces %s"
+msgstr ""
+
+#. translators: %s: category name.
+#: includes/class-tab-admin.php:260
+#, php-format
+msgid "Category: %s"
+msgstr ""
+
+#. translators: %s: title of the replacing product tab.
+#: includes/class-tab-admin.php:266
+#, php-format
+msgid "Replaced by %s"
+msgstr ""
+
+#: includes/class-tab-admin.php:272
+msgid "Hide on this product"
+msgstr ""
+
+#: includes/class-tab-admin.php:275
+msgid "Replace"
+msgstr ""
+
+#: includes/class-tab-admin.php:286
+msgid "This category"
+msgstr ""
+
+#. translators: %s: parent category name.
+#: includes/class-tab-admin.php:291
+#, php-format
+msgid "Parent category: %s"
+msgstr ""
+
+#: includes/class-tab-admin.php:303
+#: includes/class-tab-admin.php:326
+msgid "Tabs"
+msgstr ""
+
+#: includes/class-tab-admin.php:366
+msgid "Sorry, you are not allowed to manage these tabs."
+msgstr ""
+
+#: includes/class-tab-admin.php:408
+msgid "Tab settings"
+msgstr ""
+
+#. translators: %s: category name.
+#: includes/class-tab-admin.php:431
+#, php-format
+msgid "%s and its subcategories"
+msgstr ""
+
+#. translators: %s: product name.
+#: includes/class-tab-admin.php:435
+#, php-format
+msgid "Product: %s"
+msgstr ""
+
+#: includes/class-tab-admin.php:445
+msgid "Shown on:"
+msgstr ""
+
+#: includes/class-tab-admin.php:456
+msgid "Replace global tab"
+msgstr ""
+
+#: includes/class-tab-admin.php:458
+msgid "None"
 msgstr ""
 
 #: includes/class-updates.php:93
@@ -721,7 +809,7 @@ msgstr ""
 msgid "Choose length"
 msgstr ""
 
-#: jp-catalog-suite.php:72
+#: jp-catalog-suite.php:74
 msgid "JayPee Solutions Catalog Suite for WooCommerce requires WooCommerce."
 msgstr ""
 
