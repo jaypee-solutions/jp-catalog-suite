@@ -16,6 +16,7 @@ final class Quote_Mode {
         Germanized_Integration::init();
         Inquiry_Intake::init();
         Inquiry_Emails::init();
+        Quotes::init();
         add_filter( 'woocommerce_is_purchasable', [ self::class, 'is_purchasable' ], 10, 2 );
         add_filter( 'woocommerce_variation_is_purchasable', [ self::class, 'is_variation_purchasable' ], 10, 2 );
         add_filter( 'woocommerce_variation_is_visible', [ self::class, 'is_variation_visible' ], 10, 4 );

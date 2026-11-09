@@ -21,6 +21,8 @@ final class Test_Uninstall extends WP_UnitTestCase {
         update_option( 'jp_catalog_suite_github_token', 'secret' );
         update_option( 'woocommerce_jps_cs_new_inquiry_settings', [ 'enabled' => 'yes' ] );
         update_option( 'woocommerce_jps_cs_inquiry_confirmation_settings', [ 'enabled' => 'yes' ] );
+        update_option( 'woocommerce_jps_cs_quote_settings', [ 'enabled' => 'yes' ] );
+        update_option( 'woocommerce_jps_cs_quote_accepted_settings', [ 'enabled' => 'yes' ] );
         define( 'WP_UNINSTALL_PLUGIN', true );
         require dirname( __DIR__, 2 ) . '/uninstall.php';
 
@@ -29,6 +31,8 @@ final class Test_Uninstall extends WP_UnitTestCase {
         $this->assertFalse( get_option( 'jp_catalog_suite_github_token', false ) );
         $this->assertFalse( get_option( 'woocommerce_jps_cs_new_inquiry_settings', false ) );
         $this->assertFalse( get_option( 'woocommerce_jps_cs_inquiry_confirmation_settings', false ) );
+        $this->assertFalse( get_option( 'woocommerce_jps_cs_quote_settings', false ) );
+        $this->assertFalse( get_option( 'woocommerce_jps_cs_quote_accepted_settings', false ) );
         $this->assertSame( 'processing', wc_get_order( $order->get_id() )->get_status() );
         $this->assertSame( '', get_post_meta( $product_id, '_jps_cs_hidden_tabs', true ) );
     }

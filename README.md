@@ -27,6 +27,10 @@ When Germanized is active and Quote mode is on, its price and legal notices are 
 
 Two price-free WooCommerce emails are registered for each new Inquiry: **New inquiry** to the configured recipients (defaults to the site administrator email) and **Inquiry confirmation** to the billing email. Edit or disable them under **WooCommerce → Settings → Emails**. The New inquiry recipient accepts comma-separated addresses. Both email formats list products, SKU, quantity, item details, the customer's message and customer details without prices. The admin message replies to the customer's billing email. The `jps_cs_inquiry_created` action fires when an Inquiry is created; email delivery follows WooCommerce's pending-to-Inquiry notification. The two email settings are removed on uninstall; no email content is retained by this module.
 
+## Quotes
+
+Shop managers set prices on an Inquiry with the regular order item editor (**Recalculate** included; editable while the status is **Inquiry** or **Quote sent**), optionally fill **Valid until** and **Message to the customer** in the **Quote** box, and choose the order action **Send quote to customer**. The Inquiry moves to **Quote sent** (`jps-quote`) and the customer receives the **Quote** email with prices, totals, date and message; repeat the action to send a revised quote. Prices are visible to the customer from then on. A logged-in customer opens the order in My Account, reviews the Quote and clicks **Accept quote** (until the valid-until day ends): the order becomes `on-hold` (stock is reduced, no online payment) and the **Quote accepted** email goes to the configured recipients. Guests reply to the email instead. No PDF is generated. `jps_cs_quote_accepted` fires after an acceptance. Quote order meta: `_jps_cs_quote_sent`, `_jps_cs_quote_valid_until`, `_jps_cs_quote_message`.
+
 ## Inquiry checkout fields
 
 Configure Company, Phone, and Address as optional, required, or hidden, and enable or disable the message under the Quote mode settings in **WooCommerce → Settings → Catalog Suite**. Name and email remain required. Address visibility and required state follow WooCommerce country locale behavior; classic checkout removes hidden street, city, state, and postcode fields while keeping Country available. Blocks cannot hide Country, which remains preselected to the store country, and Blocks order notes cannot be required; the Checkout block's own order-notes setting controls whether its message field appears. Options use `jps_cs_quote_field_company`, `jps_cs_quote_field_phone`, `jps_cs_quote_field_address`, and `jps_cs_quote_field_message`.
@@ -143,6 +147,7 @@ All hook names use the `jps_cs_` prefix. Callback parameters below follow the or
 | `jps_cs_quote_mode_applies_to_product` (filter) | `(bool $applies, WC_Product $product): bool` | Control quote mode for a product. |
 | `jps_cs_quote_labels` (filter) | `(array $labels): array` | Customize the complete customer-facing label map. |
 | `jps_cs_inquiry_created` (action) | `(WC_Order $order): void` | Runs when a new Inquiry is created. |
+| `jps_cs_quote_accepted` (action) | `(WC_Order $order): void` | Runs after a customer accepts a Quote and the order moved to `on-hold`. |
 | `jps_cs_germanized_kept_checkboxes` (filter) | `(array $ids): array` | Select Germanized legal checkbox IDs retained in Quote mode. |
 | `jps_cs_tab_content` (filter) | `(string $content, WP_Post $tab, WC_Product $product): string` | Adjust rendered global tab content. |
 | `jps_cs_product_tabs` (filter) | `(array $tabs, WC_Product $product): array` | Adjust the product tab list. |

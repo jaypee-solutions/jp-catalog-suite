@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-09T21:34:55+00:00\n"
+"POT-Creation-Date: 2026-11-09T22:15:22+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: jp-catalog-suite\n"
@@ -84,7 +84,7 @@ msgstr ""
 
 #: includes/class-download-log.php:98
 #: includes/class-download-log.php:136
-#: templates/emails/inquiry-items.php:26
+#: templates/emails/inquiry-items.php:38
 msgid "Product"
 msgstr ""
 
@@ -131,11 +131,44 @@ msgid "[{site_title}]: New inquiry #{order_number}"
 msgstr ""
 
 #: includes/class-email-new-inquiry.php:31
+#: includes/class-email-quote-accepted.php:31
 msgid "Recipient(s)"
 msgstr ""
 
 #: includes/class-email-new-inquiry.php:33
+#: includes/class-email-quote-accepted.php:33
 msgid "Enter recipients (comma-separated). Defaults to the site administrator email address."
+msgstr ""
+
+#: includes/class-email-quote-accepted.php:16
+#: includes/class-email-quote-accepted.php:19
+msgid "Quote accepted"
+msgstr ""
+
+#: includes/class-email-quote-accepted.php:17
+msgid "Sent to the shop manager when a customer accepts a quote."
+msgstr ""
+
+#: includes/class-email-quote-accepted.php:20
+msgid "[{site_title}]: Quote #{order_number} accepted"
+msgstr ""
+
+#: includes/class-email-quote.php:16
+#: includes/class-quotes.php:48
+msgid "Quote"
+msgstr ""
+
+#: includes/class-email-quote.php:17
+msgid "Sent to the customer when you send a quote from an inquiry."
+msgstr ""
+
+#: includes/class-email-quote.php:19
+#: templates/myaccount/quote.php:16
+msgid "Your quote"
+msgstr ""
+
+#: includes/class-email-quote.php:20
+msgid "Your quote for inquiry #{order_number} at {site_title}"
 msgstr ""
 
 #: includes/class-file-list-block.php:78
@@ -143,7 +176,7 @@ msgid "login required"
 msgstr ""
 
 #: includes/class-inquiries.php:31
-#: includes/class-inquiries.php:42
+#: includes/class-inquiries.php:50
 msgctxt "Order status"
 msgid "Inquiry"
 msgstr ""
@@ -156,25 +189,39 @@ msgid_plural "Inquiries <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-inquiries.php:79
+#: includes/class-inquiries.php:39
+#: includes/class-inquiries.php:51
+msgctxt "Order status"
+msgid "Quote sent"
+msgstr ""
+
+#. translators: %s is the number of quotes in this order-status count.
+#: includes/class-inquiries.php:44
+#, php-format
+msgid "Quote sent <span class=\"count\">(%s)</span>"
+msgid_plural "Quotes sent <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-inquiries.php:103
 msgid "Inquiries"
 msgstr ""
 
-#: includes/class-inquiries.php:96
-#: includes/class-inquiries.php:100
+#: includes/class-inquiries.php:120
+#: includes/class-inquiries.php:124
 msgid "Inquiry received"
 msgstr ""
 
-#: includes/class-inquiries.php:110
+#: includes/class-inquiries.php:134
 msgid "Inquiry #:"
 msgstr ""
 
-#: includes/class-inquiries.php:112
+#: includes/class-inquiries.php:136
 msgid "Inquiry number:"
 msgstr ""
 
-#: includes/class-inquiries.php:114
-#: includes/class-inquiries.php:126
+#: includes/class-inquiries.php:138
+#: includes/class-inquiries.php:150
 msgid "Inquiry details"
 msgstr ""
 
@@ -210,13 +257,13 @@ msgid "Shop-wide tabs"
 msgstr ""
 
 #: includes/class-product-tabs.php:81
-#: includes/class-tab-admin.php:156
+#: includes/class-tab-admin.php:160
 msgid "Title"
 msgstr ""
 
 #: includes/class-product-tabs.php:88
-#: includes/class-tab-admin.php:158
-#: includes/class-tab-admin.php:461
+#: includes/class-tab-admin.php:162
+#: includes/class-tab-admin.php:466
 msgid "Priority"
 msgstr ""
 
@@ -315,93 +362,129 @@ msgstr ""
 msgid "You do not have permission to download this file."
 msgstr ""
 
-#: includes/class-quote-mode.php:54
-#: includes/class-quote-mode.php:326
-msgid "Inquiry basket"
-msgstr ""
-
 #: includes/class-quote-mode.php:55
 #: includes/class-quote-mode.php:327
-msgid "Add to inquiry"
+msgid "Inquiry basket"
 msgstr ""
 
 #: includes/class-quote-mode.php:56
 #: includes/class-quote-mode.php:328
-msgid "Continue to inquiry"
+msgid "Add to inquiry"
 msgstr ""
 
 #: includes/class-quote-mode.php:57
 #: includes/class-quote-mode.php:329
+msgid "Continue to inquiry"
+msgstr ""
+
+#: includes/class-quote-mode.php:58
+#: includes/class-quote-mode.php:330
 msgid "Send inquiry"
 msgstr ""
 
-#: includes/class-quote-mode.php:80
+#: includes/class-quote-mode.php:81
 msgid "Thank you. Your inquiry has been received."
 msgstr ""
 
-#: includes/class-quote-mode.php:191
-#: includes/class-quote-mode.php:314
+#: includes/class-quote-mode.php:192
+#: includes/class-quote-mode.php:315
 #: templates/emails/inquiry-customer-details.php:18
 msgid "Company"
 msgstr ""
 
-#: includes/class-quote-mode.php:191
-#: includes/class-quote-mode.php:315
+#: includes/class-quote-mode.php:192
+#: includes/class-quote-mode.php:316
 #: templates/emails/inquiry-customer-details.php:17
 msgid "Phone"
 msgstr ""
 
-#: includes/class-quote-mode.php:311
-#: includes/class-quote-mode.php:316
+#: includes/class-quote-mode.php:312
+#: includes/class-quote-mode.php:317
 msgid "Optional"
 msgstr ""
 
-#: includes/class-quote-mode.php:311
-#: includes/class-quote-mode.php:316
+#: includes/class-quote-mode.php:312
+#: includes/class-quote-mode.php:317
 msgid "Required"
 msgstr ""
 
-#: includes/class-quote-mode.php:311
-#: includes/class-quote-mode.php:316
+#: includes/class-quote-mode.php:312
+#: includes/class-quote-mode.php:317
 msgid "Hidden"
 msgstr ""
 
-#: includes/class-quote-mode.php:313
+#: includes/class-quote-mode.php:314
 msgid "Inquiry checkout fields"
 msgstr ""
 
-#: includes/class-quote-mode.php:316
+#: includes/class-quote-mode.php:317
 msgid "Address"
 msgstr ""
 
-#: includes/class-quote-mode.php:317
+#: includes/class-quote-mode.php:318
 msgid "Message"
 msgstr ""
 
-#: includes/class-quote-mode.php:325
+#: includes/class-quote-mode.php:326
 #: includes/class-settings-page.php:23
 #: includes/class-settings-page.php:41
 msgid "Quote mode"
 msgstr ""
 
-#: includes/class-quote-mode.php:325
+#: includes/class-quote-mode.php:326
 msgid "Germanized legal notices and checkout checkboxes are adjusted in Quote mode. The privacy checkbox is kept when enabled in Germanized."
 msgstr ""
 
-#: includes/class-quote-mode.php:326
+#: includes/class-quote-mode.php:327
 msgid "Inquiry basket label"
 msgstr ""
 
-#: includes/class-quote-mode.php:327
+#: includes/class-quote-mode.php:328
 msgid "Add to inquiry label"
 msgstr ""
 
-#: includes/class-quote-mode.php:328
+#: includes/class-quote-mode.php:329
 msgid "Continue to inquiry label"
 msgstr ""
 
-#: includes/class-quote-mode.php:329
+#: includes/class-quote-mode.php:330
 msgid "Send inquiry label"
+msgstr ""
+
+#: includes/class-quotes.php:60
+msgid "Valid until"
+msgstr ""
+
+#: includes/class-quotes.php:64
+msgid "Message to the customer"
+msgstr ""
+
+#: includes/class-quotes.php:99
+msgid "Send quote to customer"
+msgstr ""
+
+#: includes/class-quotes.php:110
+msgid "Quote not sent: the Quote email is disabled or the inquiry has no valid billing email."
+msgstr ""
+
+#: includes/class-quotes.php:115
+msgid "Revised quote sent to the customer."
+msgstr ""
+
+#: includes/class-quotes.php:118
+msgid "Quote sent to the customer."
+msgstr ""
+
+#: includes/class-quotes.php:185
+msgid "Quote accepted by the customer."
+msgstr ""
+
+#: includes/class-quotes.php:187
+msgid "Thank you. You have accepted the quote."
+msgstr ""
+
+#: includes/class-quotes.php:189
+msgid "This quote can no longer be accepted."
 msgstr ""
 
 #: includes/class-settings-page.php:16
@@ -424,127 +507,127 @@ msgstr ""
 msgid "Delete tabs, protected files and the download log when the plugin is deleted. Orders are never deleted."
 msgstr ""
 
-#: includes/class-tab-admin.php:135
+#: includes/class-tab-admin.php:139
 msgid "Move this tab to the trash?"
 msgstr ""
 
-#: includes/class-tab-admin.php:138
+#: includes/class-tab-admin.php:142
 msgid "Close"
 msgstr ""
 
-#: includes/class-tab-admin.php:139
+#: includes/class-tab-admin.php:143
 msgid "Tab editor"
 msgstr ""
 
-#: includes/class-tab-admin.php:151
+#: includes/class-tab-admin.php:155
 msgid "No tabs yet."
 msgstr ""
 
-#: includes/class-tab-admin.php:157
+#: includes/class-tab-admin.php:161
 msgid "Shown on"
 msgstr ""
 
-#: includes/class-tab-admin.php:159
+#: includes/class-tab-admin.php:163
 msgid "Status"
 msgstr ""
 
-#: includes/class-tab-admin.php:160
+#: includes/class-tab-admin.php:164
 msgid "Actions"
 msgstr ""
 
-#: includes/class-tab-admin.php:177
+#: includes/class-tab-admin.php:181
 msgid "Add tab"
 msgstr ""
 
-#: includes/class-tab-admin.php:193
-#: includes/class-tab-admin.php:258
-#: includes/class-tab-admin.php:291
-#: includes/class-tab-admin.php:432
+#: includes/class-tab-admin.php:197
+#: includes/class-tab-admin.php:262
+#: includes/class-tab-admin.php:295
+#: includes/class-tab-admin.php:437
 msgid "All products"
 msgstr ""
 
-#: includes/class-tab-admin.php:214
+#: includes/class-tab-admin.php:218
 msgid "Edit"
 msgstr ""
 
-#: includes/class-tab-admin.php:220
+#: includes/class-tab-admin.php:224
 msgid "Delete"
 msgstr ""
 
-#: includes/class-tab-admin.php:232
+#: includes/class-tab-admin.php:236
 msgid "This product"
 msgstr ""
 
 #. translators: %s: title of the replaced tab.
-#: includes/class-tab-admin.php:236
+#: includes/class-tab-admin.php:240
 #, php-format
 msgid "Replaces %s"
 msgstr ""
 
 #. translators: %s: category name.
-#: includes/class-tab-admin.php:256
+#: includes/class-tab-admin.php:260
 #, php-format
 msgid "Category: %s"
 msgstr ""
 
 #. translators: %s: title of the replacing product tab.
-#: includes/class-tab-admin.php:262
+#: includes/class-tab-admin.php:266
 #, php-format
 msgid "Replaced by %s"
 msgstr ""
 
-#: includes/class-tab-admin.php:268
+#: includes/class-tab-admin.php:272
 msgid "Hide on this product"
 msgstr ""
 
-#: includes/class-tab-admin.php:271
+#: includes/class-tab-admin.php:275
 msgid "Replace"
 msgstr ""
 
-#: includes/class-tab-admin.php:282
+#: includes/class-tab-admin.php:286
 msgid "This category"
 msgstr ""
 
 #. translators: %s: parent category name.
-#: includes/class-tab-admin.php:287
+#: includes/class-tab-admin.php:291
 #, php-format
 msgid "Parent category: %s"
 msgstr ""
 
-#: includes/class-tab-admin.php:299
-#: includes/class-tab-admin.php:322
+#: includes/class-tab-admin.php:303
+#: includes/class-tab-admin.php:326
 msgid "Tabs"
 msgstr ""
 
-#: includes/class-tab-admin.php:362
+#: includes/class-tab-admin.php:366
 msgid "Sorry, you are not allowed to manage these tabs."
 msgstr ""
 
-#: includes/class-tab-admin.php:403
+#: includes/class-tab-admin.php:408
 msgid "Tab settings"
 msgstr ""
 
 #. translators: %s: category name.
-#: includes/class-tab-admin.php:426
+#: includes/class-tab-admin.php:431
 #, php-format
 msgid "%s and its subcategories"
 msgstr ""
 
 #. translators: %s: product name.
-#: includes/class-tab-admin.php:430
+#: includes/class-tab-admin.php:435
 #, php-format
 msgid "Product: %s"
 msgstr ""
 
-#: includes/class-tab-admin.php:440
+#: includes/class-tab-admin.php:445
 msgid "Shown on:"
 msgstr ""
 
-#: includes/class-tab-admin.php:451
+#: includes/class-tab-admin.php:456
 msgid "Replace global tab"
 msgstr ""
 
-#: includes/class-tab-admin.php:453
+#: includes/class-tab-admin.php:458
 msgid "None"
 msgstr ""
 
@@ -726,7 +809,7 @@ msgstr ""
 msgid "Choose length"
 msgstr ""
 
-#: jp-catalog-suite.php:73
+#: jp-catalog-suite.php:74
 msgid "JayPee Solutions Catalog Suite for WooCommerce requires WooCommerce."
 msgstr ""
 
@@ -758,17 +841,22 @@ msgstr ""
 msgid "Billing address"
 msgstr ""
 
-#: templates/emails/inquiry-items.php:17
-#: templates/emails/inquiry-items.php:27
+#: templates/emails/inquiry-items.php:20
+#: templates/emails/inquiry-items.php:39
 msgid "SKU"
 msgstr ""
 
-#: templates/emails/inquiry-items.php:18
-#: templates/emails/inquiry-items.php:28
+#: templates/emails/inquiry-items.php:21
+#: templates/emails/inquiry-items.php:40
 msgid "Quantity"
 msgstr ""
 
-#: templates/emails/inquiry-items.php:29
+#: templates/emails/inquiry-items.php:23
+#: templates/emails/inquiry-items.php:43
+msgid "Price"
+msgstr ""
+
+#: templates/emails/inquiry-items.php:41
 msgid "Details"
 msgstr ""
 
@@ -779,7 +867,51 @@ msgstr ""
 
 #: templates/emails/new-inquiry.php:15
 #: templates/emails/plain/new-inquiry.php:16
+#: templates/emails/plain/quote-accepted.php:16
+#: templates/emails/quote-accepted.php:15
 msgid "Customer message"
+msgstr ""
+
+#. translators: %s: order number
+#: templates/emails/plain/quote-accepted.php:13
+#: templates/emails/quote-accepted.php:12
+#, php-format
+msgid "The customer has accepted quote #%s."
+msgstr ""
+
+#: templates/emails/plain/quote.php:16
+#: templates/emails/quote.php:15
+msgid "Thank you for your inquiry. Here is our quote."
+msgstr ""
+
+#. translators: %s: date
+#: templates/emails/plain/quote.php:22
+#: templates/emails/quote.php:21
+#: templates/myaccount/quote.php:29
+#, php-format
+msgid "This quote is valid until %s."
+msgstr ""
+
+#. translators: %s: URL
+#: templates/emails/plain/quote.php:25
+#, php-format
+msgid "Review and accept this quote in your account: %s"
+msgstr ""
+
+#: templates/emails/plain/quote.php:27
+#: templates/emails/quote.php:26
+msgid "Reply to this email to accept this quote."
+msgstr ""
+
+#: templates/emails/quote.php:24
+#: templates/myaccount/quote.php:40
+msgid "Accept quote"
+msgstr ""
+
+#. translators: %s: date
+#: templates/myaccount/quote.php:27
+#, php-format
+msgid "This quote expired on %s."
 msgstr ""
 
 #: blocks/access/edit.js:6

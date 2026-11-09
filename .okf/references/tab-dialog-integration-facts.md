@@ -16,4 +16,4 @@ timestamp: 2026-11-10T00:00:00Z
 - Firing `admin_init` in integration tests also runs core's `wp_admin_headers` and privacy-policy registration; tests detach the former and expect the incorrect-usage notice of the latter.
 - Inserting copies in the migration must bypass kses (`kses_remove_filters()` / `kses_init()`), otherwise copies made without an `unfiltered_html` user lose block markup.
 
-Decision: ADR 0022 (`decisions/0022-tabs-managed-on-owners.md`).
+Decision: ADR 0023 (`decisions/0023-tabs-managed-on-owners.md`).
