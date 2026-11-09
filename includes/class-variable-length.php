@@ -50,16 +50,34 @@ final class Variable_Length {
             [ 'type' => 'sectionend', 'id' => 'jps_cs_length' ],
         ];
     }
-    public static function sanitize_min( $value ): float {
-        $min = is_numeric( $value ) ? (float) $value : 0.0;
-        $max = (float) get_option( 'jps_cs_length_max', 1000 );
-        return $min > 0 && $min <= $max ? $min : (float) get_option( 'jps_cs_length_min', 1 );
+
+    /**
+     * Minimum and maximum to store when the settings form is saved.
+     *
+     * WooCommerce runs every sanitize filter before it writes any option, so the pair is
+     * validated from the submitted values; the saved options only fill in absent fields.
+     * An invalid pair (minimum not above zero, or above the maximum) keeps both saved values.
+     *
+     * @return array{0: float, 1: float}
+     */
+    private static function bounds_to_store(): array {
+        $saved = [ (float) get_option( 'jps_cs_length_min', 1 ), (float) get_option( 'jps_cs_length_max', 1000 ) ];
+        // WooCommerce verifies the settings nonce before the sanitize filters run.
+        // phpcs:disable WordPress.Security.NonceVerification.Missing
+        $submitted_min = isset( $_POST['jps_cs_length_min'] ) ? sanitize_text_field( wp_unslash( $_POST['jps_cs_length_min'] ) ) : '';
+        $submitted_max = isset( $_POST['jps_cs_length_max'] ) ? sanitize_text_field( wp_unslash( $_POST['jps_cs_length_max'] ) ) : '';
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
+        $min = is_numeric( $submitted_min ) ? (float) $submitted_min : $saved[0];
+        $max = is_numeric( $submitted_max ) ? (float) $submitted_max : $saved[1];
+        return $min > 0 && $min <= $max ? [ $min, $max ] : $saved;
     }
 
-    public static function sanitize_max( $value ): float {
-        $max = is_numeric( $value ) ? (float) $value : 0.0;
-        $min = (float) get_option( 'jps_cs_length_min', 1 );
-        return $max >= $min ? $max : (float) get_option( 'jps_cs_length_max', 1000 );
+    public static function sanitize_min(): float {
+        return self::bounds_to_store()[0];
+    }
+
+    public static function sanitize_max(): float {
+        return self::bounds_to_store()[1];
     }
 
     public static function config( \WC_Product $product ): array {
