@@ -1,7 +1,7 @@
 # Inquiry, not quote
 
 ## Status
-Accepted
+Accepted; scope amended by ADR 0022
 
 ## Context
 The customer submits a non-binding request for an offer; the seller's priced offer is the Quote. Reusing quote/order terminology for the submitted request would blur distinct domain concepts and make stored identifiers costly to change.

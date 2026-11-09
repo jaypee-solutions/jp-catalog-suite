@@ -1,0 +1,19 @@
+html.jps-cs-embedded #wpadminbar,
+html.jps-cs-embedded #adminmenumain,
+html.jps-cs-embedded .editor-header__back-button {
+	display: none;
+}
+
+html.jps-cs-embedded.wp-toolbar {
+	padding-top: 0;
+}
+
+html.jps-cs-embedded #wpcontent,
+html.jps-cs-embedded #wpfooter {
+	margin-left: 0;
+}
+
+html.jps-cs-embedded .interface-interface-skeleton {
+	top: 0;
+	left: 0;
+}

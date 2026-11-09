@@ -37,7 +37,7 @@ Protect engineering files in the Media Library and deliver them only to an Autho
 
 ## Tutorial: Add a File list to a tab
 
-1. Under **Products → Product tabs**, edit a Global tab or Product tab in the block editor.
+1. Select **Edit** or **Add tab** for a tab (Product tabs settings, category edit screen or **Product data → Tabs**); the block editor opens in a dialog.
 2. Insert the **File list** block (German: **Dateiliste**).
 3. In the block inspector's **Files** (German: **Dateien**) panel, choose **Choose files** (German: **Dateien auswählen**). In the media picker, select one or more Media Library files and choose **Use selected files** (German: **Ausgewählte Dateien verwenden**).
 4. Update the tab. The editor preview renders the same server-generated list. Existing files display their title, uppercase extension, and size; missing files are omitted.

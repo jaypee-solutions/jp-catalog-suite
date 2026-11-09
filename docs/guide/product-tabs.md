@@ -1,6 +1,6 @@
 # Product tabs
 
-Add reusable product information, tailor it for products, and control WooCommerce Core tabs. For shop admins and editors.
+Add shop-wide, category or product tabs, replace or hide them per product, and control WooCommerce Core tabs. For shop admins and editors.
 
 ## Before you start
 
@@ -8,61 +8,68 @@ Add reusable product information, tailor it for products, and control WooCommerc
 - An administrator enables **Product tabs** at **WooCommerce → Settings → Catalog Suite → General** and saves.
 - Product tabs use WooCommerce's product capabilities: Administrators and Shop managers can create and edit them; the WordPress Editor role cannot unless granted product capabilities such as `edit_products`. Product-specific controls require permission to edit the product.
 
-## Tutorial: publish a Global tab for all products
+## How tabs are managed
 
-1. Open **Products → Product tabs → Add product tab**.
-2. Enter `Shipping details` as the title.
-3. In the **Tab settings** panel, set **Scope** to **All products**. Leave **Priority** empty; an empty priority sorts as 50.
-4. Add a paragraph in the block editor: `Dispatch usually takes two business days.`
-5. Select **Publish**.
-6. Open a published product page and select the `Shipping details` tab.
+Each tab has exactly one owner and is managed where it applies:
+
+| Owner | Where you manage it | Shown on |
+|---|---|---|
+| Shop-wide | **WooCommerce → Settings → Catalog Suite → Product tabs → Shop-wide tabs** | Every product |
+| Category | The **Tabs** field on the product category edit screen | Products in that category and its subcategories |
+| Product | **Product data → Tabs** on the product edit screen | That product only |
+
+**Add tab**, **Edit** and **Replace** open the block editor in a dialog; **Close** returns to the list, which refreshes after saving. **Delete** moves the tab to the trash. Tabs are also deleted with their product or category. The old **Products → Product tabs** menu no longer exists.
+
+## Tutorial: publish a shop-wide tab for all products
+
+1. Open **WooCommerce → Settings → Catalog Suite → Product tabs** and find **Shop-wide tabs**.
+2. Select **Add tab**.
+3. Enter `Shipping details` as the title and add a paragraph in the block editor: `Dispatch usually takes two business days.`
+4. In the **Tab settings** panel, leave **Priority** empty; an empty priority sorts as 50. Publish the tab and select **Close**.
+5. Open a product page and select the `Shipping details` tab.
 
 **What you should see:** the tab appears on every product page, ordered by priority. A tab whose content is empty or whitespace-only is omitted.
 
-**Try it:** use the title `Packaging` and content `Packed in recyclable materials.`; confirm it appears on another product page too.
+**Try it:** add a second shop-wide tab `Packaging` with the content `Packed in recyclable materials.`
 
-## Tutorial: target categories and set priority
+## Tutorial: add a category tab and set priority
 
-1. Under **Products → Product tabs**, add a Global tab titled `Trade specifications`.
-2. In **Tab settings**, set **Scope** to **Categories**.
-3. Choose `Bolts` in **Categories**. A product assigned to a child category also matches a selected parent category.
-4. Set **Priority** to `25` and add `Dimensions and material grades are available on request.` in the block editor.
-5. Publish, then open a product assigned to `Bolts` or one of its descendants.
+1. Open **Products → Categories** and edit `Bolts`.
+2. In the **Tabs** field, select **Add tab**, enter `Trade specifications` and add `Dimensions and material grades are available on request.`
+3. Set **Priority** to `25`, publish and close the dialog.
+4. Open a product assigned to `Bolts` or one of its subcategories.
 
-**What you should see:** `Trade specifications` appears on matching products but not unrelated products, before tabs with higher numeric priorities.
+**What you should see:** `Trade specifications` appears on products in `Bolts` and its subcategories but not on unrelated products, before tabs with higher numeric priorities.
 
-**Try it:** set priority to `70`; it follows tabs with priorities below 70.
+**Try it:** set the priority to `70`; it follows tabs with priorities below 70. To share a tab across several categories, add it to each category; every category owns its own copy.
 
-## Tutorial: create a Product tab for selected products
+## Tutorial: add a tab to one product
 
-1. Open **Products → Product tabs → Add product tab**.
-2. Enter `Datasheet summary` as the title.
-3. Under **Tab settings**, set **Scope** to **Products** and choose `Tab Demo` in **Products**.
-4. Leave **Replace global tab** set to **None** and **Priority** empty. Add `Specifications for this product.` in the editor, then publish.
-5. Open `Tab Demo` on the storefront and then open a different product.
+1. Edit the product `Tab Demo` and open **Product data → Tabs**.
+2. Select **Add tab**, enter `Datasheet summary`, add `Specifications for this product.`, leave **Replace global tab** at **None** and **Priority** empty, then publish and close the dialog.
+3. Update the product if WordPress asks, open `Tab Demo` on the storefront, then open a different product.
 
-**What you should see:** the tab appears only on `Tab Demo`. Products-scope tabs are not listed as global tabs in a product's **Tabs** panel.
-
-**Try it:** add `Customer-specific notes` to the Products scope and select `Tab Demo` and one other product.
+**What you should see:** the tab appears only on `Tab Demo`. The panel lists it with its **Shown on** scope (**This product**).
 
 ## Tutorial: Replace or Hide one Global tab
 
-To replace a Global tab on chosen products:
+To replace a shop-wide or category tab on one product:
 
-1. Create and publish a Product tab with **Scope** set to **Products** and select the intended product in **Products**.
-2. In **Replace global tab**, choose the applicable Global tab, for example `Shipping details`.
-3. Leave **Priority** empty to inherit the replaced tab's priority, or enter an explicit number; publish.
-4. Visit that product page. The Product tab takes the Global tab's place there; it remains unchanged on other products.
+1. Edit the product and open **Product data → Tabs**.
+2. Beside the tab you want to replace, for example `Shipping details`, select **Replace**. The dialog opens with a copy of that tab; change the content.
+3. Leave **Priority** empty to inherit the replaced tab's priority, or enter a number; publish and close the dialog.
+4. Visit that product page. The replacement takes the original's place there; the original stays unchanged on other products.
+
+The list then shows **Replaced by …** beside the original and **Replaces …** beside the replacement.
 
 To Hide a Global tab on just one product:
 
-1. Edit that product and open **Product data → Tabs**.
-2. Tick **Hide on this product** beside the applicable Global tab.
-3. Update the product and refresh its storefront page.
+1. In the same **Tabs** panel, tick **Hide on this product** beside the applicable tab.
+2. Update the product and refresh its storefront page.
 
-**What you should see:** the replacement appears in place of the selected Global tab only on assigned products. A hidden Global tab is absent only on the product where you hid it.
+**What you should see:** the replacement appears in place of the original only on that product. A hidden tab is absent only on the product where you hid it.
 
-**Try it:** edit `Datasheet summary` (the Products-scope tab on `Tab Demo`), set **Replace global tab** to `Shipping details`, and update it; `Tab Demo` now shows `Datasheet summary` where `Shipping details` was. Then Hide `Shipping details` on a different product.
+**Try it:** replace `Shipping details` on `Tab Demo`, then hide `Shipping details` on a different product.
 
 ## Tutorial: configure Core tabs shop-wide
 
@@ -80,19 +87,17 @@ To Hide a Global tab on just one product:
 
 | Setting | Where | Default | Effect |
 |---|---|---|---|
-| Product tabs | WooCommerce → Settings → Catalog Suite → General | Off | Enables Global tabs, Product tabs, the product **Tabs** panel and the Core tab settings. The **Product tabs** settings section is always visible, but its tab settings take effect only while the module is on. |
-| Scope | Product tab → Tab settings | All products | Applies to all products, chosen categories, or selected products. |
-| Categories | Product tab → Tab settings | None | Chooses categories; matching includes descendant categories. |
-| Products | Product tab → Tab settings | None | Chooses products for a Products-scope tab. |
-| Replace global tab | Product tab → Tab settings | None | Replaces an applicable Global tab on the tab's selected products. Takes effect only when **Scope** is **Products**; ignored for All products and Categories scopes. |
-| Priority | Product tab → Tab settings | Empty; effective default 50 | Lower numbers sort first; replacement inherits the replaced tab's priority when left empty. |
+| Product tabs | WooCommerce → Settings → Catalog Suite → General | Off | Enables Global tabs, category and product tabs, the product **Tabs** panel and the Core tab settings. The **Product tabs** settings section is always visible, but its tab settings take effect only while the module is on. |
+| Replace global tab | Product tab → Tab settings (product tabs only) | None | Replaces an applicable Global tab on that product. |
+| Priority | Tab → Tab settings | Empty; effective default 50 | Lower numbers sort first; replacement inherits the replaced tab's priority when left empty. |
 | Hide on this product | Product data → Tabs | Off | Hides an applicable Global tab for this product. |
 | Title / Priority / Hide | WooCommerce → Settings → Catalog Suite → Product tabs, under each Core tab | Empty / empty / off | Changes Core tab title/order or hides it site-wide. |
 
 ## Good to know
 
 - A Product tab with no visible text or media does not render. Product tabs and Core tabs are sorted together by numeric priority.
-- A Product tab can replace only an applicable Global tab (all-products or category scope), not another Product tab or a Core tab.
+- A Product tab can replace only an applicable Global tab (shop-wide or category), not another Product tab or a Core tab.
+- After an upgrade from a version where one tab listed several categories or products, each of them received its own copy once ([ADR 0023](../adr/0023-tabs-managed-on-owners.md)).
 - Global tabs are WordPress content. WPML configuration includes Core tab title options; on multilingual sites, translate and assign Global tabs using your multilingual plugin's normal content workflow. Polylang can translate content and standard strings through its usual workflow. See [Multilingual sites](../../README.md#multilingual-sites).
 - The Product tabs REST route is restricted to logged-in users with `edit_posts` capability.
 - For access-controlled tab content, see [Access block](access-block.md). For file delivery, see [Protected files](protected-files.md).

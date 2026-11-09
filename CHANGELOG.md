@@ -11,9 +11,14 @@ extracts it as the GitHub release notes and fails without it.
 ## [Unreleased]
 
 ### Added
+- Quotes: the shop manager sets prices on an Inquiry and sends a priced Quote (status "Quote sent"); a logged-in customer accepts it in My Account, which turns it into an `on-hold` order (ADR 0022).
 - User guide with a task-based tutorial for every feature (`docs/guide/`).
 
+### Changed
+- Product tabs are managed on the product edit screen, the product category edit screen and WooCommerce → Settings → Catalog Suite → Product tabs through a block-editor dialog; the Products → Product tabs menu is removed. Each tab has exactly one owner; existing multi-owner tabs are split into copies once (ADR 0023).
+
 ### Fixed
+- The confirmation page of an Inquiry says "Inquiry received", "Inquiry #:", "Inquiry number:" and "Inquiry details" instead of WooCommerce's order wording (Blocks and Classic; German: "Anfrage eingegangen", "Anfrage-Nr.:", "Anfragenummer:", "Anfragedetails").
 - Variable length: the minimum and maximum default lengths are validated as the submitted pair, so inverted values are rejected and moving both bounds together is accepted.
 
 ## [0.2.0] - 2026-11-09

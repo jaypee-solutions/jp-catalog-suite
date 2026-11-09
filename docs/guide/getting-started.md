@@ -22,8 +22,8 @@ Each module stays off until you enable it. Protected files, the Access and File 
 
 1. Open **WooCommerce → Settings → Catalog Suite → General**.
 2. Tick the modules you want:
-   - **Quote mode** turns the shop into an Inquiry shop: [Quote mode](quote-mode.md), [checkout fields and emails](inquiry-checkout-and-emails.md), [Germanized](germanized.md).
-   - **Product tabs** turns on Global tabs and Product tabs (**Products → Product tabs**), the product data **Tabs** panel, the Core tab settings, and the **WooCommerce → Download log** page and recording (recording also needs **Enable download log**): [Product tabs](product-tabs.md), [Protected files](protected-files.md), [Download log](download-log.md). Protected files work whether or not this module is on: the Protected files settings, automatic protection of uploads, the protected-file endpoint, the Access block and the File list block stay active, so switching the module off never exposes protected content: [Access block](access-block.md).
+   - **Quote mode** turns the shop into an Inquiry shop: [Quote mode](quote-mode.md), [Quotes](quotes.md), [checkout fields and emails](inquiry-checkout-and-emails.md), [Germanized](germanized.md).
+   - **Product tabs** turns on shop-wide, category and product tabs (managed in the Product tabs settings, on the category edit screen and in the product data **Tabs** panel), the Core tab settings, and the **WooCommerce → Download log** page and recording (recording also needs **Enable download log**): [Product tabs](product-tabs.md), [Protected files](protected-files.md), [Download log](download-log.md). Protected files work whether or not this module is on: the Protected files settings, automatic protection of uploads, the protected-file endpoint, the Access block and the File list block stay active, so switching the module off never exposes protected content: [Access block](access-block.md).
    - **Variable length** lets customers enter a length: [Variable length](variable-length.md).
 3. Select **Save changes**.
 

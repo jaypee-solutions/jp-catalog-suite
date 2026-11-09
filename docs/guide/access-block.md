@@ -5,12 +5,12 @@ Show different tab content to Authorized users and visitors without access. For 
 ## Before you start
 
 - WooCommerce and Catalog Suite are active. An administrator enables **Product tabs** at **WooCommerce → Settings → Catalog Suite → General** to create and manage tab content.
-- You can edit a Product tab under **Products → Product tabs**.
+- You edit a tab where it is managed: under **WooCommerce → Settings → Catalog Suite → Product tabs**, on the product category edit screen, or in **Product data → Tabs** ([Product tabs](product-tabs.md)).
 - By default, an Authorized user is any logged-in user. You can customize the rule with the `jps_cs_can_access_protected` filter.
 
 ## Tutorial: add Protected content and Fallback content
 
-1. Open **Products → Product tabs** and edit a published tab, such as `Downloads`.
+1. Open **WooCommerce → Settings → Catalog Suite → Product tabs** and select **Edit** beside a shop-wide tab, such as `Downloads`.
 2. In the block editor, add a paragraph above the Access block: `Download technical information for this product.` This is Public content and is visible to every visitor.
 3. Insert the **Access** block inside the tab. In its **Access settings**, leave **Show content** set to **Only with access**.
 4. Add a heading and paragraph inside the Access block: `Technical datasheet` and `Datasheet: revision 4, issued 1 October.` This is Protected content.
@@ -38,7 +38,7 @@ Show different tab content to Authorized users and visitors without access. For 
 
 | Setting | Where | Default | Effect |
 |---|---|---|---|
-| Product tabs | WooCommerce → Settings → Catalog Suite → General | Off | Enables **Products → Product tabs**, where you add Access blocks to tab content. The Access block and **Protected notice** setting themselves work whether or not the module is on. |
+| Product tabs | WooCommerce → Settings → Catalog Suite → General | Off | Enables managing tabs on products, categories and in the Product tabs settings, where you add Access blocks to tab content. The Access block and **Protected notice** setting themselves work whether or not the module is on. |
 | Show content | Access block → Access settings | Only with access | Selects Protected content or Fallback content for the nested blocks. |
 | Show login notice when hidden | Access block → Access settings | On | Displays a Protected notice when an unauthorized visitor's Protected content is hidden. |
 | Protected notice | WooCommerce → Settings → Catalog Suite → Product tabs | Empty | Sets the message; empty uses `Please {login} or {register} to view this content.` Tokens create links when available. |

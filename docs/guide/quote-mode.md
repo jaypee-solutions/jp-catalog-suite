@@ -1,6 +1,6 @@
 # Quote mode
 
-Use **Quote mode** (German: **Angebotsmodus**) to turn the shop into an Inquiry shop: customers can request an offer without seeing prices or paying online. For shop admins and editors.
+Use **Quote mode** (German: **Angebotsmodus**) to turn the shop into an Inquiry shop: customers can request an offer without seeing prices or paying online, and you answer with a [Quote](quotes.md). For shop admins and editors.
 
 ## Before you start
 
@@ -30,7 +30,7 @@ Use **Quote mode** (German: **Angebotsmodus**) to turn the shop into an Inquiry 
 
 **Try it:** Add *Quote Profile* and *Priced Bolt*, set each quantity to `1`, and submit the Inquiry using `Alex Editor` and `alex@example.com` as the contact details.
 
-**What you should see:** The thank-you page confirms receipt. The Inquiry has status **Inquiry** (German: **Anfrage**), has no payment due, and is excluded from WooCommerce Analytics. If a customer is logged in, the My Account menu entry is **Inquiries** (German: **Anfragen**) while Quote mode is active.
+**What you should see:** The thank-you page confirms receipt as an **Inquiry received** page (German: **Anfrage eingegangen**), with Inquiry wording instead of WooCommerce's order wording. The Inquiry has status **Inquiry** (German: **Anfrage**), has no payment due, and is excluded from WooCommerce Analytics. If a customer is logged in, the My Account menu entry is **Inquiries** (German: **Anfragen**) while Quote mode is active.
 
 ## Tutorial: Find Inquiries and turn Quote mode off
 
@@ -79,7 +79,7 @@ Use **Quote mode** (German: **Angebotsmodus**) to turn the shop into an Inquiry 
 
 **Try it:** Log in as a customer, submit an Inquiry, then open My Account → **Inquiries** and find it there without prices. Then submit one while logged out: a guest Inquiry is not linked to any account, so find it under WooCommerce → Orders.
 
-**What you should see:** Customer-facing totals are not displayed for an Inquiry. Inquiries are excluded from Analytics, but they remain order records in the WooCommerce administration.
+**What you should see:** Customer-facing totals are not displayed for an Inquiry until a Quote has been sent. Inquiries are excluded from Analytics, but they remain order records in the WooCommerce administration.
 
 
 
@@ -101,11 +101,11 @@ Use **Quote mode** (German: **Angebotsmodus**) to turn the shop into an Inquiry 
 - Guest checkout follows WooCommerce's guest-checkout setting. Name and email remain required.
 - Quote mode does not change product publication status. External and grouped products are not made purchasable by this module. If a product cannot be selected, confirm that it is published and supported.
 - Quote mode removes taxes on frontend, WooCommerce AJAX and Store API requests; back-office tax behavior is not globally changed. Coupons and shipping are disabled in Quote mode.
-- Inquiry status registration and Analytics exclusion remain active when Quote mode is off. See [Inquiry checkout and emails](inquiry-checkout-and-emails.md) for customer fields and notifications.
+- Inquiry and Quote status registration and Analytics exclusion remain active when Quote mode is off. See [Inquiry checkout and emails](inquiry-checkout-and-emails.md) for customer fields and notifications.
 - With Germanized active, Quote mode removes Germanized shopmarks and all Germanized legal checkboxes except `privacy`. See [Germanized](germanized.md).
 - Prices are hidden, not confidential. The WooCommerce Store API product and cart JSON still contains the prices of priced products, and the Blocks cart and checkout hide prices with CSS, so they remain in the page source.
 - If you want a customer's Inquiry in My Account, the customer must be logged in when they submit it. Guest Inquiries are not linked to an account; find those under WooCommerce → Orders.
-- Inquiries remain price-free in customer-facing order views and WooCommerce emails when Quote mode is off. Admin order screens retain prices.
+- Inquiries remain price-free in customer-facing order views and WooCommerce emails when Quote mode is off, until you send a Quote ([Quotes](quotes.md)). Admin order screens retain prices.
 - The label filter adjusts the complete label map. Keep the keys `cart`, `add_to_cart`, `proceed`, and `place_order` in the returned map so each customer-facing control receives a value.
 - `jps_cs_quote_mode_applies_to_product` controls per-product behavior, such as price display, price-free purchasability, and the **Add to inquiry** label. Basket and checkout behavior stays shop-wide while Quote mode is active: basket prices are hidden, payment, shipping, taxes and coupons are off, and every checkout becomes an Inquiry. This filter cannot run Quote mode for selected products only.
 

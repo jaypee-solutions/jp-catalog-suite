@@ -14,6 +14,9 @@ timestamp: 2026-11-06T00:00:00Z
 - `src/StoreApi/Utilities/CartController.php:337-345,1232-1237` applies `woocommerce_add_to_cart_validation` and `woocommerce_add_cart_item_data`; `src/StoreApi/Routes/V1/CartAddItem.php:116-127` passes `( $data, $request )` to `woocommerce_store_api_add_to_cart_data`.
 - `src/Blocks/BlockTypes/MiniCart.php` has no `integration_registry_identifier`.
 - Analytics reads `woocommerce_excluded_report_order_statuses` through `get_option( …, [ 'pending', 'failed', 'cancelled' ] )` (`src/Admin/API/Reports/DataStore.php:812`). A store that never saved the setting has no row, and core then applies only `default_option_{name}`, never `option_{name}`; filter both. `woocommerce_analytics_settings_default_excluded_order_statuses` does not exist.
+- `WC_Order::is_editable()` allows only pending, on-hold and auto-draft and passes the result through `wc_order_is_editable` (`includes/class-wc-order.php:1717`).
+- `woocommerce_process_shop_order_meta` runs items at 10, downloads at 30, order data at 40 and order actions at 50 (`src/Internal/Admin/Orders/Edit.php:104-107`); a priority between 40 and 50 sees saved data before the order action runs.
+- `woocommerce_order_actions` receives the order as second argument; an `on-hold` status reduces stock through `wc_maybe_reduce_stock_levels` (`includes/wc-stock-functions.php:127`).
 
 # Citations
 

@@ -5,6 +5,7 @@ Run each module's applicable cases as a guest and as a logged-in customer, in Ge
 | Module | Guest DE Classic | Guest DE Blocks | Guest EN Classic | Guest EN Blocks | Logged-in DE Classic | Logged-in DE Blocks | Logged-in EN Classic | Logged-in EN Blocks | Germanized | Protected-file direct URL |
 |---|---|---|---|---|---|---|---|---|---|---|
 | Quote mode and Inquiries | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | N/A |
+| Quotes | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | N/A |
 | Inquiry emails and checkout fields | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | N/A |
 | Product tabs and access | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | N/A | ☐ |
 | Protected files and download log | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | N/A | ☐ |
@@ -13,6 +14,7 @@ Run each module's applicable cases as a guest and as a logged-in customer, in Ge
 ## Per-module checks
 
 - **Quote mode and Inquiries:** submit an inquiry; verify price-free cart, checkout and confirmation, inquiry status and email notifications; verify Quote mode off restores standard purchases without hiding existing Inquiries.
+- **Quotes:** price an Inquiry, send the Quote, verify the priced email and My Account view, accept as the customer (order becomes On hold, shop email arrives), re-send a revised Quote, and check expiry and guest behavior.
 - **Inquiry emails and checkout fields:** verify recipient configuration and both email templates; exercise optional, required and hidden fields in Classic and Blocks.
 - **Product tabs and access:** verify global/category/product scope, replacement and priority, core tabs, protected/fallback block behavior, guest notice and logged-in access.
 - **Protected files and download log:** authorized delivery succeeds; unauthorized guest direct URL is denied without leaking the protected file; authorized delivery appears in the log and privacy export/erasure.

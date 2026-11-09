@@ -118,6 +118,8 @@ test( 'guest sends an inquiry on classic checkout', async ( { page } ) => {
 	await expect( page.locator( '#place_order' ) ).toContainText( /Send inquiry|Anfrage absenden/i );
 	await page.locator( '#place_order' ).click();
 	await expect( page ).toHaveURL( /order-received/ );
+	await expect( page.locator( 'body' ) ).toContainText( /Inquiry received|Anfrage eingegangen/ );
+	await expect( page.locator( 'body' ) ).not.toContainText( /Order received|Bestellung eingegangen|Order number|Bestell-Nr|Order details/ );
         await expect( page.locator( 'body' ) ).not.toContainText( '€' );
         await login( page );
         await page.goto( '/my-account/' );

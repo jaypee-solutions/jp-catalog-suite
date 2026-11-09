@@ -1,6 +1,6 @@
 # Inquiry checkout and emails
 
-Configure the customer details collected with an Inquiry and the two price-free notifications. For shop admins.
+Configure the customer details collected with an Inquiry and the two price-free Inquiry notifications. The Quote emails are described in [Quotes](quotes.md). For shop admins.
 
 ## Before you start
 
@@ -107,7 +107,7 @@ The messages are separate WooCommerce email types: disabling one does not change
 - Blocks checkout cannot hide Country, which stays preselected to the store country. It cannot make order notes required. The Address setting overrides WooCommerce's per-country address rules: it applies the same visibility and required state to address line 1 and 2, city, state and postcode in every country (for example, **Required** makes State mandatory for Germany, and **Optional** shows State for Denmark, where WooCommerce normally hides it).
 - First name, last name and email remain required; customer delivery of Inquiry confirmation depends on a valid billing email and successful WooCommerce email delivery.
 - While Quote mode is on, the Company and Phone settings here replace the Checkout block's own Company and Phone options; changing those in the block editor has no effect. If you use a caching layer, test checkout as a guest after saving; cached checkout content may not reflect the latest settings.
-- Prices are omitted from both Inquiry emails. See [Quote mode](quote-mode.md) for catalog, Inquiry basket and label behavior.
+- Prices are omitted from both Inquiry emails; the Quote email sent later carries them ([Quotes](quotes.md)). See [Quote mode](quote-mode.md) for catalog, Inquiry basket and label behavior.
 
 
 
