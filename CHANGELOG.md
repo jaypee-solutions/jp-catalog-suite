@@ -10,6 +10,9 @@ extracts it as the GitHub release notes and fails without it.
 
 ## [Unreleased]
 
+### Changed
+- Product tabs are managed on the product edit screen, the product category edit screen and WooCommerce → Settings → Catalog Suite → Product tabs through a block-editor dialog; the Products → Product tabs menu is removed. Each tab has exactly one owner; existing multi-owner tabs are split into copies once (ADR 0022).
+
 ### Fixed
 - The confirmation page of an Inquiry says "Inquiry received", "Inquiry #:", "Inquiry number:" and "Inquiry details" instead of WooCommerce's order wording (Blocks and Classic; German: "Anfrage eingegangen", "Anfrage-Nr.:", "Anfragenummer:", "Anfragedetails").
 

@@ -1,0 +1,18 @@
+.jps-cs-tab-dialog {
+	width: 90vw;
+	height: 90vh;
+	padding: 0;
+}
+
+.jps-cs-tab-dialog__header {
+	box-sizing: border-box;
+	height: 48px;
+	padding: 8px 12px;
+	text-align: right;
+}
+
+.jps-cs-tab-dialog__frame {
+	width: 100%;
+	height: calc(100% - 48px);
+	border: 0;
+}

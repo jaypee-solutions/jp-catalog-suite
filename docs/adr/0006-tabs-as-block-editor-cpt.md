@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted
+Accepted. Superseded in part by 0022.
 
 ## Context
 

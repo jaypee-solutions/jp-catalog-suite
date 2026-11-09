@@ -450,3 +450,69 @@ msgstr "Anfragenummer:"
 
 msgid "Inquiry details"
 msgstr "Anfragedetails"
+
+msgid "Add tab"
+msgstr "Tab hinzufügen"
+
+msgid "Edit"
+msgstr "Bearbeiten"
+
+msgid "Delete"
+msgstr "Löschen"
+
+msgid "Replace"
+msgstr "Ersetzen"
+
+msgid "Replaced by %s"
+msgstr "Ersetzt durch %s"
+
+msgid "Replaces %s"
+msgstr "Ersetzt %s"
+
+msgid "Category: %s"
+msgstr "Kategorie: %s"
+
+msgid "Parent category: %s"
+msgstr "Übergeordnete Kategorie: %s"
+
+msgid "Product: %s"
+msgstr "Produkt: %s"
+
+msgid "%s and its subcategories"
+msgstr "%s und Unterkategorien"
+
+msgid "This product"
+msgstr "Dieses Produkt"
+
+msgid "This category"
+msgstr "Diese Kategorie"
+
+msgid "No tabs yet."
+msgstr "Noch keine Tabs."
+
+msgid "Shown on"
+msgstr "Angezeigt bei"
+
+msgid "Shown on:"
+msgstr "Angezeigt bei:"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Actions"
+msgstr "Aktionen"
+
+msgid "Shop-wide tabs"
+msgstr "Shopweite Tabs"
+
+msgid "Close"
+msgstr "Schließen"
+
+msgid "Tab editor"
+msgstr "Tab-Editor"
+
+msgid "Move this tab to the trash?"
+msgstr "Diesen Tab in den Papierkorb verschieben?"
+
+msgid "Sorry, you are not allowed to manage these tabs."
+msgstr "Sie dürfen diese Tabs nicht verwalten."
