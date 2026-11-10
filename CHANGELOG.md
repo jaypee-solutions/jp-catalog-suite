@@ -10,6 +10,11 @@ extracts it as the GitHub release notes and fails without it.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-10
+
+### Added
+- Variation tabs: a variation of a variable product can own tabs, managed in its panel on the product edit screen. A variation tab shows only while its variation is selected and may replace one tab shown on the parent product (ADR 0024). Needs the classic variation form; with the "Add to Cart + Options" block, variation tabs stay hidden.
+
 ## [0.3.0] - 2026-11-10
 
 ### Added

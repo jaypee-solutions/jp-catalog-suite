@@ -1,6 +1,6 @@
 # Product tabs
 
-Add shop-wide, category or product tabs, replace or hide them per product, and control WooCommerce Core tabs. For shop admins and editors.
+Add shop-wide, category, product or variation tabs, replace or hide them per product, and control WooCommerce Core tabs. For shop admins and editors.
 
 ## Before you start
 
@@ -17,6 +17,7 @@ Each tab has exactly one owner and is managed where it applies:
 | Shop-wide | **WooCommerce → Settings → Catalog Suite → Product tabs → Shop-wide tabs** | Every product |
 | Category | The **Tabs** field on the product category edit screen | Products in that category and its subcategories |
 | Product | **Product data → Tabs** on the product edit screen | That product only |
+| Variation | The **Tabs** field in the variation's panel under **Product data → Variations** | That variation, while it is selected |
 
 **Add tab**, **Edit** and **Replace** open the block editor in a dialog; **Close** returns to the list, which refreshes after saving. **Delete** moves the tab to the trash. Tabs are also deleted with their product or category. The old **Products → Product tabs** menu no longer exists.
 
@@ -71,6 +72,16 @@ To Hide a Global tab on just one product:
 
 **Try it:** replace `Shipping details` on `Tab Demo`, then hide `Shipping details` on a different product.
 
+## Tutorial: add a tab to one variation
+
+1. Edit a variable product, open **Product data → Variations** and expand the variation `Blue`.
+2. In its **Tabs** field, select **Add tab**, enter `Blue finish`, add `Powder-coated, RAL 5015.`, leave **Replace tab** at **None** and **Priority** empty, then publish and close the dialog.
+3. Open the product page, then select `Blue` and `Red` in turn.
+
+**What you should see:** `Blue finish` appears only while `Blue` is selected and is hidden again after **Clear**. The panel lists the parent product's tabs too, each with a **Replace** link.
+
+**Try it:** select **Replace** beside a parent tab such as `Datasheet summary`. While `Blue` is selected, the variation tab takes its place; with any other selection the original shows.
+
 ## Tutorial: configure Core tabs shop-wide
 
 1. Open **WooCommerce → Settings → Catalog Suite → Product tabs**.
@@ -96,7 +107,8 @@ To Hide a Global tab on just one product:
 ## Good to know
 
 - A Product tab with no visible text or media does not render. Product tabs and Core tabs are sorted together by numeric priority.
-- A Product tab can replace only an applicable Global tab (shop-wide or category), not another Product tab or a Core tab.
+- A Product tab can replace only an applicable Global tab (shop-wide or category), not another Product tab or a Core tab. A variation tab can also replace a Product tab of its parent product, but never a Core tab or another variation tab.
+- Variation tabs are switched when the shopper selects a variation in the classic variation form. With the "Add to Cart + Options" block they stay hidden; without JavaScript every tab shows. See [ADR 0024](../adr/0024-variation-tabs.md).
 - After an upgrade from a version where one tab listed several categories or products, each of them received its own copy once ([ADR 0023](../adr/0023-tabs-managed-on-owners.md)).
 - Global tabs are WordPress content. WPML configuration includes Core tab title options; on multilingual sites, translate and assign Global tabs using your multilingual plugin's normal content workflow. Polylang can translate content and standard strings through its usual workflow. See [Multilingual sites](../../README.md#multilingual-sites).
 - The Product tabs REST route is restricted to logged-in users with `edit_posts` capability.
