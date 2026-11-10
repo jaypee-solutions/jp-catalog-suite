@@ -3,7 +3,7 @@
  * Plugin Name:       JayPee Solutions Catalog Suite for WooCommerce
  * Plugin URI:        https://github.com/jaypee-solutions/jp-catalog-suite
  * Description:       Quote mode, extended product tabs with access levels and protected files, and customer-entered lengths for WooCommerce.
- * Version:           0.3.0
+ * Version:           0.4.0
  * Author:            JayPee Solutions
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -22,7 +22,7 @@ namespace JayPee\CatalogSuite;
 
 defined( 'ABSPATH' ) || exit;
 
-const VERSION     = '0.3.0';
+const VERSION     = '0.4.0';
 const PLUGIN_DIR  = __DIR__ . '/';
 const PLUGIN_FILE = __FILE__;
 const GITHUB_REPO = 'jaypee-solutions/jp-catalog-suite';
