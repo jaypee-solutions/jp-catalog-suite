@@ -219,11 +219,80 @@ final class Test_Product_Tabs extends WP_UnitTestCase {
         update_post_meta( $product_tab, '_jps_cs_products', [ $product_id ] );
         $category_tab = $this->create_tab( 'Category-owned tab', 'Content.', 'categories', [ $category_id ], 10 );
         $shop_wide_tab = $this->create_tab( 'Shop-wide tab', 'Content.', 'all', [], 10 );
+        [ , $variation_id ] = $this->create_variable_product();
+        $variation_tab = $this->create_tab( 'Variation-owned tab', 'Content.', 'variations', [], 10 );
+        update_post_meta( $variation_tab, '_jps_cs_variations', [ $variation_id ] );
         wp_delete_post( $product_id, true );
+        wp_delete_post( $variation_id, true );
         wp_delete_term( $category_id, 'product_cat' );
+        $this->assertNull( get_post( $variation_tab ) );
         $this->assertNull( get_post( $product_tab ) );
         $this->assertNull( get_post( $category_tab ) );
         $this->assertNotNull( get_post( $shop_wide_tab ) );
+    }
+
+    public function test_variation_tabs_render_for_their_parent_with_replacement_markers(): void {
+        wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
+        [ $parent_id, $blue, $red ] = $this->create_variable_product();
+        [ $other_parent ] = $this->create_variable_product();
+        $global_id = $this->create_tab( 'Global specs', 'Global content.', 'all', [], 20 );
+        $product_tab_id = $this->create_tab( 'Parent specs', 'Parent content.', 'products', [], 30 );
+        update_post_meta( $product_tab_id, '_jps_cs_products', [ $parent_id ] );
+        $blue_tab_id = $this->publish_variation_tab( 'Blue specs', $blue, $global_id, '' );
+        $red_tab_id = $this->publish_variation_tab( 'Red extra', $red, $blue_tab_id, '40' );
+        $this->assertSame( 'variations', get_post_meta( $blue_tab_id, '_jps_cs_scope', true ) );
+        $this->assertSame( [ $blue ], get_post_meta( $blue_tab_id, '_jps_cs_variations', true ) );
+        $this->assertSame( 0, (int) get_post_meta( $red_tab_id, '_jps_cs_replaces', true ) );
+        $tabs = $this->tabs_for_product( $parent_id );
+        $this->assertEqualsCanonicalizing( [ 'jps_cs_tab_' . $global_id, 'jps_cs_tab_' . $product_tab_id, 'jps_cs_tab_' . $blue_tab_id, 'jps_cs_tab_' . $red_tab_id ], $this->tab_keys( $tabs ) );
+        $this->assertSame( 20, $tabs[ 'jps_cs_tab_' . $blue_tab_id ]['priority'] );
+        $this->assertSame( 40, $tabs[ 'jps_cs_tab_' . $red_tab_id ]['priority'] );
+        $blue_output = $this->tab_output( $tabs[ 'jps_cs_tab_' . $blue_tab_id ] );
+        $this->assertStringContainsString( 'data-jps-cs-variation="' . $blue . '"', $blue_output );
+        $this->assertStringContainsString( 'data-jps-cs-product="' . $parent_id . '"', $blue_output );
+        $this->assertStringContainsString( 'data-jps-cs-replaces="jps_cs_tab_' . $global_id . '"', $blue_output );
+        $this->assertStringContainsString( 'data-jps-cs-tab="jps_cs_tab_' . $global_id . '"', $this->tab_output( $tabs[ 'jps_cs_tab_' . $global_id ] ) );
+        $this->assertStringNotContainsString( 'data-jps-cs-tab', $this->tab_output( $tabs[ 'jps_cs_tab_' . $product_tab_id ] ) );
+        $this->assertSame( [ 'jps_cs_tab_' . $global_id ], $this->tab_keys( $this->tabs_for_product( $other_parent ) ) );
+    }
+
+    public function test_variation_panel_lists_own_and_inherited_tabs(): void {
+        wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
+        [ $parent_id, $blue ] = $this->create_variable_product();
+        $global_id = $this->create_tab( 'Global specs', 'Global content.', 'all', [], 20 );
+        $product_tab_id = $this->create_tab( 'Parent specs', 'Parent content.', 'products', [], 30 );
+        update_post_meta( $product_tab_id, '_jps_cs_products', [ $parent_id ] );
+        $this->publish_variation_tab( 'Blue specs', $blue, $global_id, '' );
+        ob_start();
+        do_action( 'woocommerce_product_after_variable_attributes', 0, [], get_post( $blue ) );
+        $markup = ob_get_clean();
+        $this->assertStringContainsString( 'data-scope="variations"', $markup );
+        $this->assertStringContainsString( 'This variation · Replaces Global specs', $markup );
+        $this->assertStringContainsString( 'Replaced by Blue specs', $markup );
+        $this->assertStringContainsString( 'Parent product', $markup );
+        $this->assertStringContainsString( 'jps_cs_scope=variations&#038;jps_cs_target=' . $blue . '&#038;jps_cs_replaces=' . $product_tab_id, $markup );
+    }
+
+    public function test_new_variation_tab_editor_offers_parent_tabs_for_replacement(): void {
+        wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
+        [ $parent_id, $blue ] = $this->create_variable_product();
+        $global_id = $this->create_tab( 'Global specs', 'Global content.', 'all', [], 20 );
+        $product_tab_id = $this->create_tab( 'Parent specs', '<p>Parent body.</p>', 'products', [], 30 );
+        update_post_meta( $product_tab_id, '_jps_cs_products', [ $parent_id ] );
+        $_GET = [ 'jps_cs_scope' => 'variations', 'jps_cs_target' => (string) $blue, 'jps_cs_replaces' => (string) $product_tab_id ];
+        $tab = get_post( self::factory()->post->create( [ 'post_type' => 'jps_cs_tab', 'post_status' => 'auto-draft' ] ) );
+        $GLOBALS['post'] = $tab;
+        set_current_screen( 'post' );
+        do_action( 'add_meta_boxes_jps_cs_tab', $tab );
+        ob_start();
+        do_meta_boxes( 'jps_cs_tab', 'side', $tab );
+        $markup = ob_get_clean();
+        $title = apply_filters( 'default_title', '', $tab );
+        $_GET = [];
+        $this->assertStringContainsString( 'name="jps_cs_scope" value="variations"', $markup );
+        $this->assertMatchesRegularExpression( '/<option value="' . $product_tab_id . '"\s+selected/', $markup );
+        $this->assertStringContainsString( '<option value="' . $global_id . '"', $markup );
+        $this->assertSame( 'Parent specs', $title );
     }
 
     public function test_tab_settings_meta_box_is_registered(): void {
@@ -357,5 +426,48 @@ final class Test_Product_Tabs extends WP_UnitTestCase {
         update_post_meta( $id, '_jps_cs_categories', $categories );
         update_post_meta( $id, '_jps_cs_priority', (string) $priority );
         return $id;
+    }
+
+    /**
+     * @return int[] Parent ID, Blue variation ID, Red variation ID.
+     */
+    private function create_variable_product(): array {
+        $attribute = new WC_Product_Attribute();
+        $attribute->set_name( 'Colour' );
+        $attribute->set_options( [ 'Blue', 'Red' ] );
+        $attribute->set_position( 0 );
+        $attribute->set_visible( true );
+        $attribute->set_variation( true );
+        $variable = new WC_Product_Variable();
+        $variable->set_name( 'Variable product' );
+        $variable->set_status( 'publish' );
+        $variable->set_attributes( [ $attribute ] );
+        $variable->save();
+        $ids = [ $variable->get_id() ];
+        foreach ( [ 'Blue', 'Red' ] as $colour ) {
+            $variation = new WC_Product_Variation();
+            $variation->set_status( 'publish' );
+            $variation->set_parent_id( $variable->get_id() );
+            $variation->set_attributes( [ 'colour' => $colour ] );
+            $variation->set_regular_price( '5' );
+            $variation->save();
+            $ids[] = $variation->get_id();
+        }
+        WC_Product_Variable::sync( $variable->get_id() );
+        return $ids;
+    }
+
+    private function publish_variation_tab( string $title, int $variation_id, int $replaces, string $priority ): int {
+        $tab_id = self::factory()->post->create( [ 'post_type' => 'jps_cs_tab', 'post_status' => 'draft', 'post_title' => $title, 'post_content' => $title . ' content.' ] );
+        $_POST = [ 'jps_cs_tab_nonce' => wp_create_nonce( 'jps_cs_tab_meta' ), 'jps_cs_scope' => 'variations', 'jps_cs_target' => (string) $variation_id, 'jps_cs_replaces' => (string) $replaces, 'jps_cs_priority' => $priority ];
+        wp_update_post( [ 'ID' => $tab_id, 'post_status' => 'publish' ] );
+        $_POST = [];
+        return $tab_id;
+    }
+
+    private function tab_output( array $tab ): string {
+        ob_start();
+        ( $tab['callback'] )();
+        return (string) ob_get_clean();
     }
 }

@@ -1,32 +1,8 @@
-import { test, expect, type Page } from './support/fixtures';
+import { test, expect } from './support/fixtures';
+import { logIn, publishInDialog } from './support/tab-editor';
 import { wpCli } from './support/wp-cli';
 
 type Fixtures = { category: number; product: number; url: string };
-
-async function logIn( page: Page ): Promise<void> {
-	await page.request.get( '/wp-login.php' );
-	const login = await page.request.post( '/wp-login.php', {
-		form: { log: process.env.WP_ADMIN_USER ?? 'admin', pwd: process.env.WP_ADMIN_PASS ?? 'password', 'wp-submit': 'Log In', redirect_to: '/wp-admin/', testcookie: '1' },
-		maxRedirects: 0,
-	} );
-	expect( login.status() ).toBe( 302 );
-}
-
-async function publishInDialog( page: Page, title: string, body: string ): Promise<void> {
-	const editor = page.frameLocator( '.jps-cs-tab-dialog iframe' );
-	const nestedCanvas = editor.locator( 'iframe[name="editor-canvas"]' );
-	await expect( editor.locator( '.edit-post-layout, .editor-header' ).first() ).toBeVisible( { timeout: 30_000 } );
-	const canvas = ( await nestedCanvas.count() ) > 0 ? editor.frameLocator( 'iframe[name="editor-canvas"]' ) : editor;
-	const titleField = canvas.getByRole( 'textbox', { name: 'Add title' } );
-	await titleField.fill( title );
-	await titleField.press( 'Enter' );
-	await page.keyboard.type( body );
-	await editor.getByRole( 'button', { name: 'Publish', exact: true } ).first().click();
-	const confirm = editor.locator( '.editor-post-publish-panel__header-publish-button button, .editor-post-publish-panel__header-publish-button' ).first();
-	if ( await confirm.isVisible( { timeout: 3_000 } ).catch( () => false ) ) {
-		await confirm.click();
-	}
-}
 
 test( 'tabs are managed on the category and product screens through the editor dialog', async ( { page } ) => {
 	const stamp = String( Date.now() );

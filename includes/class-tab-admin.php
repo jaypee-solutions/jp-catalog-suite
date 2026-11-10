@@ -11,10 +11,16 @@ namespace JayPee\CatalogSuite;
 
 final class Tab_Admin {
 
-    private const SCOPES         = [ 'all', 'categories', 'products' ];
+    private const SCOPES         = [ 'all', 'categories', 'products', 'variations' ];
+    private const OWNER_TYPES    = [ 'categories' => 'product_cat', 'products' => 'product', 'variations' => 'product_variation' ];
     private const STATUSES       = [ 'publish', 'draft', 'pending', 'future', 'private' ];
     private const NONCE_ACTION   = 'jps_cs_tab_manager';
     private const DEFAULT_PRIORITY = 50;
+
+    /**
+     * @var array<int, array> Product_Tabs::tabs_for() per parent product, memoized for the request.
+     */
+    private static array $parent_tabs = [];
 
     public static function init(): void {
         add_action( 'add_meta_boxes_jps_cs_tab', [ self::class, 'add_meta_box' ] );
@@ -25,6 +31,7 @@ final class Tab_Admin {
         add_action( 'admin_enqueue_scripts', [ self::class, 'enqueue_manager_assets' ] );
         add_action( 'enqueue_block_editor_assets', [ self::class, 'enqueue_embed_assets' ] );
         add_action( 'product_cat_edit_form_fields', [ self::class, 'render_category_field' ], 10, 2 );
+        add_action( 'woocommerce_product_after_variable_attributes', [ self::class, 'render_variation_field' ], 10, 3 );
         add_action( 'woocommerce_admin_field_jps_cs_tab_list', [ self::class, 'render_settings_field' ] );
         add_action( 'wp_ajax_jps_cs_tab_list', [ self::class, 'ajax_tab_list' ] );
         add_action( 'wp_ajax_jps_cs_trash_tab', [ self::class, 'ajax_trash_tab' ] );
@@ -51,7 +58,7 @@ final class Tab_Admin {
     }
 
     private static function owner_meta_key( string $scope ): ?string {
-        return [ 'categories' => '_jps_cs_categories', 'products' => '_jps_cs_products' ][ $scope ] ?? null;
+        return [ 'categories' => '_jps_cs_categories', 'products' => '_jps_cs_products', 'variations' => '_jps_cs_variations' ][ $scope ] ?? null;
     }
 
     /**
@@ -69,6 +76,9 @@ final class Tab_Admin {
         if ( 'products' === $scope && 'product' === get_post_type( $target ) ) {
             return [ $scope, $target ];
         }
+        if ( 'variations' === $scope && 'product_variation' === get_post_type( $target ) ) {
+            return [ $scope, $target ];
+        }
         return null;
     }
 
@@ -77,7 +87,7 @@ final class Tab_Admin {
      */
     private static function tabs_owned_by( string $scope, int $target, array $statuses ): array {
         $owned = [];
-        $type  = 'categories' === $scope ? 'product_cat' : 'product';
+        $type  = self::OWNER_TYPES[ $scope ] ?? 'product';
         $canonical_target = 'all' === $scope ? 0 : Plugin::canonical_id( $target, $type );
         foreach ( get_posts( [ 'post_type' => 'jps_cs_tab', 'post_status' => $statuses, 'numberposts' => -1, 'suppress_filters' => false ] ) as $tab ) {
             [ $tab_scope, $tab_target ] = self::owner_of( $tab );
@@ -190,6 +200,9 @@ final class Tab_Admin {
         if ( 'products' === $scope ) {
             return self::product_rows( $target );
         }
+        if ( 'variations' === $scope ) {
+            return self::variation_rows( $target );
+        }
         if ( 'categories' === $scope ) {
             return self::category_rows( $target );
         }
@@ -280,6 +293,65 @@ final class Tab_Admin {
         return $rows;
     }
 
+    /**
+     * @return array<int, array{post: \WP_Post, scope: string, priority: int}> Tabs shown on the parent product, variation tabs included.
+     */
+    private static function parent_tabs( \WC_Product $parent_product ): array {
+        self::$parent_tabs[ $parent_product->get_id() ] ??= Product_Tabs::tabs_for( $parent_product );
+        return self::$parent_tabs[ $parent_product->get_id() ];
+    }
+
+    private static function variation_rows( int $variation_id ): array {
+        $parent  = wc_get_product( wp_get_post_parent_id( $variation_id ) );
+        $inherited = [];
+        foreach ( $parent instanceof \WC_Product ? self::parent_tabs( $parent ) : [] as $entry ) {
+            if ( 'variations' !== $entry['scope'] ) {
+                $inherited[ Plugin::canonical_id( $entry['post']->ID, 'jps_cs_tab' ) ] = $entry;
+            }
+        }
+        $rows         = [];
+        $replacements = [];
+        foreach ( self::owned_tabs( 'variations', $variation_id ) as $tab ) {
+            $replaced_id = absint( get_post_meta( $tab->ID, '_jps_cs_replaces', true ) );
+            $replaced    = $replaced_id ? get_post( $replaced_id ) : null;
+            $shown_on    = __( 'This variation', 'jp-catalog-suite' );
+            $priority    = self::effective_priority( $tab );
+            if ( $replaced instanceof \WP_Post ) {
+                /* translators: %s: title of the replaced tab. */
+                $shown_on .= ' · ' . sprintf( __( 'Replaces %s', 'jp-catalog-suite' ), self::title_of( $replaced ) );
+                $canonical = Plugin::canonical_id( $replaced_id, 'jps_cs_tab' );
+                if ( '' === get_post_meta( $tab->ID, '_jps_cs_priority', true ) && isset( $inherited[ $canonical ] ) ) {
+                    $priority = $inherited[ $canonical ]['priority'];
+                }
+                if ( 'publish' === $tab->post_status ) {
+                    $replacements[ $canonical ] = $tab;
+                }
+            }
+            $rows[] = self::row( $tab, $shown_on, $priority, self::own_actions( $tab ) );
+        }
+        foreach ( $inherited as $canonical => $entry ) {
+            $post = $entry['post'];
+            if ( 'categories' === $entry['scope'] ) {
+                /* translators: %s: category name. */
+                $shown_on = sprintf( __( 'Category: %s', 'jp-catalog-suite' ), self::term_name( self::owner_of( $post )[1] ) );
+            } elseif ( 'products' === $entry['scope'] ) {
+                $shown_on = __( 'Parent product', 'jp-catalog-suite' );
+            } else {
+                $shown_on = __( 'All products', 'jp-catalog-suite' );
+            }
+            if ( isset( $replacements[ $canonical ] ) ) {
+                /* translators: %s: title of the replacing variation tab. */
+                $actions = esc_html( sprintf( __( 'Replaced by %s', 'jp-catalog-suite' ), self::title_of( $replacements[ $canonical ] ) ) );
+            } elseif ( self::can_create() ) {
+                $actions = self::open_link( self::new_tab_url( 'variations', $variation_id, $post->ID ), __( 'Replace', 'jp-catalog-suite' ) );
+            } else {
+                $actions = '';
+            }
+            $rows[] = self::row( $post, $shown_on, $entry['priority'], $actions );
+        }
+        return $rows;
+    }
+
     private static function category_rows( int $term_id ): array {
         $rows = [];
         foreach ( self::owned_tabs( 'categories', $term_id ) as $tab ) {
@@ -328,6 +400,13 @@ final class Tab_Admin {
         echo '</td></tr>';
     }
 
+    public static function render_variation_field( int $loop, array $variation_data, \WP_Post $variation ): void {
+        unset( $loop, $variation_data );
+        echo '<div class="form-row form-row-full jps-cs-variation-tabs"><p><strong>' . esc_html__( 'Tabs', 'jp-catalog-suite' ) . '</strong></p>';
+        echo self::manager_html( 'variations', $variation->ID ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped while building the markup.
+        echo '</div>';
+    }
+
     public static function render_settings_field( array $value ): void {
         echo '<tr><th scope="row" class="titledesc">' . esc_html( (string) ( $value['title'] ?? '' ) ) . '</th><td class="forminp">';
         echo self::manager_html( 'all', 0 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped while building the markup.
@@ -369,6 +448,9 @@ final class Tab_Admin {
     private static function can_manage( string $scope, int $target ): bool {
         if ( 'products' === $scope ) {
             return 'product' === get_post_type( $target ) && current_user_can( 'edit_post', $target );
+        }
+        if ( 'variations' === $scope ) {
+            return 'product_variation' === get_post_type( $target ) && current_user_can( 'edit_post', $target );
         }
         if ( 'categories' === $scope ) {
             return (bool) term_exists( $target, 'product_cat' ) && current_user_can( 'edit_term', $target );
@@ -434,6 +516,10 @@ final class Tab_Admin {
             /* translators: %s: product name. */
             return sprintf( __( 'Product: %s', 'jp-catalog-suite' ), get_the_title( $target ) );
         }
+        if ( 'variations' === $scope ) {
+            /* translators: %s: variation name. */
+            return sprintf( __( 'Variation: %s', 'jp-catalog-suite' ), get_the_title( $target ) );
+        }
         return __( 'All products', 'jp-catalog-suite' );
     }
 
@@ -446,18 +532,30 @@ final class Tab_Admin {
         <?php
         printf( '<input type="hidden" name="jps_cs_scope" value="%s" />', esc_attr( $scope ) );
         printf( '<input type="hidden" name="jps_cs_target" value="%s" />', esc_attr( (string) $target ) );
-        if ( 'products' === $scope ) {
+        if ( in_array( $scope, [ 'products', 'variations' ], true ) ) {
             $replace = absint( get_post_meta( $post->ID, '_jps_cs_replaces', true ) );
             if ( 'auto-draft' === $post->post_status && isset( $_GET['jps_cs_replaces'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only preselects the field.
                 $replace = absint( wp_unslash( $_GET['jps_cs_replaces'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only preselects the field.
             }
-            $product = wc_get_product( $target );
+            $candidates = [];
+            if ( 'products' === $scope ) {
+                $product    = wc_get_product( $target );
+                $candidates = $product instanceof \WC_Product ? Product_Tabs::global_tabs_for( $product ) : [];
+            } else {
+                $parent = wc_get_product( wp_get_post_parent_id( $target ) );
+                foreach ( $parent instanceof \WC_Product ? self::parent_tabs( $parent ) : [] as $entry ) {
+                    if ( 'variations' !== $entry['scope'] ) {
+                        $candidates[] = $entry['post'];
+                    }
+                }
+            }
+            $label = 'products' === $scope ? __( 'Replace global tab', 'jp-catalog-suite' ) : __( 'Replace tab', 'jp-catalog-suite' );
             ?>
-            <p><label for="jps-cs-replace-tab"><?php esc_html_e( 'Replace global tab', 'jp-catalog-suite' ); ?></label>
+            <p><label for="jps-cs-replace-tab"><?php echo esc_html( $label ); ?></label>
             <select id="jps-cs-replace-tab" name="jps_cs_replaces">
                 <option value="0"><?php esc_html_e( 'None', 'jp-catalog-suite' ); ?></option>
-                <?php foreach ( $product instanceof \WC_Product ? Product_Tabs::global_tabs_for( $product ) : [] as $global_tab ) : ?>
-                    <option value="<?php echo esc_attr( (string) $global_tab->ID ); ?>" <?php selected( $replace, $global_tab->ID ); ?>><?php echo esc_html( get_the_title( $global_tab ) ); ?></option>
+                <?php foreach ( $candidates as $candidate ) : ?>
+                    <option value="<?php echo esc_attr( (string) $candidate->ID ); ?>" <?php selected( $replace, $candidate->ID ); ?>><?php echo esc_html( get_the_title( $candidate ) ); ?></option>
                 <?php endforeach; ?>
             </select></p>
             <?php
@@ -482,15 +580,27 @@ final class Tab_Admin {
             update_post_meta( $post_id, '_jps_cs_scope', $owner[0] );
             update_post_meta( $post_id, '_jps_cs_categories', 'categories' === $owner[0] ? [ $owner[1] ] : [] );
             update_post_meta( $post_id, '_jps_cs_products', 'products' === $owner[0] ? [ $owner[1] ] : [] );
+            update_post_meta( $post_id, '_jps_cs_variations', 'variations' === $owner[0] ? [ $owner[1] ] : [] );
         }
         update_post_meta( $post_id, '_jps_cs_priority', isset( $_POST['jps_cs_priority'] ) ? sanitize_text_field( wp_unslash( $_POST['jps_cs_priority'] ) ) : '' );
         $replace      = isset( $_POST['jps_cs_replaces'] ) ? absint( wp_unslash( $_POST['jps_cs_replaces'] ) ) : 0;
         $replace_post = $replace ? get_post( $replace ) : null;
         $valid_replace = $replace_post instanceof \WP_Post
             && 'jps_cs_tab' === $replace_post->post_type
-            && in_array( Product_Tabs::scope( $replace_post ), [ 'all', 'categories' ], true )
-            && 'products' === Product_Tabs::scope( get_post( $post_id ) );
+            && in_array( Product_Tabs::scope( $replace_post ), self::replaceable_scopes( Product_Tabs::scope( get_post( $post_id ) ) ), true );
         update_post_meta( $post_id, '_jps_cs_replaces', $valid_replace ? $replace : 0 );
+    }
+
+    /**
+     * Scopes of the tabs a tab of the given scope may replace.
+     *
+     * @return string[]
+     */
+    private static function replaceable_scopes( string $owner_scope ): array {
+        return [
+            'products'   => [ 'all', 'categories' ],
+            'variations' => [ 'all', 'categories', 'products' ],
+        ][ $owner_scope ] ?? [];
     }
 
     /**
@@ -506,7 +616,9 @@ final class Tab_Admin {
             return $value;
         }
         $source = get_post( $replaces );
-        if ( ! $source instanceof \WP_Post || 'jps_cs_tab' !== $source->post_type || ! in_array( Product_Tabs::scope( $source ), [ 'all', 'categories' ], true ) || ! current_user_can( 'edit_post', $source->ID ) ) {
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only prefills the new editor; saving remains protected by the tab nonce.
+        $owner_scope = sanitize_key( wp_unslash( $_GET['jps_cs_scope'] ?? '' ) );
+        if ( ! $source instanceof \WP_Post || 'jps_cs_tab' !== $source->post_type || ! in_array( Product_Tabs::scope( $source ), self::replaceable_scopes( $owner_scope ), true ) || ! current_user_can( 'edit_post', $source->ID ) ) {
             return $value;
         }
         return 'default_title' === current_filter() ? $source->post_title : $source->post_content;
@@ -517,6 +629,8 @@ final class Tab_Admin {
     public static function delete_tabs_of_deleted_product( int $post_id, \WP_Post $post ): void {
         if ( 'product' === $post->post_type ) {
             self::delete_tabs_with_raw_owner( '_jps_cs_products', $post_id );
+        } elseif ( 'product_variation' === $post->post_type ) {
+            self::delete_tabs_with_raw_owner( '_jps_cs_variations', $post_id );
         }
     }
 

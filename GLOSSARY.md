@@ -40,8 +40,12 @@ _Avoid_: custom tab, local tab
 One of WooCommerce's built-in tabs: Description, Additional information, Reviews.
 _Avoid_: default tab, standard tab, Woo tab
 
+**Variation tab**:
+A tab belonging to one variation of a variable product; shown while that variation is selected.
+_Avoid_: variant tab
+
 **Replace**:
-A product tab taking the place of one global tab on the product tab's products.
+A product tab taking the place of one global tab on its product, or a variation tab taking the place of one tab shown on its parent product while the variation is selected.
 _Avoid_: override, überschreiben
 
 **Hide**:

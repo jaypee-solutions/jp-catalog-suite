@@ -70,14 +70,19 @@
 		}
 	} );
 
-	document.addEventListener( 'DOMContentLoaded', function () {
-		document.querySelectorAll( '.jps-cs-tab-dialog' ).forEach( function ( dialog ) {
-			dialog.addEventListener( 'close', function () {
-				dialog.querySelector( '.jps-cs-tab-dialog__frame' ).src = 'about:blank';
-				refresh( manager_of( dialog ) );
-			} );
-		} );
-	} );
+	// `close` does not bubble; capture reaches dialogs added later, such as AJAX-loaded variation panels.
+	document.addEventListener(
+		'close',
+		function ( event ) {
+			var dialog = event.target;
+			if ( ! dialog.classList || ! dialog.classList.contains( 'jps-cs-tab-dialog' ) ) {
+				return;
+			}
+			dialog.querySelector( '.jps-cs-tab-dialog__frame' ).src = 'about:blank';
+			refresh( manager_of( dialog ) );
+		},
+		true
+	);
 
 	window.addEventListener( 'message', function ( event ) {
 		if ( event.origin !== window.location.origin || ! event.data || event.data.type !== 'jps-cs-tab-saved' ) {
