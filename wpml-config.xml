@@ -14,6 +14,7 @@
         <custom-field action="copy">_jps_cs_length_step</custom-field>
         <custom-field action="copy">_jps_cs_length_default</custom-field>
         <custom-field action="copy">_jps_cs_products</custom-field>
+        <custom-field action="copy">_jps_cs_variations</custom-field>
         <custom-field action="copy">_jps_cs_replaces</custom-field>
         <custom-field action="copy">_jps_cs_hidden_tabs</custom-field>
         <custom-field action="copy">_jps_cs_length_price_per_unit</custom-field>

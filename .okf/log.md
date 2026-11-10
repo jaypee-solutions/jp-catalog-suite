@@ -26,3 +26,4 @@
 * **Release documentation**: Added the cross-module test matrix, hosting requirements, complete decision index, and release checklist.
 * **Persisted names and Quote mode ownership**: Recorded ADR 0021 for canonical persisted names, hidden-tab IDs, and Quote-mode-owned intake behavior.
 * **Tabs managed on owners**: Recorded ADR 0023: single owner per tab, management on product/category/settings screens via a block-editor dialog, split migration, owner-bound deletion.
+* **Variation tabs**: Recorded ADR 0024: `variations` scope, management in the variation panel, client-side show/replace on variation selection.

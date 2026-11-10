@@ -484,6 +484,18 @@ msgstr "%s und Unterkategorien"
 msgid "This product"
 msgstr "Dieses Produkt"
 
+msgid "This variation"
+msgstr "Diese Variante"
+
+msgid "Parent product"
+msgstr "Übergeordnetes Produkt"
+
+msgid "Variation: %s"
+msgstr "Variante: %s"
+
+msgid "Replace tab"
+msgstr "Tab ersetzen"
+
 msgid "This category"
 msgstr "Diese Kategorie"
 
