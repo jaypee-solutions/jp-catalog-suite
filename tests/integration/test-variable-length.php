@@ -355,4 +355,40 @@ final class Test_Variable_Length extends WP_UnitTestCase {
             $_POST = $previous_post;
         }
     }
+
+    /** @return array{0: string, 1: string} Stored minimum and maximum after saving the Variable length section. */
+    private function save_length_bounds( string $min, string $max ): array {
+        wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
+        global $current_tab, $current_section;
+        $current_tab     = 'jps_cs';
+        $current_section = 'length';
+        if ( ! class_exists( 'WC_Admin_Settings' ) ) {
+            require_once WC_ABSPATH . 'includes/admin/class-wc-admin-settings.php';
+        }
+        $_POST    = [
+            'jps_cs_length_min' => $min,
+            'jps_cs_length_max' => $max,
+            '_wpnonce'          => wp_create_nonce( 'woocommerce-settings' ),
+        ];
+        $_REQUEST = $_POST;
+        \WC_Admin_Settings::save();
+        return [ (string) get_option( 'jps_cs_length_min' ), (string) get_option( 'jps_cs_length_max' ) ];
+    }
+
+    public function test_length_bounds_are_validated_against_the_submitted_pair(): void {
+        update_option( 'jps_cs_length_min', 10 );
+        update_option( 'jps_cs_length_max', 300 );
+
+        $this->assertSame( [ '400', '500' ], $this->save_length_bounds( '400', '500' ), 'Raising both bounds together is valid.' );
+        $this->assertSame( [ '20', '30' ], $this->save_length_bounds( '20', '30' ), 'Lowering both bounds together is valid.' );
+    }
+
+    public function test_inverted_or_non_positive_length_bounds_keep_the_saved_values(): void {
+        update_option( 'jps_cs_length_min', 10 );
+        update_option( 'jps_cs_length_max', 300 );
+
+        $this->assertSame( [ '10', '300' ], $this->save_length_bounds( '200', '150' ), 'Minimum above maximum is discarded.' );
+        $this->assertSame( [ '10', '300' ], $this->save_length_bounds( '0', '300' ), 'A minimum of zero is discarded.' );
+        $this->assertSame( [ '10', '300' ], $this->save_length_bounds( '-5', '300' ), 'A negative minimum is discarded.' );
+    }
 }
