@@ -4,7 +4,7 @@ When Germanized is active alongside Quote mode, Catalog Suite removes Germanized
 
 ## Before you start
 
-- WooCommerce, Catalog Suite, and WooCommerce Germanized must be active.
+- WooCommerce and Catalog Suite are active. Germanized is optional: Catalog Suite works without it, and this integration does nothing unless WooCommerce Germanized is also active. To follow this tutorial, activate it.
 - Enable **Quote mode** (German: **Angebotsmodus**) under **WooCommerce → Settings → Catalog Suite → General**. The integration has no effect while Quote mode is off.
 - To test checkbox retention, open **WooCommerce → Settings → Germanized → Legal Checkboxes** (Checkboxen), edit **New account** (Neues Kundenkonto), enable it and add the **Checkout** (Kasse) location. Germanized shows this checkbox at checkout only to logged-out visitors who create an account there, so also tick **Account creation → During checkout** under **WooCommerce → Settings → Accounts & Privacy**, and test in a logged-out browser.
 
