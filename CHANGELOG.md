@@ -10,6 +10,9 @@ extracts it as the GitHub release notes and fails without it.
 
 ## [Unreleased]
 
+### Fixed
+- Variable length: the settings were unreachable on variable products when WooCommerce hid the General tab (for example with taxes disabled). They now sit in their own option group, so the tab stays visible.
+
 ## [0.4.0] - 2026-11-10
 
 ### Added

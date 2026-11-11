@@ -156,6 +156,8 @@ final class Variable_Length {
         if ( ! $product_object instanceof \WC_Product_Simple && ! $product_object instanceof \WC_Product_Variable ) {
             return;
         }
+        // WooCommerce hides the General tab of a variable product when none of its option groups is visible.
+        echo '<div class="options_group">';
         woocommerce_wp_checkbox( [ 'id' => self::META['enabled'], 'label' => __( 'Variable length', 'jp-catalog-suite' ) ] );
         if ( 'yes' === get_option( 'jps_cs_length_pricing_enabled', 'no' ) ) {
             woocommerce_wp_checkbox( [ 'id' => self::META['price_per_unit'], 'label' => __( 'Price per length unit', 'jp-catalog-suite' ) ] );
@@ -164,6 +166,7 @@ final class Variable_Length {
         foreach ( [ 'min' => __( 'Minimum length', 'jp-catalog-suite' ), 'max' => __( 'Maximum length', 'jp-catalog-suite' ), 'step' => __( 'Length step', 'jp-catalog-suite' ), 'default' => __( 'Default length', 'jp-catalog-suite' ) ] as $key => $label ) {
             woocommerce_wp_text_input( [ 'id' => self::META[ $key ], 'label' => $label, 'type' => 'number', 'custom_attributes' => [ 'min' => 0, 'step' => 'any' ] ] );
         }
+        echo '</div>';
     }
 
     public static function save_product_fields( \WC_Product $product ): void {
