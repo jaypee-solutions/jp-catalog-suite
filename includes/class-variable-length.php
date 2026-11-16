@@ -109,7 +109,7 @@ final class Variable_Length {
 
     public static function available_variation( array $data, \WC_Product $parent_product, \WC_Product_Variation $variation ): array {
         $config = self::variation_config( $parent_product, $variation );
-        $data['jps_cs_length'] = [ 'enabled' => $config['enabled'], 'min' => $config['min'], 'max' => $config['max'], 'step' => $config['step'], 'default' => $config['default'] ];
+        $data['jps_cs_length'] = [ 'enabled' => $config['enabled'], 'min' => $config['min'], 'max' => $config['max'], 'step' => $config['step'], 'default' => $config['default'], 'range_message' => self::range_message( $config ), 'step_message' => self::step_message( $config ) ];
         return $data;
     }
 
@@ -118,9 +118,12 @@ final class Variable_Length {
             return;
         }
         $product = wc_get_product( get_queried_object_id() );
-        if ( $product instanceof \WC_Product_Variable && self::config( $product )['enabled'] ) {
-            wp_enqueue_script( 'jps-cs-variable-length', plugins_url( '../assets/js/variable-length.js', __FILE__ ), [ 'jquery', 'wc-add-to-cart-variation' ], '0.1.0', true );
+        if ( ( ! $product instanceof \WC_Product_Simple && ! $product instanceof \WC_Product_Variable ) || ! self::config( $product )['enabled'] ) {
+            return;
         }
+        $dependencies = $product instanceof \WC_Product_Variable ? [ 'jquery', 'wc-add-to-cart-variation' ] : [ 'jquery' ];
+        wp_enqueue_style( 'jps-cs-variable-length', plugins_url( 'assets/css/variable-length.css', PLUGIN_FILE ), [], VERSION );
+        wp_enqueue_script( 'jps-cs-variable-length', plugins_url( 'assets/js/variable-length.js', PLUGIN_FILE ), $dependencies, VERSION, true );
     }
 
     public static function variation_fields( int $loop, array $variation_data, \WP_Post $variation ): void {
@@ -204,7 +207,7 @@ final class Variable_Length {
             return;
         }
         // translators: %s is the product's length unit (mm, cm, or m).
-        printf( '<p class="jps-cs-length"><label for="jps_cs_length">%1$s</label><input id="jps_cs_length" name="jps_cs_length" type="number" required min="%2$s" max="%3$s" step="%4$s" value="%5$s" /></p>', esc_html( sprintf( __( 'Length (%s)', 'jp-catalog-suite' ), $config['unit'] ) ), esc_attr( (string) $config['min'] ), esc_attr( (string) $config['max'] ), esc_attr( (string) $config['step'] ), esc_attr( (string) $config['default'] ) );
+        printf( '<p class="jps-cs-length"><label for="jps_cs_length">%1$s</label><input id="jps_cs_length" name="jps_cs_length" type="number" required min="%2$s" max="%3$s" step="%4$s" value="%5$s" data-range-message="%6$s" data-step-message="%7$s" aria-describedby="jps_cs_length_message" /><span id="jps_cs_length_message" class="jps-cs-length-message" aria-live="polite"></span></p>', esc_html( sprintf( __( 'Length (%s)', 'jp-catalog-suite' ), $config['unit'] ) ), esc_attr( (string) $config['min'] ), esc_attr( (string) $config['max'] ), esc_attr( (string) $config['step'] ), esc_attr( (string) $config['default'] ), esc_attr( self::range_message( $config ) ), esc_attr( self::step_message( $config ) ) );
     }
 
     public static function store_api_add_to_cart_data( array $data, \WP_REST_Request $request ): array {
@@ -301,17 +304,24 @@ final class Variable_Length {
         return true;
     }
 
+    private static function range_message( array $config ): string {
+        // translators: %1$s and %2$s are the inclusive length bounds; %3$s is the unit.
+        return sprintf( __( 'Please enter a length between %1$s and %2$s %3$s.', 'jp-catalog-suite' ), $config['min'], $config['max'], $config['unit'] );
+    }
+
+    private static function step_message( array $config ): string {
+        // translators: %1$s is the required step size; %2$s is the unit.
+        return sprintf( __( 'The length must be a multiple of %1$s %2$s.', 'jp-catalog-suite' ), $config['step'], $config['unit'] );
+    }
 
     private static function validation_message( array $config, string $value ): ?string {
         $length = is_numeric( $value ) ? (float) $value : NAN;
         if ( ! is_finite( $length ) || $length <= 0 || $length < $config['min'] || $length > $config['max'] ) {
-            // translators: %1$s and %2$s are the inclusive length bounds; %3$s is the unit.
-            return sprintf( __( 'Please enter a length between %1$s and %2$s %3$s.', 'jp-catalog-suite' ), $config['min'], $config['max'], $config['unit'] );
+            return self::range_message( $config );
         }
         $step = max( 0.0000001, $config['step'] );
         if ( abs( ( ( $length - $config['min'] ) / $step ) - round( ( $length - $config['min'] ) / $step ) ) > 0.00001 ) {
-            // translators: %1$s is the required step size; %2$s is the unit.
-            return sprintf( __( 'The length must be a multiple of %1$s %2$s.', 'jp-catalog-suite' ), $config['step'], $config['unit'] );
+            return self::step_message( $config );
         }
         return null;
     }

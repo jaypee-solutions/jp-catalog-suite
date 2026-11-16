@@ -67,6 +67,8 @@ final class Test_Variable_Length extends WP_UnitTestCase {
         $this->assertSame( 200.0, $blue_data['jps_cs_length']['max'] );
         $this->assertSame( 0.5, $blue_data['jps_cs_length']['step'] );
         $this->assertSame( '120', $blue_data['jps_cs_length']['default'] );
+        $this->assertSame( 'Please enter a length between 9.5 and 200 cm.', $blue_data['jps_cs_length']['range_message'] );
+        $this->assertSame( 'The length must be a multiple of 0.5 cm.', $blue_data['jps_cs_length']['step_message'] );
         $red_data = apply_filters( 'woocommerce_available_variation', [], $product, $red );
         $this->assertSame( 10.0, $red_data['jps_cs_length']['min'] );
         $this->assertSame( 300.0, $red_data['jps_cs_length']['max'] );

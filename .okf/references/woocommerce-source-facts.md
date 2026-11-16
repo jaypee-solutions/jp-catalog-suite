@@ -17,6 +17,8 @@ timestamp: 2026-11-06T00:00:00Z
 - `WC_Order::is_editable()` allows only pending, on-hold and auto-draft and passes the result through `wc_order_is_editable` (`includes/class-wc-order.php:1717`).
 - `woocommerce_process_shop_order_meta` runs items at 10, downloads at 30, order data at 40 and order actions at 50 (`src/Internal/Admin/Orders/Edit.php:104-107`); a priority between 40 and 50 sees saved data before the order action runs.
 - `woocommerce_order_actions` receives the order as second argument; an `on-hold` status reduces stock through `wc_maybe_reduce_stock_levels` (`includes/wc-stock-functions.php:127`).
+- `templates/single-product/add-to-cart/variable.php` has no hook inside `<table class="variations">`; only `woocommerce_after_variations_table` fires after `</table>`, so an extra row must be added client-side.
+- The variation select is styled by the blocktheme rule `.woocommerce table.variations tr td select{height:3em;padding:.9em 1.1em;font-size:var(--wp--preset--font-size--small)}` plus `min-width:75%;max-width:100%;margin-right:1em` and a `background` shorthand (transparent background); the border is the UA default.
 
 # Citations
 
