@@ -6,6 +6,8 @@ declare( strict_types = 1 );
 namespace JayPee\CatalogSuite;
 
 final class Protected_Files {
+    public const DEFAULT_MIMES = "stp|step=application/step\ndxf=application/dxf\nstl=model/stl";
+    public const DEFAULT_PROTECTED_EXTS = 'stp, step, dxf, stl';
     private static bool $automatic = false;
     private static bool $routing = false;
     private static string $routing_component = '';
@@ -89,7 +91,7 @@ final class Protected_Files {
         }
     }
     private static function mimes(): array {
-        $rows = preg_split( '/\r?\n/', (string) get_option( 'jps_cs_files_mimes', "stp|step=application/step\ndxf=application/dxf" ) );
+        $rows = preg_split( '/\r?\n/', (string) get_option( 'jps_cs_files_mimes', self::DEFAULT_MIMES ) );
         $out = [];
         $dangerous = array_merge( [ 'phtml', 'phar', 'pl', 'py', 'cgi', 'sh', 'html', 'htm', 'js', 'svg', 'htaccess', 'htpasswd', 'exe' ], wp_get_ext_types()['code'] ?? [] );
         foreach ( $rows as $row ) {
@@ -108,7 +110,7 @@ final class Protected_Files {
     // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WooCommerce supplies the sanitize filter contract.
     public static function sanitize_mimes( $value, $option = null, $raw_value = null ): string {
         if ( ! current_user_can( 'manage_options' ) ) {
-            return (string) get_option( 'jps_cs_files_mimes', "stp|step=application/step\ndxf=application/dxf" );
+            return (string) get_option( 'jps_cs_files_mimes', self::DEFAULT_MIMES );
         }
         $safe = [];
         foreach ( preg_split( '/\r?\n/', (string) $value ) as $row ) {
@@ -135,18 +137,20 @@ final class Protected_Files {
     // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WordPress filter signature includes all five parameters.
     // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WordPress filter signature includes all five parameters.
     public static function filetype( array $data, string $file, string $filename, $mimes, $real ): array {
-        if ( ! current_user_can( 'upload_files' ) || ! is_array( $mimes ) ) {
+        if ( ! current_user_can( 'upload_files' ) ) {
             return $data;
         }
+        // Core passes no list when the caller sets none and then checks the site's allowed types.
+        $allowed = is_array( $mimes ) ? $mimes : get_allowed_mime_types();
         $ext = strtolower( (string) pathinfo( $filename, PATHINFO_EXTENSION ) );
         $configured = self::mimes();
-        if ( isset( $configured[ $ext ], $mimes[ $ext ] ) ) {
+        if ( isset( $configured[ $ext ], $allowed[ $ext ] ) ) {
             return [ 'ext' => $ext, 'type' => $configured[ $ext ], 'proper_filename' => false ];
         }
         return $data;
     }
     public static function route_upload( array $file ): array {
-        $exts = array_filter( array_map( 'trim', explode( ',', strtolower( (string) get_option( 'jps_cs_files_protected_exts', 'stp, step, dxf' ) ) ) ) );
+        $exts = array_filter( array_map( 'trim', explode( ',', strtolower( (string) get_option( 'jps_cs_files_protected_exts', self::DEFAULT_PROTECTED_EXTS ) ) ) ) );
         self::$routing = in_array( strtolower( (string) pathinfo( $file['name'] ?? '', PATHINFO_EXTENSION ) ), $exts, true );
         self::$routing_component = self::$routing ? wp_generate_password( 20, false, false ) : '';
         if ( self::$routing ) {
@@ -178,7 +182,7 @@ final class Protected_Files {
             wp_update_post( [ 'ID' => $id, 'guid' => self::attachment_url( (string) get_the_guid( $id ), $id ) ] );
             return;
         }
-        $extensions = array_filter( array_map( 'trim', explode( ',', strtolower( (string) get_option( 'jps_cs_files_protected_exts', 'stp, step, dxf' ) ) ) ) );
+        $extensions = array_filter( array_map( 'trim', explode( ',', strtolower( (string) get_option( 'jps_cs_files_protected_exts', self::DEFAULT_PROTECTED_EXTS ) ) ) ) );
         if ( ! in_array( strtolower( pathinfo( $path, PATHINFO_EXTENSION ) ), $extensions, true ) ) {
             return;
         }

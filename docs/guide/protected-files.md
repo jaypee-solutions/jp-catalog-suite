@@ -9,11 +9,11 @@ Protect engineering files in the Media Library and deliver them only to an Autho
 - Configure your web server before accepting protected uploads. The plugin creates an Apache `.htaccess` deny rule, but nginx requires its own deny rule. Review the [hosting requirements](../../.okf/references/hosting-requirements.md), the [README hosting and privacy notes](../../README.md#hosting-and-privacy) and the [README hook reference](../../README.md#hook-reference).
 - The default MIME list allows STEP and DXF, and the default automatic-protection list includes `stp`, `step`, and `dxf`.
 
-## Tutorial: Upload a protected STEP or DXF file
+## Tutorial: Upload a protected STEP, DXF or STL file
 
 1. Open **WooCommerce → Settings → Catalog Suite → Product tabs**.
-2. In **Protected files** (German: **Geschützte Dateien**), leave **Allowed file MIME types** (German: **Zulässige MIME-Typen für Dateien**) as `stp|step=application/step` and `dxf=application/dxf`. Each line maps extension(s) to a MIME type; separate aliases with `|`.
-3. Leave **Automatically protect extensions** (German: **Dateiendungen automatisch schützen**) as `stp, step, dxf`, or enter the comma-separated extensions you want automatically protected. The extension must also be an upload type WordPress accepts: one WordPress allows already (for example `pdf`) or one added in **Allowed file MIME types**.
+2. In **Protected files** (German: **Geschützte Dateien**), leave **Allowed file MIME types** (German: **Zulässige MIME-Typen für Dateien**) as `stp|step=application/step`, `dxf=application/dxf` and `stl=model/stl`. Each line maps extension(s) to a MIME type; separate aliases with `|`.
+3. Leave **Automatically protect extensions** (German: **Dateiendungen automatisch schützen**) as `stp, step, dxf, stl`, or enter the comma-separated extensions you want automatically protected. The extension must also be an upload type WordPress accepts: one WordPress allows already (for example `pdf`) or one added in **Allowed file MIME types**.
 4. Set **File delivery method** (German: **Methode zur Dateibereitstellung**) to **Automatic** (German: **Automatisch**). Automatic uses X-Sendfile only when PHP runs as an Apache module and `apache_get_modules()` reports `mod_xsendfile`; otherwise, including under PHP-FPM, it uses PHP delivery.
 5. Save the settings. In **Media → Add Media File**, upload `part.stp` (or `bracket.dxf`).
 6. WordPress stores the upload under `wp-content/uploads/jps-cs-protected/` in a generated subdirectory. The plugin marks the attachment protected and rewrites its attachment URL to the plugin endpoint, `/?jps_cs_file=<attachment-id>`; the URL does not reveal the storage path.
@@ -64,8 +64,8 @@ Protect engineering files in the Media Library and deliver them only to an Autho
 
 | Setting | Where | Default | Effect |
 |---|---|---|---|
-| Allowed file MIME types | WooCommerce → Settings → Catalog Suite → Product tabs → Protected files | `stp\|step=application/step` and `dxf=application/dxf` | Adds permitted extension-to-MIME mappings for users allowed to upload files. Dangerous code/script extensions are rejected. |
-| Automatically protect extensions | Same section | `stp, step, dxf` | Matching new uploads are stored protected and marked protected. |
+| Allowed file MIME types | WooCommerce → Settings → Catalog Suite → Product tabs → Protected files | `stp\|step=application/step`, `dxf=application/dxf` and `stl=model/stl` | Adds permitted extension-to-MIME mappings for users allowed to upload files. Dangerous code/script extensions are rejected. |
+| Automatically protect extensions | Same section | `stp, step, dxf, stl` | Matching new uploads are stored protected and marked protected. Stored settings keep their value; add `stl` to both settings on existing sites. |
 | File delivery method | Same section | **Automatic** (`auto`) | Selects PHP or X-Sendfile. X-Sendfile, whether chosen here, by Automatic or by the `jps_cs_file_delivery_method` filter, is used only when PHP runs as an Apache module that reports `mod_xsendfile`; otherwise the file is streamed by PHP. |
 
 ## Good to know
