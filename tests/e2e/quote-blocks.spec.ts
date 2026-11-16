@@ -157,8 +157,14 @@ test( 'mini-cart labels use Quote mode options on ordinary product pages', async
 		const productId = wpCli( 'post', 'list', '--post_type=product', '--meta_key=_sku', '--meta_value=QP-2', '--field=ID' );
 		await page.goto( '/?add-to-cart=' + productId );
 		await page.goto( '/product/tab-demo/' );
-		await page.locator( '.wc-block-mini-cart__button' ).click();
-		await expect( page.locator( 'body' ) ).toContainText( customLabel );
+		// The mini-cart block hydrates after load; a click before that is lost, so retry until the drawer is open.
+		const drawer = page.getByRole( 'dialog' );
+		await expect( async () => {
+			if ( ! await drawer.isVisible() ) {
+				await page.locator( '.wc-block-mini-cart__button' ).click();
+			}
+			await expect( drawer ).toContainText( customLabel, { timeout: 2000 } );
+		} ).toPass();
 	} finally {
 		wpCli( 'option', 'update', 'jps_cs_module_quote', oldQuote );
 		wpCli( 'option', 'update', 'woocommerce_coming_soon', oldComingSoon );
