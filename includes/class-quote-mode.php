@@ -41,6 +41,7 @@ final class Quote_Mode {
         add_filter( 'woocommerce_thankyou_order_received_text', [ self::class, 'thankyou_text' ], 10, 2 );
         add_filter( 'gettext_woocommerce', [ self::class, 'woocommerce_translation' ], 10, 3 );
         add_filter( 'ngettext_woocommerce', [ self::class, 'woocommerce_translation' ], 10, 5 );
+        add_filter( 'render_block_data', [ self::class, 'mini_cart_checkout_button_label' ] );
         add_action( 'woocommerce_blocks_loaded', [ self::class, 'register_blocks_integration' ] );
         add_action( 'wp_enqueue_scripts', [ self::class, 'enqueue_mini_cart_integration' ] );
         add_filter( 'woocommerce_checkout_fields', [ self::class, 'checkout_fields' ] );
@@ -96,6 +97,14 @@ final class Quote_Mode {
             'Place Order' => 'place_order',
         ];
         return isset( $map[ $text ] ) ? self::labels()[ $map[ $text ] ] : $translation;
+    }
+
+    // WooCommerce 11.3 renders the mini-cart button as "Checkout" (a string too generic to map in gettext), so set the block's own label attribute.
+    public static function mini_cart_checkout_button_label( array $parsed_block ): array {
+        if ( 'woocommerce/mini-cart-checkout-button-block' === $parsed_block['blockName'] && self::is_active() && empty( $parsed_block['attrs']['checkoutButtonLabel'] ) ) {
+            $parsed_block['attrs']['checkoutButtonLabel'] = self::labels()['proceed'];
+        }
+        return $parsed_block;
     }
 
     public static function register_blocks_integration(): void {

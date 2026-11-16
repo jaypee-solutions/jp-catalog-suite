@@ -28,5 +28,8 @@
 * **Tabs managed on owners**: Recorded ADR 0023: single owner per tab, management on product/category/settings screens via a block-editor dialog, split migration, owner-bound deletion.
 * **Variation tabs**: Recorded ADR 0024: `variations` scope, management in the variation panel, client-side show/replace on variation selection.
 
+## 2026-11-16
+* **Mini-cart label**: WooCommerce 11.3 renamed the mini-cart button to "Checkout"; Quote mode now sets the button block label through `render_block_data`.
+
 ## 2026-11-13
 * **Length field**: Recorded ADR 0025: length input as a variations-table row, select-matching style, live native validation with server-formatted messages.
