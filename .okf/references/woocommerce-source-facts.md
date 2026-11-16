@@ -17,6 +17,7 @@ timestamp: 2026-11-06T00:00:00Z
 - `WC_Order::is_editable()` allows only pending, on-hold and auto-draft and passes the result through `wc_order_is_editable` (`includes/class-wc-order.php:1717`).
 - `woocommerce_process_shop_order_meta` runs items at 10, downloads at 30, order data at 40 and order actions at 50 (`src/Internal/Admin/Orders/Edit.php:104-107`); a priority between 40 and 50 sees saved data before the order action runs.
 - `woocommerce_order_actions` receives the order as second argument; an `on-hold` status reduces stock through `wc_maybe_reduce_stock_levels` (`includes/wc-stock-functions.php:127`).
+- The mini-cart footer button renders `__( 'Go to checkout', 'woocommerce' )` in WC 11.2.2 and `__( 'Checkout', 'woocommerce' )` in WC 11.3.0 (`src/Blocks/BlockTypes/MiniCartCheckoutButtonBlock.php`), unless the block's `checkoutButtonLabel` attribute is set. CI installs `latest-stable`, so a newer WooCommerce reaches CI before local caches; `render_block_data` can set the attribute.
 
 # Citations
 
