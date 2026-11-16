@@ -30,3 +30,6 @@
 
 ## 2026-11-16
 * **Mini-cart label**: WooCommerce 11.3 renamed the mini-cart button to "Checkout"; Quote mode now sets the button block label through `render_block_data`.
+
+## 2026-11-13
+* **Length field**: Recorded ADR 0025: length input as a variations-table row, select-matching style, live native validation with server-formatted messages.
