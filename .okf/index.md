@@ -29,5 +29,6 @@ okf_version: "0.1"
 * [Persisted names and Quote mode ownership](decisions/0021-persisted-names-and-quote-mode-gating.md) - Canonical persisted names, canonical hidden-tab metadata, and Quote module lifecycle ownership.
 * [Tabs managed on their owners](decisions/0023-tabs-managed-on-owners.md) - Single-owner tabs managed on product, category and settings screens through a block-editor dialog; one-time split migration.
 * [Variation tabs](decisions/0024-variation-tabs.md) - Variations own tabs, managed in the variation panel; shown while selected, optionally replacing one parent tab client-side.
+* [Length field in the variations table](decisions/0025-length-field-in-variations-table.md) - Length input moved into `table.variations`, styled like the variation select, with live inline validation.
 * [Tab editor dialog integration facts](references/tab-dialog-integration-facts.md) - Verified WordPress/WooCommerce behaviors behind the tab management dialog.
 * [Quotes from Inquiries](decisions/0022-quotes-from-inquiries.md) - Priced Quote sent from an Inquiry (`jps-quote`), accepted by the customer in My Account.
