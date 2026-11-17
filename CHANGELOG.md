@@ -10,6 +10,9 @@ extracts it as the GitHub release notes and fails without it.
 
 ## [Unreleased]
 
+### Fixed
+- Quote mode: no cart wording is left on the storefront. Variable products get the Add to inquiry button, and other WooCommerce texts such as "Update cart", "Cart totals" or "added to your cart" (German "Warenkorb") use the Inquiry basket label, in PHP and in the Cart, Checkout and mini-cart blocks (ADR 0028).
+
 ## [0.5.0] - 2026-11-17
 
 ### Added

@@ -17,7 +17,7 @@ test( 'variable length limits follow the selected variation', async ( { page } )
 	await expect( addToCart ).toBeEnabled();
 	await expect( variationId ).toHaveValue( /\d+/ );
 	await addToCart.click();
-	await expect( page.locator( '.woocommerce-notices-wrapper' ) ).toContainText( /added to your cart|added to the inquiry/i );
+	await expect( page.locator( '.woocommerce-notices-wrapper' ) ).toContainText( /added to your inquiry basket|added to your cart|added to the inquiry/i );
 	await page.goto( '/cart/' );
 	await expect( page.locator( '.wp-block-woocommerce-cart' ) ).toContainText( '120 cm' );
 	await page.goto( '/product/length-rail/' );
