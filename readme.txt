@@ -3,7 +3,7 @@ Contributors: jaypeesolutions
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.1
+Stable tag: 0.5.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 WC requires at least: 8.0
@@ -21,6 +21,12 @@ The suite adds price-free Inquiries, priced Quotes, configurable checkout fields
 3. WooCommerce must be active; the plugin stays dormant without it.
 
 == Changelog ==
+
+= 0.5.0 =
+* Variable length: the length field validates while typing with an inline message, looks like the variation select, and sits in the variations table on variable products.
+* Protected files: STL, OBJ, 3MF, PLY, glTF, FBX, Collada, IGES and 3DS are allowed and protected by default on new installs; existing sites add the extensions in the settings.
+* Fix: STL and other configured CAD types are no longer rejected on upload.
+* Fix: the Quote mode label on the mini-cart checkout button works with WooCommerce 11.3.
 
 = 0.4.1 =
 * Fix: the Variable length settings are reachable on variable products when WooCommerce hides the General tab.
