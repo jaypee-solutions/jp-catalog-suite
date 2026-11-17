@@ -30,6 +30,8 @@
 
 ## 2026-11-16
 * **Mini-cart label**: WooCommerce 11.3 renamed the mini-cart button to "Checkout"; Quote mode now sets the button block label through `render_block_data`.
+* **STL uploads**: Recorded ADR 0026: STL and other common 3D formats join the default CAD types and the upload type override now runs when core passes no MIME list.
+* **Protected file storage**: Recorded ADR 0027: protected files stay in the Media Library; a custom file manager is deferred until per-file permissions, versioning or resumable uploads are needed.
 
 ## 2026-11-13
 * **Length field**: Recorded ADR 0025: length input as a variations-table row, select-matching style, live native validation with server-formatted messages.

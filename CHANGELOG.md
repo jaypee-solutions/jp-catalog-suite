@@ -10,6 +10,14 @@ extracts it as the GitHub release notes and fails without it.
 
 ## [Unreleased]
 
+### Added
+- Variable length: the length field validates while typing with an inline message, looks like the variation select, and sits in the variations table on variable products (ADR 0025).
+- Protected files: STL, OBJ, 3MF, PLY, glTF (`glb`, `gltf`), FBX, Collada (`dae`), IGES (`igs`, `iges`) and 3DS join the default allowed types and automatically protected extensions for new installs (ADR 0026). Existing sites keep their stored settings; add the extensions to both.
+
+### Fixed
+- Protected files: configured types whose content WordPress cannot match to their MIME type, such as binary STL (`model/stl`) or text STEP, were rejected on upload because the type override ignored uploads without an explicit MIME list.
+- Quote mode: the mini-cart checkout button uses the Quote mode label again on WooCommerce 11.3, which renamed it from "Go to checkout" to "Checkout".
+
 ## [0.4.1] - 2026-11-11
 
 ### Fixed
