@@ -6,8 +6,8 @@ declare( strict_types = 1 );
 namespace JayPee\CatalogSuite;
 
 final class Protected_Files {
-    public const DEFAULT_MIMES = "stp|step=application/step\ndxf=application/dxf\nstl=model/stl";
-    public const DEFAULT_PROTECTED_EXTS = 'stp, step, dxf, stl';
+    public const DEFAULT_MIMES = "stp|step=application/step\ndxf=application/dxf\nstl=model/stl\nobj=model/obj\n3mf=model/3mf\nply=model/ply\nglb=model/gltf-binary\ngltf=model/gltf+json\nfbx=application/vnd.autodesk.fbx\ndae=model/vnd.collada+xml\nigs|iges=model/iges\n3ds=application/x-3ds";
+    public const DEFAULT_PROTECTED_EXTS = 'stp, step, dxf, stl, obj, 3mf, ply, glb, gltf, fbx, dae, igs, iges, 3ds';
     private static bool $automatic = false;
     private static bool $routing = false;
     private static string $routing_component = '';

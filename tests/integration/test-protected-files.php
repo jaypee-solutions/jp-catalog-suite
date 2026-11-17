@@ -276,6 +276,22 @@ final class Test_Protected_Files extends WP_UnitTestCase {
         wp_set_current_user( 0 );
     }
 
+    public function test_default_settings_accept_common_3d_formats_with_binary_content(): void {
+        $previous = get_option( 'jps_cs_files_mimes', null );
+        delete_option( 'jps_cs_files_mimes' );
+        wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
+        $file = wp_tempnam( 'model.bin' );
+        file_put_contents( $file, str_repeat( "\0", 128 ) );
+        foreach ( [ 'stl', 'obj', '3mf', 'ply', 'glb', 'gltf', 'fbx', 'dae', 'igs', 'iges', '3ds', 'step', 'dxf' ] as $extension ) {
+            $this->assertNotFalse( wp_check_filetype_and_ext( $file, 'part.' . $extension )['type'], $extension );
+        }
+        unlink( $file );
+        if ( null !== $previous ) {
+            update_option( 'jps_cs_files_mimes', $previous );
+        }
+        wp_set_current_user( 0 );
+    }
+
     public function test_guest_rest_media_response_hides_protected_attachments(): void {
         $attachment = wp_insert_attachment( [ 'post_mime_type' => 'application/step', 'post_title' => 'REST secret', 'post_status' => 'inherit' ], __FILE__ );
         update_post_meta( $attachment, '_jps_cs_protected', '1' );

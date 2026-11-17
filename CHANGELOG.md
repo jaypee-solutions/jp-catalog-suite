@@ -12,7 +12,7 @@ extracts it as the GitHub release notes and fails without it.
 
 ### Added
 - Variable length: the length field validates while typing with an inline message, looks like the variation select, and sits in the variations table on variable products (ADR 0025).
-- Protected files: STL (`stl=model/stl`) joins the default CAD types and automatically protected extensions for new installs (ADR 0026). Existing sites keep their stored settings; add `stl` to both.
+- Protected files: STL, OBJ, 3MF, PLY, glTF (`glb`, `gltf`), FBX, Collada (`dae`), IGES (`igs`, `iges`) and 3DS join the default allowed types and automatically protected extensions for new installs (ADR 0026). Existing sites keep their stored settings; add the extensions to both.
 
 ### Fixed
 - Protected files: configured types whose content WordPress cannot match to their MIME type, such as binary STL (`model/stl`) or text STEP, were rejected on upload because the type override ignored uploads without an explicit MIME list.
