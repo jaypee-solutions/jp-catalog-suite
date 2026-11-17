@@ -67,7 +67,7 @@ final class Quote_Mode {
     }
 
     public static function single_add_to_cart_text( string $text, \WC_Product $product ): string {
-        return self::applies_to( $product ) && in_array( $product->get_type(), [ 'simple', 'variation' ], true ) ? self::labels()['add_to_cart'] : $text;
+        return self::applies_to( $product ) && in_array( $product->get_type(), [ 'simple', 'variable', 'variation' ], true ) ? self::labels()['add_to_cart'] : $text;
     }
 
     public static function add_to_cart_text( string $text, \WC_Product $product ): string {
@@ -90,13 +90,31 @@ final class Quote_Mode {
             'Cart' => 'cart',
             'View cart' => 'cart',
             'Your cart' => 'cart',
+            'Add to cart' => 'add_to_cart',
             'Proceed to checkout' => 'proceed',
             'Proceed to Checkout' => 'proceed',
             'Go to checkout' => 'proceed',
             'Place order' => 'place_order',
             'Place Order' => 'place_order',
         ];
-        return isset( $map[ $text ] ) ? self::labels()[ $map[ $text ] ] : $translation;
+        if ( isset( $map[ $text ] ) ) {
+            return self::labels()[ $map[ $text ] ];
+        }
+        return is_admin() && ! wp_doing_ajax() ? $translation : self::rename_cart( $translation );
+    }
+
+    /**
+     * Swaps the cart noun in any other WooCommerce string ("Update cart", "added to your cart", German "Warenkorb"),
+     * so no cart wording is left in Quote mode. The JavaScript counterpart is assets/js/quote-blocks.js.
+     */
+    private static function rename_cart( string $translation ): string {
+        $label = self::labels()['cart'];
+        $translation = str_replace( 'Warenkorb', $label, $translation );
+        return preg_replace_callback(
+            '/\bcarts?\b/i',
+            static fn( array $found ): string => strtolower( $found[0] ) === $found[0] ? lcfirst( $label ) : $label,
+            $translation
+        ) ?? $translation;
     }
 
     // WooCommerce 11.3 renders the mini-cart button as "Checkout" (a string too generic to map in gettext), so set the block's own label attribute.

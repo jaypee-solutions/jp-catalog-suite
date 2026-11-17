@@ -51,7 +51,7 @@ Use **Quote mode** (German: **Angebotsmodus**) to turn the shop into an Inquiry 
 
 **Try it:** Set the four fields to `Request basket`, `Add item to request`, `Review request`, and `Submit request`; leave the first field empty instead if you want to test its translated default.
 
-**What you should see:** The configured labels appear in the corresponding WooCommerce customer-facing controls. Cart and checkout page titles are WordPress page titles; change those separately under **Pages**.
+**What you should see:** The configured labels appear in the corresponding WooCommerce customer-facing controls, including the Add to inquiry button on variable products. Every other WooCommerce text on the storefront and in the Cart and Checkout blocks that says "cart" (English) or "Warenkorb" (German), such as "Update cart", "Cart totals" or "added to your cart", uses the **Inquiry basket label** instead. WooCommerce admin screens keep their wording. Cart and checkout page titles are WordPress page titles; change those separately under **Pages**.
 
 ## Tutorial: Verify the complete storefront flow
 
