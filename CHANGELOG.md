@@ -10,6 +10,8 @@ extracts it as the GitHub release notes and fails without it.
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-17
+
 ### Added
 - Variable length: the length field validates while typing with an inline message, looks like the variation select, and sits in the variations table on variable products (ADR 0025).
 - Protected files: STL, OBJ, 3MF, PLY, glTF (`glb`, `gltf`), FBX, Collada (`dae`), IGES (`igs`, `iges`) and 3DS join the default allowed types and automatically protected extensions for new installs (ADR 0026). Existing sites keep their stored settings; add the extensions to both.
