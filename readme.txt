@@ -3,7 +3,7 @@ Contributors: jaypeesolutions
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.5.0
+Stable tag: 0.5.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 WC requires at least: 8.0
@@ -21,6 +21,9 @@ The suite adds price-free Inquiries, priced Quotes, configurable checkout fields
 3. WooCommerce must be active; the plugin stays dormant without it.
 
 == Changelog ==
+
+= 0.5.1 =
+* Fix: Quote mode leaves no cart wording on the storefront. Variable products get the Add to inquiry button, and other WooCommerce texts that say cart or Warenkorb use the Inquiry basket label.
 
 = 0.5.0 =
 * Variable length: the length field validates while typing with an inline message, looks like the variation select, and sits in the variations table on variable products.
