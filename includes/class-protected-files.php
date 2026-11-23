@@ -6,8 +6,12 @@ declare( strict_types = 1 );
 namespace JayPee\CatalogSuite;
 
 final class Protected_Files {
-    public const DEFAULT_MIMES = "stp|step=application/step\ndxf=application/dxf\nstl=model/stl\nobj=model/obj\n3mf=model/3mf\nply=model/ply\nglb=model/gltf-binary\ngltf=model/gltf+json\nfbx=application/vnd.autodesk.fbx\ndae=model/vnd.collada+xml\nigs|iges=model/iges\n3ds=application/x-3ds";
-    public const DEFAULT_PROTECTED_EXTS = 'stp, step, dxf, stl, obj, 3mf, ply, glb, gltf, fbx, dae, igs, iges, 3ds';
+    private const BASE_MIMES = "stp|step=application/step\ndxf=application/dxf";
+    private const ADDED_MIMES = "stl=model/stl\nobj=model/obj\n3mf=model/3mf\nply=model/ply\nglb=model/gltf-binary\ngltf=model/gltf+json\nfbx=application/vnd.autodesk.fbx\ndae=model/vnd.collada+xml\nigs|iges=model/iges\n3ds=application/x-3ds";
+    private const BASE_PROTECTED_EXTS = 'stp, step, dxf';
+    private const ADDED_PROTECTED_EXTS = 'stl, obj, 3mf, ply, glb, gltf, fbx, dae, igs, iges, 3ds';
+    public const DEFAULT_MIMES = self::BASE_MIMES . "\n" . self::ADDED_MIMES;
+    public const DEFAULT_PROTECTED_EXTS = self::BASE_PROTECTED_EXTS . ', ' . self::ADDED_PROTECTED_EXTS;
     private static bool $automatic = false;
     private static bool $routing = false;
     private static string $routing_component = '';
@@ -42,6 +46,39 @@ final class Protected_Files {
         } );
         add_filter( 'pre_handle_404', [ self::class, 'handle_file_request' ], 10, 2 );
         add_action( 'template_redirect', [ self::class, 'deliver' ], 1 );
+        add_action( 'admin_init', [ self::class, 'add_default_3d_types' ] );
+    }
+
+    /**
+     * Sites that saved the file type settings before the 3D formats became defaults keep their stored values.
+     * Once, append the added types that the stored values lack, so those sites can upload them too.
+     */
+    public static function add_default_3d_types(): void {
+        if ( ! add_option( 'jps_cs_files_3d_types_added', 'yes' ) ) {
+            return;
+        }
+        $mimes = get_option( 'jps_cs_files_mimes', null );
+        if ( is_string( $mimes ) && '' !== trim( $mimes ) ) {
+            $known = [];
+            foreach ( preg_split( '/\r?\n/', $mimes ) as $row ) {
+                $known = array_merge( $known, explode( '|', strtolower( trim( (string) strtok( $row, '=' ) ) ) ) );
+            }
+            $missing = array_filter(
+                explode( "\n", self::ADDED_MIMES ),
+                static fn ( string $row ): bool => ! array_intersect( explode( '|', (string) strtok( $row, '=' ) ), $known )
+            );
+            if ( $missing ) {
+                update_option( 'jps_cs_files_mimes', rtrim( $mimes ) . "\n" . implode( "\n", $missing ) );
+            }
+        }
+        $exts = get_option( 'jps_cs_files_protected_exts', null );
+        if ( is_string( $exts ) && '' !== trim( $exts ) ) {
+            $stored = array_filter( array_map( 'trim', explode( ',', strtolower( $exts ) ) ) );
+            $missing = array_diff( explode( ', ', self::ADDED_PROTECTED_EXTS ), $stored );
+            if ( $missing ) {
+                update_option( 'jps_cs_files_protected_exts', implode( ', ', array_merge( $stored, $missing ) ) );
+            }
+        }
     }
 
     public static function reset_routing(): void {
