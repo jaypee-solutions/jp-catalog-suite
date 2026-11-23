@@ -34,6 +34,7 @@
 * **Protected file storage**: Recorded ADR 0027: protected files stay in the Media Library; a custom file manager is deferred until per-file permissions, versioning or resumable uploads are needed.
 * **Quote mode wording**: Recorded ADR 0028: the cart noun is replaced in all storefront WooCommerce strings, and variable products get the Add to inquiry button.
 * **Upload routing**: Protected-file routing now lasts until the upload finishes; real Media Library uploads of STL and STEP failed with a fatal before. Recorded the WordPress upload facts.
+* **3D types on existing sites**: A one-time upgrade appends the added 3D types to saved file type settings; documented in ADR 0026.
 
 ## 2026-11-13
 * **Length field**: Recorded ADR 0025: length input as a variations-table row, select-matching style, live native validation with server-formatted messages.

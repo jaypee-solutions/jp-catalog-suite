@@ -292,6 +292,34 @@ final class Test_Protected_Files extends WP_UnitTestCase {
         wp_set_current_user( 0 );
     }
 
+    public function test_sites_with_saved_file_settings_get_the_added_3d_types_once(): void {
+        update_option( 'jps_cs_files_mimes', "stp|step=application/step\nobj=model/vnd.custom-obj" );
+        update_option( 'jps_cs_files_protected_exts', 'stp, step' );
+        delete_option( 'jps_cs_files_3d_types_added' );
+        wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
+        // Firing admin_init outside wp-admin also runs core's privacy-policy registration, which flags that.
+        $this->setExpectedIncorrectUsage( 'wp_add_privacy_policy_content' );
+        remove_action( 'admin_init', 'wp_admin_headers' );
+        do_action( 'admin_init' );
+
+        $mimes = (string) get_option( 'jps_cs_files_mimes' );
+        $this->assertStringContainsString( 'stl=model/stl', $mimes );
+        $this->assertStringContainsString( 'igs|iges=model/iges', $mimes );
+        $this->assertStringNotContainsString( 'dxf', $mimes, 'types the site removed stay removed' );
+        $this->assertStringContainsString( 'obj=model/vnd.custom-obj', $mimes );
+        $this->assertSame( 1, substr_count( $mimes, 'obj=' ), 'a customised type is not duplicated' );
+        $this->assertSame( 'stp, step, stl, obj, 3mf, ply, glb, gltf, fbx, dae, igs, iges, 3ds', get_option( 'jps_cs_files_protected_exts' ) );
+        $file = wp_tempnam( 'Box.STL' );
+        file_put_contents( $file, str_repeat( "\0", 128 ) );
+        $this->assertSame( 'model/stl', wp_check_filetype_and_ext( $file, 'Box.STL' )['type'] );
+        unlink( $file );
+
+        update_option( 'jps_cs_files_mimes', 'stp|step=application/step' );
+        do_action( 'admin_init' );
+        $this->assertSame( 'stp|step=application/step', get_option( 'jps_cs_files_mimes' ), 'runs only once' );
+        wp_set_current_user( 0 );
+    }
+
     public function test_guest_rest_media_response_hides_protected_attachments(): void {
         $attachment = wp_insert_attachment( [ 'post_mime_type' => 'application/step', 'post_title' => 'REST secret', 'post_status' => 'inherit' ], __FILE__ );
         update_post_meta( $attachment, '_jps_cs_protected', '1' );

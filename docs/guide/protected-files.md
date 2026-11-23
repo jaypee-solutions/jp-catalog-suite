@@ -65,7 +65,7 @@ Protect engineering files in the Media Library and deliver them only to an Autho
 | Setting | Where | Default | Effect |
 |---|---|---|---|
 | Allowed file MIME types | WooCommerce → Settings → Catalog Suite → Product tabs → Protected files | STEP (`stp\|step`), DXF, STL, OBJ, 3MF, PLY, glTF (`glb`, `gltf`), FBX, Collada (`dae`), IGES (`igs\|iges`) and 3DS, each as `ext=type` lines | Adds permitted extension-to-MIME mappings for users allowed to upload files. Dangerous code/script extensions are rejected. |
-| Automatically protect extensions | Same section | `stp, step, dxf, stl, obj, 3mf, ply, glb, gltf, fbx, dae, igs, iges, 3ds` | Matching new uploads are stored protected and marked protected. Stored settings keep their value; add new extensions to both settings on existing sites. |
+| Automatically protect extensions | Same section | `stp, step, dxf, stl, obj, 3mf, ply, glb, gltf, fbx, dae, igs, iges, 3ds` | Matching new uploads are stored protected and marked protected. A site that saved these settings before the 3D formats became defaults gets the missing 3D formats appended once, on the first admin page load after updating; types it removed or customised stay as they are. |
 | File delivery method | Same section | **Automatic** (`auto`) | Selects PHP or X-Sendfile. X-Sendfile, whether chosen here, by Automatic or by the `jps_cs_file_delivery_method` filter, is used only when PHP runs as an Apache module that reports `mod_xsendfile`; otherwise the file is streamed by PHP. |
 
 ## Good to know
