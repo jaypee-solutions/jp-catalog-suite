@@ -155,7 +155,6 @@ final class Protected_Files {
         self::$routing_component = self::$routing ? wp_generate_password( 20, false, false ) : '';
         if ( self::$routing ) {
             self::ensure_directory();
-            wp_upload_dir( null, false, true );
         }
         return $file;
     }
@@ -164,9 +163,6 @@ final class Protected_Files {
             $dirs['subdir'] = '/jps-cs-protected/' . self::$routing_component . $dirs['subdir'];
             $dirs['path'] = $dirs['basedir'] . $dirs['subdir'];
             $dirs['url'] = $dirs['baseurl'] . $dirs['subdir'];
-        }
-        if ( self::$routing ) {
-            self::reset_routing();
         }
         return $dirs;
     }
@@ -247,6 +243,7 @@ final class Protected_Files {
         $target = trailingslashit( $directory ) . wp_unique_filename( $directory, basename( $relative ) );
         $metadata = wp_get_attachment_metadata( $id );
         if ( ! class_exists( '\WP_Filesystem_Direct' ) ) {
+            require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
             require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
         }
         $filesystem = new \WP_Filesystem_Direct( null );

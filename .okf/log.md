@@ -33,6 +33,7 @@
 * **STL uploads**: Recorded ADR 0026: STL and other common 3D formats join the default CAD types and the upload type override now runs when core passes no MIME list.
 * **Protected file storage**: Recorded ADR 0027: protected files stay in the Media Library; a custom file manager is deferred until per-file permissions, versioning or resumable uploads are needed.
 * **Quote mode wording**: Recorded ADR 0028: the cart noun is replaced in all storefront WooCommerce strings, and variable products get the Add to inquiry button.
+* **Upload routing**: Protected-file routing now lasts until the upload finishes; real Media Library uploads of STL and STEP failed with a fatal before. Recorded the WordPress upload facts.
 
 ## 2026-11-13
 * **Length field**: Recorded ADR 0025: length input as a variations-table row, select-matching style, live native validation with server-formatted messages.

@@ -10,6 +10,9 @@ extracts it as the GitHub release notes and fails without it.
 
 ## [Unreleased]
 
+### Fixed
+- Protected files: uploads of protected types (STL, STEP, DXF and the other 3D formats) in the Media Library failed with "The web server cannot process this file" (HTTP 500). The protected-directory routing was cancelled by the plugin's own upload-directory refresh, so the file landed in the public directory and the follow-up move crashed on a missing WordPress filesystem class. Both are fixed.
+
 ## [0.5.1] - 2026-11-17
 
 ### Fixed
