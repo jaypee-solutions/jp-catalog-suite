@@ -10,6 +10,8 @@ extracts it as the GitHub release notes and fails without it.
 
 ## [Unreleased]
 
+## [0.5.4] - 2026-11-23
+
 ### Fixed
 - Protected files: uploading a protected file in the block editor (File block, media upload) stayed on "Uploading" forever. The editor reads a file name from the URL path and crashed on the endpoint URL `/?jps_cs_file=<id>`; the endpoint URL of a protected attachment now is `/index.php?jps_cs_file=<id>` (the old form still works).
 
