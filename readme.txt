@@ -3,7 +3,7 @@ Contributors: jaypeesolutions
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.5.2
+Stable tag: 0.5.3
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 WC requires at least: 8.0
@@ -21,6 +21,9 @@ The suite adds price-free Inquiries, priced Quotes, configurable checkout fields
 3. WooCommerce must be active; the plugin stays dormant without it.
 
 == Changelog ==
+
+= 0.5.3 =
+* Fix: sites that saved the Protected files settings before the 3D formats existed can upload STL and the other 3D formats; the missing types are added to the saved settings once.
 
 = 0.5.2 =
 * Fix: protected files (STL, STEP, DXF and the other 3D formats) upload in the Media Library again instead of failing with "The web server cannot process this file".

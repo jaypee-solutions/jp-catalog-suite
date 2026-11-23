@@ -10,6 +10,8 @@ extracts it as the GitHub release notes and fails without it.
 
 ## [Unreleased]
 
+## [0.5.3] - 2026-11-23
+
 ### Fixed
 - Protected files: sites that had saved the file type settings before 0.5.0 could not upload STL and the other 3D formats ("not allowed to upload this file type"), because their stored settings replaced the new defaults. The first admin page load after updating now appends the missing 3D types to both settings once; types the site removed or customised are kept (ADR 0026).
 
