@@ -34,4 +34,5 @@ okf_version: "0.1"
 * [Protected files stay in the Media Library](decisions/0027-protected-files-stay-in-the-media-library.md) - Attachments remain the storage model; custom file manager rejected at this scale, with revisit triggers.
 * [Quote mode renames the cart noun](decisions/0028-quote-mode-renames-the-cart-noun.md) - Cart noun replaced in all storefront WooCommerce strings (PHP and block JavaScript); variable product button relabelled.
 * [Tab editor dialog integration facts](references/tab-dialog-integration-facts.md) - Verified WordPress/WooCommerce behaviors behind the tab management dialog.
+* [WordPress upload behavior facts](references/wordpress-upload-facts.md) - Verified `upload_dir` filter timing, type-check behavior and filesystem class loading used by protected uploads.
 * [Quotes from Inquiries](decisions/0022-quotes-from-inquiries.md) - Priced Quote sent from an Inquiry (`jps-quote`), accepted by the customer in My Account.
