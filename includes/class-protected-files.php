@@ -315,7 +315,9 @@ final class Protected_Files {
         return str_contains( (string) ( $metadata['file'] ?? '' ), 'jps-cs-protected/' ) ? [] : $sizes;
     }
     public static function attachment_url( string $url, int $id ): string {
-        return '1' === get_post_meta( $id, '_jps_cs_protected', true ) ? add_query_arg( 'jps_cs_file', $id, home_url( '/' ) ) : $url; }
+        // The path ends in index.php because the block editor derives a file name from the URL path and fails on a bare home URL.
+        return '1' === get_post_meta( $id, '_jps_cs_protected', true ) ? add_query_arg( 'jps_cs_file', $id, home_url( '/index.php' ) ) : $url;
+    }
 
     public static function handle_file_request( bool $preempt, \WP_Query $query ): bool {
         return $preempt || (bool) $query->get( 'jps_cs_file' );
