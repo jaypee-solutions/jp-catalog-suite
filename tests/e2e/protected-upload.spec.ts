@@ -32,3 +32,26 @@ test( 'CAD files uploaded in the media uploader are stored protected', async ( {
 		wpCli( 'eval', "foreach ( get_posts( [ 'post_type' => 'attachment', 'post_status' => 'any', 'numberposts' => -1, 's' => 'E2E-', 'fields' => 'ids' ] ) as $id ) { wp_delete_attachment( $id, true ); }" );
 	}
 } );
+
+test( 'a site with file type settings saved before the 3D types can upload STL after updating', async ( { page, options } ) => {
+	options.set( 'jps_cs_files_mimes', 'stp|step=application/step\ndxf=application/dxf' );
+	options.set( 'jps_cs_files_protected_exts', 'stp, step, dxf' );
+	options.set( 'jps_cs_files_3d_types_added', 'yes' );
+	wpCli( 'option', 'delete', 'jps_cs_files_3d_types_added' );
+	await page.goto( '/wp-login.php' );
+	await page.fill( '#user_login', process.env.WP_ADMIN_USER ?? 'admin' );
+	await page.fill( '#user_pass', process.env.WP_ADMIN_PASS ?? 'password' );
+	await page.click( '#wp-submit' );
+
+	try {
+		await page.goto( '/wp-admin/media-new.php' );
+		const upload = page.waitForResponse( ( response ) => response.url().includes( 'async-upload.php' ) );
+		await page.locator( 'input[type=file]' ).first().setInputFiles( FILES[ 0 ] );
+		expect( ( await upload ).status() ).toBe( 200 );
+		await expect( page.locator( '.media-item .error-div' ) ).toHaveCount( 0 );
+		const stored = wpCli( 'eval', "$ids = get_posts( [ 'post_type' => 'attachment', 'post_status' => 'any', 'title' => 'E2E-Box', 'numberposts' => 1, 'fields' => 'ids' ] ); echo $ids ? get_post_meta( $ids[0], '_jps_cs_protected', true ) : 'missing';" );
+		expect( stored ).toBe( '1' );
+	} finally {
+		wpCli( 'eval', "foreach ( get_posts( [ 'post_type' => 'attachment', 'post_status' => 'any', 'numberposts' => -1, 's' => 'E2E-', 'fields' => 'ids' ] ) as $id ) { wp_delete_attachment( $id, true ); }" );
+	}
+} );
