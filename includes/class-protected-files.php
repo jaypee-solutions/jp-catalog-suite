@@ -45,6 +45,7 @@ final class Protected_Files {
             return $vars;
         } );
         add_filter( 'pre_handle_404', [ self::class, 'handle_file_request' ], 10, 2 );
+        add_filter( 'render_block_core/file', [ self::class, 'guard_file_block' ], 10, 2 );
         add_action( 'template_redirect', [ self::class, 'deliver' ], 1 );
         add_action( 'admin_init', [ self::class, 'add_default_3d_types' ] );
     }
@@ -317,6 +318,27 @@ final class Protected_Files {
     public static function attachment_url( string $url, int $id ): string {
         // The path ends in index.php because the block editor derives a file name from the URL path and fails on a bare home URL.
         return '1' === get_post_meta( $id, '_jps_cs_protected', true ) ? add_query_arg( 'jps_cs_file', $id, home_url( '/index.php' ) ) : $url;
+    }
+
+    /**
+     * The core File block saves the endpoint URL of a protected attachment in the post content, so its link and
+     * download button would show to every visitor. Show the name and "login required" to those without access.
+     */
+    public static function guard_file_block( string $content, array $block ): string {
+        $id = absint( $block['attrs']['id'] ?? 0 );
+        if ( ! $id && preg_match( '/jps_cs_file=(\d+)/', (string) ( $block['attrs']['href'] ?? '' ), $found ) ) {
+            $id = (int) $found[1];
+        }
+        if ( ! $id || 'attachment' !== get_post_type( $id ) || '1' !== get_post_meta( $id, '_jps_cs_protected', true ) ) {
+            return $content;
+        }
+        if ( is_user_logged_in() ) {
+            Access_Block::mark_page_uncacheable();
+        }
+        if ( Access_Block::can_access( get_current_user_id(), [ 'attachment_id' => $id ] ) ) {
+            return $content;
+        }
+        return '<p class="wp-block-file jps-cs-protected-file">' . esc_html( get_the_title( $id ) ) . ' <span class="jps-cs-login-required">(' . esc_html__( 'login required', 'jp-catalog-suite' ) . ')</span></p>';
     }
 
     public static function handle_file_request( bool $preempt, \WP_Query $query ): bool {

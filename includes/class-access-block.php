@@ -102,7 +102,7 @@ final class Access_Block {
     }
 
 
-    private static function mark_page_uncacheable(): void {
+    public static function mark_page_uncacheable(): void {
         if ( ! defined( 'DONOTCACHEPAGE' ) ) {
             define( 'DONOTCACHEPAGE', true );
         }

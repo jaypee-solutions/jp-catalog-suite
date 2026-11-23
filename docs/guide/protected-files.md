@@ -74,6 +74,7 @@ Protect engineering files in the Media Library and deliver them only to an Autho
 - Files larger than 256 MB are never delivered, whichever delivery method is selected; the endpoint returns HTTP 404. PHP delivery does not serve byte ranges. X-Sendfile needs Apache `mod_xsendfile` configured with the absolute protected directory path.
 - Images are not offered the manual **Protected** attachment field; protected files do not generate previews. Existing PDFs remain public unless you protect them individually.
 - Guests cannot discover protected attachments through the Media REST API; protected paths are stripped from REST responses.
+- The core **File** block of a protected file shows its link and download button only to Authorized users. Everyone else sees the file name with **(login required)** and no link, the same as in the File list. The block keeps working because the guard reads the attachment ID the File block saves.
 - The File list adds `product=<id>` only as logging context. Authorization is checked against the attachment and current user, not that client-provided product value.
 - The uninstall deletion option is separate: protected files are removed when plugin deletion is opted into. See [Download log](download-log.md).
 

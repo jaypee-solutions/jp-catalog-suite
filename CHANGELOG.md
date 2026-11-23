@@ -10,6 +10,9 @@ extracts it as the GitHub release notes and fails without it.
 
 ## [Unreleased]
 
+### Fixed
+- Protected files: the core File block of a protected file showed its link and download button to every visitor; a guest got a link to the login page and a button that downloaded the login page as `index.php`. Guests now see the file name with "login required" and no link; Authorized users see the block unchanged and download under the file's own name.
+
 ## [0.5.4] - 2026-11-23
 
 ### Fixed
