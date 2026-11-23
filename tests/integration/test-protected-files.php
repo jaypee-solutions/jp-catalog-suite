@@ -320,6 +320,24 @@ final class Test_Protected_Files extends WP_UnitTestCase {
         wp_set_current_user( 0 );
     }
 
+    public function test_core_file_block_of_a_protected_file_shows_its_link_only_to_authorized_users(): void {
+        $attachment = wp_insert_attachment( [ 'post_mime_type' => 'model/stl', 'post_title' => 'Guarded box', 'post_status' => 'inherit' ], __FILE__ );
+        update_post_meta( $attachment, '_jps_cs_protected', '1' );
+        $url = wp_get_attachment_url( $attachment );
+        $markup = '<!-- wp:file {"id":' . $attachment . ',"href":"' . $url . '"} --><div class="wp-block-file"><a href="' . $url . '">Guarded box</a><a href="' . $url . '" class="wp-block-file__button wp-element-button" download>Download</a></div><!-- /wp:file -->';
+
+        wp_set_current_user( 0 );
+        $guest = do_blocks( $markup );
+        $this->assertStringNotContainsString( 'jps_cs_file', $guest );
+        $this->assertStringNotContainsString( 'download', $guest );
+        $this->assertStringContainsString( 'Guarded box', $guest );
+        $this->assertStringContainsString( 'login required', $guest );
+
+        wp_set_current_user( self::factory()->user->create( [ 'role' => 'customer' ] ) );
+        $this->assertStringContainsString( 'jps_cs_file=' . $attachment, do_blocks( $markup ) );
+        wp_set_current_user( 0 );
+    }
+
     public function test_guest_rest_media_response_hides_protected_attachments(): void {
         $attachment = wp_insert_attachment( [ 'post_mime_type' => 'application/step', 'post_title' => 'REST secret', 'post_status' => 'inherit' ], __FILE__ );
         update_post_meta( $attachment, '_jps_cs_protected', '1' );
