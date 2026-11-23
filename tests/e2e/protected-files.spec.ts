@@ -12,7 +12,8 @@ test( 'protected file endpoint requires login and denies direct uploads access',
   const guestMedia = await page.request.get( `/wp-json/wp/v2/media/${ id }` );
   expect( guestMedia.status() ).toBe( 404 );
   const url = wpCli( 'eval', `echo str_replace( wp_upload_dir()['basedir'], wp_upload_dir()['baseurl'], get_attached_file( ${ id } ) );` );
-  const guest = await page.request.get( `/?jps_cs_file=${ id }`, { maxRedirects: 0 } );
+  const endpoint = wpCli( 'eval', `echo wp_get_attachment_url( ${ id } );` );
+  const guest = await page.request.get( endpoint, { maxRedirects: 0 } );
   expect( guest.status() ).toBe( 302 );
   expect( guest.headers().location ).toContain( 'wp-login.php' );
 
@@ -22,7 +23,7 @@ test( 'protected file endpoint requires login and denies direct uploads access',
     maxRedirects: 0,
   } );
   expect( login.status() ).toBe( 302 );
-  const download = await page.request.get( `/?jps_cs_file=${ id }` );
+  const download = await page.request.get( endpoint );
   expect( download.status() ).toBe( 200 );
   expect( download.headers()['content-disposition'] ).toContain( 'part.stp' );
   const direct = await page.request.get( url );

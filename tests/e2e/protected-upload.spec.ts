@@ -55,3 +55,26 @@ test( 'a site with file type settings saved before the 3D types can upload STL a
 		wpCli( 'eval', "foreach ( get_posts( [ 'post_type' => 'attachment', 'post_status' => 'any', 'numberposts' => -1, 's' => 'E2E-', 'fields' => 'ids' ] ) as $id ) { wp_delete_attachment( $id, true ); }" );
 	}
 } );
+
+test( 'a CAD file uploaded in the block editor File block completes and links to the protected endpoint', async ( { page, options } ) => {
+	options.set( 'jps_cs_files_mimes', MIMES );
+	options.set( 'jps_cs_files_protected_exts', EXTENSIONS );
+	await page.goto( '/wp-login.php' );
+	await page.fill( '#user_login', process.env.WP_ADMIN_USER ?? 'admin' );
+	await page.fill( '#user_pass', process.env.WP_ADMIN_PASS ?? 'password' );
+	await page.click( '#wp-submit' );
+
+	try {
+		await page.goto( '/wp-admin/post-new.php' );
+		await page.waitForFunction( () => Reflect.get( window, 'wp' )?.data?.select( 'core/block-editor' ) );
+		await page.evaluate( () => {
+			const wp = Reflect.get( window, 'wp' );
+			wp.data.dispatch( 'core/block-editor' ).insertBlock( wp.blocks.createBlock( 'core/file' ) );
+		} );
+		await page.frameLocator( 'iframe[name="editor-canvas"]' ).locator( 'input[type=file]' ).first().setInputFiles( FILES[ 0 ] );
+		await expect.poll( () => page.evaluate( () => Reflect.get( window, 'wp' ).data.select( 'core/block-editor' ).getBlocks()[ 0 ]?.attributes.href ?? '' ), { timeout: 20000 } ).toContain( 'jps_cs_file=' );
+		await expect( page.locator( '.components-snackbar', { hasText: /Uploading|Wird hochgeladen/ } ) ).toHaveCount( 0 );
+	} finally {
+		wpCli( 'eval', "foreach ( get_posts( [ 'post_type' => 'attachment', 'post_status' => 'any', 'numberposts' => -1, 's' => 'E2E-', 'fields' => 'ids' ] ) as $id ) { wp_delete_attachment( $id, true ); }" );
+	}
+} );
