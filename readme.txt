@@ -3,7 +3,7 @@ Contributors: jaypeesolutions
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.5.5
+Stable tag: 0.5.6
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 WC requires at least: 8.0
@@ -21,6 +21,9 @@ The suite adds price-free Inquiries, priced Quotes, configurable checkout fields
 3. WooCommerce must be active; the plugin stays dormant without it.
 
 == Changelog ==
+
+= 0.5.6 =
+* Fix: the download button of a protected file in a File block names the file in the browser's save dialog instead of "index.php".
 
 = 0.5.5 =
 * Fix: the core File block of a protected file shows its link and download button only to visitors with access; everyone else sees the file name and "login required".
