@@ -13,6 +13,7 @@ test( 'a core File block of a protected file is hidden from guests and downloads
 		const login = await page.request.post( '/wp-login.php', { form: { log: 'customer1', pwd: 'password', 'wp-submit': 'Log In', redirect_to: '/', testcookie: '1' }, maxRedirects: 0 } );
 		expect( login.status() ).toBe( 302 );
 		await page.goto( permalink );
+		await expect( page.locator( '.wp-block-file__button' ) ).toHaveAttribute( 'download', 'part.stp' );
 		const download = page.waitForEvent( 'download' );
 		await page.locator( '.wp-block-file__button' ).click();
 		expect( ( await download ).suggestedFilename() ).toBe( 'part.stp' );

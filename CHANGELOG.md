@@ -10,6 +10,9 @@ extracts it as the GitHub release notes and fails without it.
 
 ## [Unreleased]
 
+### Fixed
+- Protected files: the browser's save dialog for the download button of a core File block named the file `index.php` (the last segment of the endpoint URL) until the response arrived. The button now carries the file name in its `download` attribute.
+
 ## [0.5.5] - 2026-11-23
 
 ### Fixed
