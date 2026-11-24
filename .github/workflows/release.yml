@@ -14,8 +14,9 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      # The composer image can lag the Alpine repositories (python3 r1 vs python3-ndbm r2), which makes `apk add gettext` fail on a file conflict.
       - name: Install gettext
-        run: apk add --no-cache gettext
+        run: apk upgrade --no-cache && apk add --no-cache gettext
 
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress
