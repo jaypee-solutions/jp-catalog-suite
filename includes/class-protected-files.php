@@ -336,9 +336,19 @@ final class Protected_Files {
             Access_Block::mark_page_uncacheable();
         }
         if ( Access_Block::can_access( get_current_user_id(), [ 'attachment_id' => $id ] ) ) {
-            return $content;
+            // A bare `download` attribute makes the browser's save dialog show the last URL path segment (index.php) until the response arrives.
+            $name = esc_attr( self::download_name( (string) get_attached_file( $id ) ) );
+            return (string) preg_replace_callback(
+                '/<a\b[^>]*>/i',
+                static fn( array $tag ): string => (string) preg_replace( '/(\sdownload)(?=[\s>\/])/', '$1="' . $name . '"', $tag[0] ),
+                $content
+            );
         }
         return '<p class="wp-block-file jps-cs-protected-file">' . esc_html( get_the_title( $id ) ) . ' <span class="jps-cs-login-required">(' . esc_html__( 'login required', 'jp-catalog-suite' ) . ')</span></p>';
+    }
+
+    private static function download_name( string $path ): string {
+        return sanitize_file_name( basename( $path ) );
     }
 
     public static function handle_file_request( bool $preempt, \WP_Query $query ): bool {
@@ -447,7 +457,7 @@ final class Protected_Files {
         if ( ! $type ) {
             $type = 'application/octet-stream';
         }
-        $name = sanitize_file_name( basename( $path ) );
+        $name = self::download_name( $path );
         if ( ! headers_sent() ) {
             header( 'Content-Type: ' . $type );
             header( 'Content-Disposition: attachment; filename="' . $name . '"; filename*=UTF-8\'\'' . rawurlencode( basename( $path ) ) );

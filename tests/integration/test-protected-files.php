@@ -334,7 +334,9 @@ final class Test_Protected_Files extends WP_UnitTestCase {
         $this->assertStringContainsString( 'login required', $guest );
 
         wp_set_current_user( self::factory()->user->create( [ 'role' => 'customer' ] ) );
-        $this->assertStringContainsString( 'jps_cs_file=' . $attachment, do_blocks( $markup ) );
+        $customer = do_blocks( $markup );
+        $this->assertStringContainsString( 'jps_cs_file=' . $attachment, $customer );
+        $this->assertStringContainsString( 'download="' . basename( (string) get_attached_file( $attachment ) ) . '"', $customer );
         wp_set_current_user( 0 );
     }
 
