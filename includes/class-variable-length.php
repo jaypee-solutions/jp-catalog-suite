@@ -31,7 +31,8 @@ final class Variable_Length {
         add_action( 'woocommerce_add_to_cart', [ self::class, 'clear_store_api_length' ] );
         add_filter( 'woocommerce_get_item_data', [ self::class, 'display_item_data' ], 10, 2 );
         add_action( 'woocommerce_checkout_create_order_line_item', [ self::class, 'order_item_meta' ], 10, 4 );
-        add_filter( 'woocommerce_loop_add_to_cart_link', [ self::class, 'loop_button' ], 10, 3 );
+        add_filter( 'woocommerce_product_add_to_cart_text', [ self::class, 'loop_button_text' ], 20, 2 );
+        add_filter( 'woocommerce_product_add_to_cart_url', [ self::class, 'loop_button_url' ], 10, 2 );
         add_filter( 'woocommerce_product_supports', [ self::class, 'disable_ajax_add' ], 10, 3 );
         add_filter( 'woocommerce_order_item_display_meta_key', [ self::class, 'order_meta_key' ], 10, 2 );
         add_filter( 'woocommerce_order_item_display_meta_value', [ self::class, 'order_meta_value' ], 10, 3 );
@@ -434,12 +435,16 @@ final class Variable_Length {
         return wc_format_localized_decimal( $display_value ) . ' ' . $item->get_meta( '_jps_cs_length_unit', true );
     }
 
-    // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WooCommerce supplies loop arguments in its filter contract.
-    public static function loop_button( string $html, \WC_Product $product, array $args ): string {
-        if ( ( $product instanceof \WC_Product_Simple || $product instanceof \WC_Product_Variable ) && self::config( $product )['enabled'] ) {
-            return sprintf( '<a href="%s" class="button">%s</a>', esc_url( $product->get_permalink() ), esc_html__( 'Choose length', 'jp-catalog-suite' ) );
-        }
-        return $html;
+    public static function loop_button_text( string $text, \WC_Product $product ): string {
+        return self::chooses_length_in_loop( $product ) ? __( 'Choose length', 'jp-catalog-suite' ) : $text;
+    }
+
+    public static function loop_button_url( string $url, \WC_Product $product ): string {
+        return self::chooses_length_in_loop( $product ) ? $product->get_permalink() : $url;
+    }
+
+    private static function chooses_length_in_loop( \WC_Product $product ): bool {
+        return $product instanceof \WC_Product_Simple && self::config( $product )['enabled'];
     }
 
     public static function disable_ajax_add( bool $supports, string $feature, \WC_Product $product ): bool {

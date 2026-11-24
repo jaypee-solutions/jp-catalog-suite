@@ -40,3 +40,6 @@
 
 ## 2026-11-13
 * **Length field**: Recorded ADR 0025: length input as a variations-table row, select-matching style, live native validation with server-formatted messages.
+
+## 2026-11-24
+* **Length loop button**: Recorded ADR 0029: listing button keeps WooCommerce markup; only simple length products relabelled to Choose length, variable ones keep Select options.

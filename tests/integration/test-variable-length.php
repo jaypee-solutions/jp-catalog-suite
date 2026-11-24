@@ -393,4 +393,13 @@ final class Test_Variable_Length extends WP_UnitTestCase {
         $this->assertSame( [ '10', '300' ], $this->save_length_bounds( '0', '300' ), 'A minimum of zero is discarded.' );
         $this->assertSame( [ '10', '300' ], $this->save_length_bounds( '-5', '300' ), 'A negative minimum is discarded.' );
     }
+
+    public function test_listing_button_asks_simple_products_for_length_and_variable_products_for_options(): void {
+        $simple = $this->product();
+        [ $variable ] = $this->variable_product();
+
+        $this->assertSame( 'Choose length', $simple->add_to_cart_text() );
+        $this->assertSame( $simple->get_permalink(), $simple->add_to_cart_url() );
+        $this->assertSame( 'Select options', $variable->add_to_cart_text() );
+    }
 }

@@ -45,3 +45,11 @@ test( 'simple variable length product keeps lengths as distinct inquiry lines', 
 	await page.goto( `/wp-admin/admin.php?page=wc-orders&action=edit&id=${ orderId }` );
 	await expect( page.locator( 'body' ) ).toContainText( 'Length: 120 cm' );
 } );
+
+test( 'listing buttons keep WooCommerce button styling', async ( { page } ) => {
+	await page.goto( '/?s=Length&post_type=product' );
+	const listingButton = ( name: string ) => page.locator( 'li', { has: page.getByRole( 'link', { name, exact: true } ) } ).locator( '.wp-block-button__link' );
+	await expect( listingButton( 'Length Bar' ) ).toHaveText( 'Choose length' );
+	await expect( listingButton( 'Length Bar' ) ).toHaveAttribute( 'href', /\/product\/length-bar\/$/ );
+	await expect( listingButton( 'Length Rail' ) ).toHaveText( 'Select options' );
+} );
