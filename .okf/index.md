@@ -34,6 +34,7 @@ okf_version: "0.1"
 * [Protected files stay in the Media Library](decisions/0027-protected-files-stay-in-the-media-library.md) - Attachments remain the storage model; custom file manager rejected at this scale, with revisit triggers.
 * [Quote mode renames the cart noun](decisions/0028-quote-mode-renames-the-cart-noun.md) - Cart noun replaced in all storefront WooCommerce strings (PHP and block JavaScript); variable product button relabelled.
 * [Length loop button keeps WooCommerce markup](decisions/0029-length-loop-button-keeps-woocommerce-markup.md) - Listing button keeps WooCommerce markup and styling; simple length products read Choose length, variable ones keep Select options.
+* [Quote mode address setting is billing-only](decisions/0030-quote-mode-address-setting-is-billing-only.md) - Address setting (hidden/optional/required) applies to billing fields only; Adresszusatz never required; shipping untouched.
 * [Tab editor dialog integration facts](references/tab-dialog-integration-facts.md) - Verified WordPress/WooCommerce behaviors behind the tab management dialog.
 * [WordPress upload behavior facts](references/wordpress-upload-facts.md) - Verified `upload_dir` filter timing, type-check behavior and filesystem class loading used by protected uploads.
 * [Quotes from Inquiries](decisions/0022-quotes-from-inquiries.md) - Priced Quote sent from an Inquiry (`jps-quote`), accepted by the customer in My Account.
