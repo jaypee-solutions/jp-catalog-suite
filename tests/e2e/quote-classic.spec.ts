@@ -1,27 +1,13 @@
-import { execFileSync } from 'node:child_process';
 import { test, expect, type Locator, type Page } from '@playwright/test';
+import { loginAs } from './support/auth';
+import { wpCli } from './support/wp-cli';
 
-function wpCli( ...args: string[] ): string {
-	const output = execFileSync( 'npx', [ 'wp-env', 'run', 'cli', '--', 'wp', ...args ], { encoding: 'utf8', env: { ...process.env, WP_ENV_HOME: './.wp-env' } } );
-	const numeric = output.split( /\r?\n/ ).map( ( line ) => line.trim() ).filter( ( line ) => /^\d+$/.test( line ) );
-	return numeric.length ? numeric[ numeric.length - 1 ] : output.split( /\r?\n/ ).map( ( line ) => line.trim() ).filter( ( line ) => line && ! line.startsWith( 'ℹ' ) && ! line.startsWith( '✔' ) && ! line.startsWith( 'Deprecated:' ) ).join( '\n' ).trim();
-}
-
-const ADMIN_USER = process.env.WP_ADMIN_USER ?? 'admin';
-const ADMIN_PASS = process.env.WP_ADMIN_PASS ?? 'password';
 let oldCart = '';
 let oldCheckout = '';
 let oldQuote = '';
 let oldPhone = '';
 let oldMessage = '';
 let oldComingSoon = '';
-
-async function login( page: Page ): Promise<void> {
-	await page.context().clearCookies();
-	await page.request.get( '/wp-login.php' );
-	const response = await page.request.post( '/wp-login.php', { form: { log: ADMIN_USER, pwd: ADMIN_PASS, 'wp-submit': 'Log In', redirect_to: '/wp-admin/', testcookie: '1' }, maxRedirects: 0 } );
-	expect( response.status() ).toBe( 302 );
-}
 
 async function waitForCheckoutUpdate( page: Page, country: Locator, countryCode: string ): Promise<void> {
 	await page.evaluate( () => {
@@ -121,7 +107,7 @@ test( 'guest sends an inquiry on classic checkout', async ( { page } ) => {
 	await expect( page.locator( 'body' ) ).toContainText( /Inquiry received|Anfrage eingegangen/ );
 	await expect( page.locator( 'body' ) ).not.toContainText( /Order received|Bestellung eingegangen|Order number|Bestell-Nr|Order details/ );
         await expect( page.locator( 'body' ) ).not.toContainText( '€' );
-        await login( page );
+        await loginAs( page );
         await page.goto( '/my-account/' );
         await expect( page.getByRole( 'link', { name: /Inquiries|Anfragen/i } ) ).toBeVisible();
 	await page.goto( '/wp-admin/admin.php?page=wc-orders' );

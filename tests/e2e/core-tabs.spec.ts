@@ -1,9 +1,5 @@
-import { execFileSync } from 'node:child_process';
 import { expect, test } from '@playwright/test';
-
-function wpCli( ...args: string[] ): string {
-	return execFileSync( 'npx', [ 'wp-env', 'run', 'cli', '--', 'wp', ...args ], { encoding: 'utf8', env: { ...process.env, WP_ENV_HOME: './.wp-env' } } ).trim();
-}
+import { wpCli } from './support/wp-cli';
 
 test( 'Core tab settings change titles, order and visibility shop-wide', async ( { page } ) => {
 	const optionNames = [

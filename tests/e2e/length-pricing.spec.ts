@@ -1,10 +1,5 @@
-import { execFileSync } from 'node:child_process';
 import { test, expect } from '@playwright/test';
-
-function wpCli( ...args: string[] ): string {
-	const output = execFileSync( 'npx', [ 'wp-env', 'run', 'cli', '--', 'wp', ...args ], { encoding: 'utf8', env: { ...process.env, WP_ENV_HOME: './.wp-env' } } );
-	return output.split( /\r?\n/ ).map( ( line ) => line.trim() ).filter( ( line ) => line && ! line.startsWith( 'ℹ' ) && ! line.startsWith( '✔' ) && ! line.startsWith( 'Deprecated:' ) ).join( '\n' ).trim();
-}
+import { wpCli } from './support/wp-cli';
 
 test( 'length pricing multiplies by the entered length and displays the unit', async ( { page } ) => {
 	const productId = wpCli( 'post', 'list', '--post_type=product', '--meta_key=_sku', '--meta_value=LBP-1', '--field=ID' ).split( /\r?\n/ ).filter( Boolean ).pop();

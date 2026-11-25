@@ -1,19 +1,10 @@
-import { test, expect, type Page } from './support/fixtures';
+import { test, expect } from './support/fixtures';
+import { loginAs } from './support/auth';
 import { wpCli } from './support/wp-cli';
-
-const ADMIN_USER = process.env.WP_ADMIN_USER ?? 'admin';
-const ADMIN_PASS = process.env.WP_ADMIN_PASS ?? 'password';
 
 let orderId = '';
 let editUrl = '';
 let viewUrl = '';
-
-async function login( page: Page, user: string, password: string ): Promise<void> {
-	await page.context().clearCookies();
-	await page.request.get( '/wp-login.php' );
-	const response = await page.request.post( '/wp-login.php', { form: { log: user, pwd: password, 'wp-submit': 'Log In', redirect_to: '/', testcookie: '1' }, maxRedirects: 0 } );
-	expect( response.status() ).toBe( 302 );
-}
 
 function inDays( days: number ): string {
 	const date = new Date();
@@ -44,7 +35,7 @@ test.afterAll( () => {
 } );
 
 test( 'shop manager sends a quote and the customer accepts it in My Account', async ( { page } ) => {
-	await login( page, ADMIN_USER, ADMIN_PASS );
+	await loginAs( page );
 	await page.goto( editUrl );
 	await expect( page.locator( 'a.edit-order-item' ).first() ).toBeVisible();
 
@@ -54,7 +45,7 @@ test( 'shop manager sends a quote and the customer accepts it in My Account', as
 	await page.locator( 'button.save_order' ).click();
 	await expect( page.locator( '#order_status' ) ).toHaveValue( 'wc-jps-quote' );
 
-	await login( page, 'customer1', 'password' );
+	await loginAs( page, 'customer1', 'password' );
 	await page.goto( viewUrl );
 	const details = page.locator( '.woocommerce-order-details' );
 	await expect( page.locator( '.jps-cs-quote' ) ).toContainText( 'Delivery in 2 weeks.' );

@@ -1,10 +1,6 @@
-import { execFileSync } from 'node:child_process';
 import { expect, test } from '@playwright/test';
-
-function wpCli( ...args: string[] ): string {
-  const output = execFileSync( 'npx', [ 'wp-env', 'run', 'cli', '--', 'wp', ...args ], { encoding: 'utf8', env: { ...process.env, WP_ENV_HOME: './.wp-env' } } );
-  return output.split( /\r?\n/ ).map( ( line ) => line.trim() ).filter( ( line ) => line && ! line.startsWith( 'ℹ' ) && ! line.startsWith( '✔' ) && ! line.startsWith( 'Deprecated:' ) ).join( '\n' ).trim();
-}
+import { loginAs } from './support/auth';
+import { wpCli } from './support/wp-cli';
 
 test( 'protected file endpoint requires login and denies direct uploads access', async ( { page } ) => {
   const id = wpCli( 'eval', "echo get_posts( [ 'post_type' => 'attachment', 'title' => 'part.stp', 'posts_per_page' => 1, 'fields' => 'ids' ] )[0] ?? 0;" );
@@ -17,12 +13,7 @@ test( 'protected file endpoint requires login and denies direct uploads access',
   expect( guest.status() ).toBe( 302 );
   expect( guest.headers().location ).toContain( 'wp-login.php' );
 
-  await page.request.get( '/wp-login.php' );
-  const login = await page.request.post( '/wp-login.php', {
-    form: { log: 'customer1', pwd: 'password', 'wp-submit': 'Log In', redirect_to: '/', testcookie: '1' },
-    maxRedirects: 0,
-  } );
-  expect( login.status() ).toBe( 302 );
+  await loginAs( page, 'customer1', 'password' );
   const download = await page.request.get( endpoint );
   expect( download.status() ).toBe( 200 );
   expect( download.headers()['content-disposition'] ).toContain( 'part.stp' );
