@@ -46,7 +46,7 @@ final class Quote_Mode {
         add_action( 'wp_enqueue_scripts', [ self::class, 'enqueue_mini_cart_integration' ] );
         add_filter( 'woocommerce_checkout_fields', [ self::class, 'checkout_fields' ] );
         add_filter( 'woocommerce_get_country_locale', [ self::class, 'country_locale' ] );
-        add_filter( 'woocommerce_default_address_fields', [ self::class, 'default_address_fields' ] );
+        add_filter( 'woocommerce_billing_fields', [ self::class, 'billing_fields' ] );
         add_filter( 'pre_option_woocommerce_checkout_company_field', [ self::class, 'blocks_company_field' ] );
         add_filter( 'pre_option_woocommerce_checkout_phone_field', [ self::class, 'blocks_phone_field' ] );
     }
@@ -249,7 +249,7 @@ final class Quote_Mode {
     }
 
     public static function country_locale( array $locale ): array {
-        if ( ! self::is_active() ) {
+        if ( ! self::is_active() || self::locale_serves_classic_address_forms() ) {
             return $locale;
         }
 
@@ -257,7 +257,7 @@ final class Quote_Mode {
         foreach ( $locale as &$country ) {
             foreach ( [ 'address_1', 'address_2', 'city', 'state', 'postcode', 'country' ] as $field ) {
                 $country[ $field ]           = $country[ $field ] ?? [];
-                $country[ $field ]['required'] = 'country' === $field || 'required' === $address;
+                $country[ $field ]['required'] = 'country' === $field || ( 'address_2' !== $field && 'required' === $address );
                 if ( 'country' !== $field ) {
                     $country[ $field ]['hidden'] = 'hidden' === $address;
                 }
@@ -266,16 +266,30 @@ final class Quote_Mode {
         return $locale;
     }
 
-    public static function default_address_fields( array $fields ): array {
+    /**
+     * The country locale cannot tell billing from shipping, and classic forms
+     * (My Account, classic checkout) also render the shipping address from it.
+     * There the setting is applied to billing fields only, in billing_fields().
+     */
+    private static function locale_serves_classic_address_forms(): bool {
+        if ( function_exists( 'is_account_page' ) && is_account_page() ) {
+            return true;
+        }
+        return function_exists( 'is_checkout' ) && is_checkout() && ! has_block( 'woocommerce/checkout' );
+    }
+
+    public static function billing_fields( array $fields ): array {
         if ( ! self::is_active() ) {
             return $fields;
         }
 
         $address = get_option( 'jps_cs_quote_field_address', 'hidden' );
         foreach ( [ 'address_1', 'address_2', 'city', 'state', 'postcode' ] as $field ) {
-            if ( isset( $fields[ $field ] ) ) {
-                $fields[ $field ]['required'] = 'required' === $address;
-                $fields[ $field ]['hidden']   = 'hidden' === $address;
+            $key = "billing_{$field}";
+            if ( 'hidden' === $address ) {
+                unset( $fields[ $key ] );
+            } elseif ( isset( $fields[ $key ] ) ) {
+                $fields[ $key ]['required'] = 'address_2' !== $field && 'required' === $address;
             }
         }
         return $fields;

@@ -30,11 +30,27 @@ final class Test_Checkout_Fields extends WP_UnitTestCase {
         $this->assertTrue( $fields['billing']['billing_phone']['required'] );
         $this->assertArrayNotHasKey( 'order_comments', $fields['order'] );
 
-        $locale = apply_filters( 'woocommerce_get_country_locale', [ 'DE' => [ 'address_1' => [], 'postcode' => [] ] ] );
+        $locale = apply_filters( 'woocommerce_get_country_locale', [ 'DE' => [ 'address_1' => [], 'address_2' => [], 'postcode' => [] ] ] );
         $this->assertTrue( $locale['DE']['address_1']['required'] );
+        $this->assertFalse( $locale['DE']['address_2']['required'] );
         $this->assertTrue( $locale['DE']['postcode']['required'] );
-        $defaults = apply_filters( 'woocommerce_default_address_fields', [ 'address_1' => [] ] );
-        $this->assertTrue( $defaults['address_1']['required'] );
+        $billing = apply_filters( 'woocommerce_billing_fields', [ 'billing_address_1' => [], 'billing_address_2' => [] ] );
+        $this->assertTrue( $billing['billing_address_1']['required'] );
+        $this->assertFalse( $billing['billing_address_2']['required'] );
+    }
+
+    public function test_address_setting_leaves_shipping_fields_of_classic_forms_untouched(): void {
+        add_filter( 'woocommerce_is_account_page', '__return_true' );
+        foreach ( [ 'hidden', 'required' ] as $state ) {
+            update_option( 'jps_cs_quote_field_address', $state );
+            $shipping = ( new \WC_Countries() )->get_address_fields( 'DE', 'shipping_' );
+            foreach ( [ 'shipping_address_1', 'shipping_city', 'shipping_postcode' ] as $key ) {
+                $this->assertArrayHasKey( $key, $shipping );
+                $this->assertTrue( $shipping[ $key ]['required'] );
+            }
+            $this->assertArrayHasKey( 'shipping_address_2', $shipping );
+            $this->assertFalse( $shipping['shipping_address_2']['required'] );
+        }
     }
 
     public function test_hidden_address_is_removed_from_classic_and_locale_fields(): void {
@@ -46,8 +62,8 @@ final class Test_Checkout_Fields extends WP_UnitTestCase {
         $this->assertArrayHasKey( 'billing_country', $fields['billing'] );
         $locale = apply_filters( 'woocommerce_get_country_locale', [ 'DE' => [ 'address_1' => [] ] ] );
         $this->assertTrue( $locale['DE']['address_1']['hidden'] );
-        $defaults = apply_filters( 'woocommerce_default_address_fields', [ 'address_1' => [] ] );
-        $this->assertTrue( $defaults['address_1']['hidden'] );
+        $billing = apply_filters( 'woocommerce_billing_fields', [ 'billing_address_1' => [] ] );
+        $this->assertArrayNotHasKey( 'billing_address_1', $billing );
     }
 
     public function test_company_phone_and_address_support_every_configured_state(): void {
@@ -68,9 +84,12 @@ final class Test_Checkout_Fields extends WP_UnitTestCase {
             $locale = apply_filters( 'woocommerce_get_country_locale', [ 'DE' => [ 'address_1' => [] ] ] );
             $this->assertSame( 'required' === $state, $locale['DE']['address_1']['required'] );
             $this->assertSame( 'hidden' === $state, $locale['DE']['address_1']['hidden'] );
-            $defaults = apply_filters( 'woocommerce_default_address_fields', [ 'address_1' => [] ] );
-            $this->assertSame( 'required' === $state, $defaults['address_1']['required'] );
-            $this->assertSame( 'hidden' === $state, $defaults['address_1']['hidden'] );
+            $billing = apply_filters( 'woocommerce_billing_fields', [ 'billing_address_1' => [] ] );
+            if ( 'hidden' === $state ) {
+                $this->assertArrayNotHasKey( 'billing_address_1', $billing );
+            } else {
+                $this->assertSame( 'required' === $state, $billing['billing_address_1']['required'] );
+            }
         }
     }
 

@@ -10,6 +10,10 @@ extracts it as the GitHub release notes and fails without it.
 
 ## [Unreleased]
 
+### Fixed
+- Quote mode: with the address field set to "required", the second address line (Adresszusatz) became mandatory too, blocking saving addresses in My Account and checkout. Only the first line, city, state and postcode are required now.
+- Quote mode: the Address setting also changed the shipping address in My Account and the classic checkout. It now applies to the billing address only; Blocks checkout still follows it for its address form.
+
 ## [0.5.6] - 2026-11-24
 
 ### Fixed
