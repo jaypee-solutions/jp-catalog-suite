@@ -8,3 +8,5 @@
 - A feature gated by a module toggle never depends on that module for security or privacy, including protected files, access blocks, and privacy tools.
 - Spec-fixed hook signatures are part of the public contract.
 - E2E specs restore everything they change and assert on objects they created.
+- Upload and download features have an E2E through the real uploader (Media Library, block editor) and the real download link, because fixtures built with `wp eval` or `wp_insert_attachment` skip core's upload handlers, where the protected-file bugs of 0.5.2 to 0.5.6 hid.
+- Changing the default of a stored option ships an upgrade routine that applies the new default to sites that already saved the option, once, because the stored value shadows the default (the 3D file types of 0.5.0 never reached saved settings).

@@ -1,29 +1,14 @@
 import { basename } from 'node:path';
-import { execFileSync } from 'node:child_process';
-import { test, expect, type Page } from '@playwright/test';
-
-function wpCli( ...args: string[] ): string {
-	const output = execFileSync( 'npx', [ 'wp-env', 'run', 'cli', '--', 'wp', ...args ], { encoding: 'utf8', env: { ...process.env, WP_ENV_HOME: './.wp-env' } } );
-	const numeric = output.split( /\r?\n/ ).map( ( line ) => line.trim() ).filter( ( line ) => /^\d+$/.test( line ) );
-	return numeric.length ? numeric[ numeric.length - 1 ] : output.split( /\r?\n/ ).map( ( line ) => line.trim() ).filter( ( line ) => line && ! line.startsWith( 'ℹ' ) && ! line.startsWith( '✔' ) && ! line.startsWith( 'Deprecated:' ) ).join( '\n' ).trim();
-}
+import { test, expect } from '@playwright/test';
+import { loginAs } from './support/auth';
+import { wpCli } from './support/wp-cli';
 
 function compileGermanCatalog(): void {
-	execFileSync( 'npx', [ 'wp-env', 'run', 'cli', `--env-cwd=wp-content/plugins/${ basename( process.cwd() ) }`, 'wp', 'i18n', 'make-mo', 'languages' ], { encoding: 'utf8', env: { ...process.env, WP_ENV_HOME: './.wp-env' } } );
+	wpCli( 'i18n', 'make-mo', `/var/www/html/wp-content/plugins/${ basename( process.cwd() ) }/languages` );
 }
-
 
 function setSiteLocale( locale: string ): void {
 	wpCli( 'eval', `add_filter( 'sanitize_option_WPLANG', static fn() => '${ locale }', PHP_INT_MAX ); update_option( 'WPLANG', '${ locale }' );` );
-}
-const ADMIN_USER = process.env.WP_ADMIN_USER ?? 'admin';
-const ADMIN_PASS = process.env.WP_ADMIN_PASS ?? 'password';
-
-async function login( page: Page ): Promise<void> {
-	await page.context().clearCookies();
-	await page.request.get( '/wp-login.php' );
-	const response = await page.request.post( '/wp-login.php', { form: { log: ADMIN_USER, pwd: ADMIN_PASS, 'wp-submit': 'Log In', redirect_to: '/wp-admin/', testcookie: '1' }, maxRedirects: 0 } );
-	expect( response.status() ).toBe( 302 );
 }
 
 test( 'guest sends a Blocks inquiry which stays listed when Quote mode is off', async ( { page } ) => {
@@ -78,7 +63,7 @@ test( 'guest sends a Blocks inquiry which stays listed when Quote mode is off', 
 
         await expect( page.locator( 'body' ) ).not.toContainText( '€' );
 
-		await login( page );
+		await loginAs( page );
         await page.goto( '/my-account/' );
         await expect( page.getByRole( 'link', { name: 'Inquiries' } ) ).toBeVisible();
 		await page.goto( '/wp-admin/admin.php?page=wc-orders' );
@@ -131,7 +116,7 @@ test( 'administrator can view Blocks cart and checkout with a price-free inquiry
 	try {
 		wpCli( 'option', 'update', 'woocommerce_coming_soon', 'no' );
 		wpCli( 'option', 'update', 'jps_cs_module_quote', 'yes' );
-		await login( page );
+		await loginAs( page );
 		const productId = wpCli( 'post', 'list', '--post_type=product', '--meta_key=_sku', '--meta_value=QP-2', '--field=ID' );
 		await page.goto( '/?add-to-cart=' + productId );
 		await page.goto( '/cart/' );
@@ -177,9 +162,7 @@ test( 'My Account keeps standard order labels when Quote mode is disabled', asyn
 		const customerId = wpCli( 'user', 'get', 'customer1', '--field=ID' );
 		const productId = wpCli( 'post', 'list', '--post_type=product', '--meta_key=_sku', '--meta_value=QP-2', '--field=ID' );
 		wpCli( 'eval', `$order = wc_create_order( [ 'customer_id' => ${ customerId } ] ); $order->add_product( wc_get_product( ${ productId } ), 1 ); $order->save(); $order->update_status( 'processing' );` );
-		await page.request.get( '/wp-login.php' );
-		const login = await page.request.post( '/wp-login.php', { form: { log: 'customer1', pwd: 'password', 'wp-submit': 'Log In', redirect_to: '/', testcookie: '1' }, maxRedirects: 0 } );
-		expect( login.status() ).toBe( 302 );
+		await loginAs( page, 'customer1', 'password' );
 		await page.goto( '/my-account/' );
 		await expect( page.getByRole( 'link', { name: 'Orders', exact: true } ) ).toBeVisible();
 		await expect( page.locator( 'body' ) ).not.toContainText( 'Inquiries' );

@@ -10,6 +10,11 @@ PLUGIN_DIR_NAME="$(basename "$ROOT_DIR")"
 
 # Route Docker CLI to Podman when no Docker daemon is reachable (e.g. after removing Colima).
 if ! docker info &>/dev/null 2>&1 && command -v podman &>/dev/null; then
+	# The machine stops with the Mac's sleep or reboot; without it the socket below does not exist.
+	if [[ "$(podman machine inspect --format '{{.State}}' 2>/dev/null || true)" == "stopped" ]]; then
+		echo "wp-env: Starting the stopped Podman machine."
+		podman machine start >/dev/null
+	fi
 	_podman_sock="$(podman machine inspect --format '{{.ConnectionInfo.PodmanSocket.Path}}' 2>/dev/null || true)"
 	if [[ -S "$_podman_sock" ]]; then
 		export DOCKER_HOST="unix://${_podman_sock}"
@@ -349,6 +354,29 @@ start() {
 	fi
 }
 
+# CI installs WooCommerce latest-stable, while wp-env keeps the version it first downloaded.
+# A CI-only failure after a WooCommerce release is usually this drift (WooCommerce 11.3 renamed
+# a mini-cart label that way), so say so. Never fails the start: no network means no warning.
+warn_stale_woocommerce() {
+	local cached latest
+	cached="$(sed -n -E 's/^[[:space:]*]*Version:[[:space:]]*([0-9][^[:space:]]*).*/\1/p' "$WP_ENV_HOME"/wp-env-*/woocommerce.latest-stable/woocommerce.php 2>/dev/null | head -n1 || true)"
+	latest="$(curl -fsS --max-time 5 https://api.wordpress.org/plugins/info/1.0/woocommerce.json 2>/dev/null | sed -n -E 's/.*"version":"([0-9][^"]*)".*/\1/p' | head -n1 || true)"
+	if [[ -n "$cached" && -n "$latest" && "$cached" != "$latest" ]]; then
+		echo "wp-env: WooCommerce $cached is cached locally, CI installs $latest. Refresh with: just env-update" >&2
+	fi
+	return 0
+}
+
+# Re-downloads the plugin sources (WooCommerce, Germanized latest-stable) and brings the site back up.
+update_sources() {
+	wp_env start --update
+	_ensure_plugin_sources
+	_compose_up
+	if ! wait_for_dbs || ! ensure_sites || ! wait_for_http_sites; then
+		destroy_and_restart
+	fi
+}
+
 seed() {
 	ensure_sites || destroy_and_restart
 
@@ -363,6 +391,11 @@ seed() {
 case "${1:-start}" in
 	start)
 		start
+		warn_stale_woocommerce
+		;;
+	update)
+		update_sources
+		warn_stale_woocommerce
 		;;
 	stop)
 		wp_env stop
@@ -374,7 +407,7 @@ case "${1:-start}" in
 		seed
 		;;
 	*)
-		echo "Usage: $0 {start|stop|ensure|seed}" >&2
+		echo "Usage: $0 {start|update|stop|ensure|seed}" >&2
 		exit 2
 		;;
 esac

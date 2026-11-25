@@ -15,3 +15,6 @@ languages/*.mo
 # APM dependencies
 apm_modules/
 HANDOFF.md
+
+# Throwaway diagnostic specs (docs/agents/testing.md, "Diagnosing browser behaviour")
+tests/e2e/zz-*.spec.ts

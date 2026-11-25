@@ -51,3 +51,10 @@ PHP_NAMESPACE=$php_namespace find tests/integration -type f -name '*.php' -exec 
     }
     END { exit failed }
 ' {} +
+
+# E2E specs run WP-CLI through tests/e2e/support/wp-cli.ts and log in through
+# tests/e2e/support/auth.ts; their own child-process helpers drift apart (docs/agents/testing.md).
+if [ -d tests/e2e ] && grep -Hn 'execFileSync' tests/e2e/*.spec.ts >&2; then
+    echo "Import wpCli from tests/e2e/support/wp-cli.ts instead of spawning wp-env in a spec." >&2
+    exit 1
+fi

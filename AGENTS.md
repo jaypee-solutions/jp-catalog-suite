@@ -2,6 +2,14 @@
 
 Before starting wp-env or running integration/E2E tests, read `docs/agents/testing.md`.
 
+## Automation
+
+`just` lists the recipes for lint, tests, E2E, wp-env, releases (`release` skill) and ADR scaffolding; use them instead of retyping the underlying commands.
+
+## Deployed dev site
+
+For a report from the dev site (a cache serving the wrong page, a download header), read `docs/agents/dev-site.md`.
+
 ## Agent skills
 
 ### Issue tracker

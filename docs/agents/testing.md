@@ -12,6 +12,8 @@
 - wp-env lifecycle, integration and E2E commands queue per plugin (package name) using FIFO PID tickets in `${TMPDIR:-/tmp}/<slug>-e2e.queue`; abandoned tickets are removed. A waiting command prints one `e2e: waiting for PID …` line. `npm run test:e2e:ui` leaves the queue once the site is ready; every other run holds it until it exits. Set `E2E_LOCK_DIR` to use another queue or `E2E_LOCK_DISABLE=1` to disable locking.
 - `npm run test:e2e:run` checks that the site on its port serves this checkout (it compares `readme.txt`). If another plugin's wp-env answers there, it exits with an error instead of testing that site; set `WP_ENV_PORT`/`WP_ENV_TESTS_PORT` to a free pair.
 - Run `composer install` after every pull or merge. Composer resolves for PHP 8.0 while the host PHP is newer, so stale `vendor/` packages may use syntax unsupported by wp-env PHP.
+- CI installs WooCommerce and Germanized `latest-stable` and the `composer:2` image's current Alpine packages, while wp-env keeps the plugin versions it first downloaded. When CI fails and the same test passes locally, compare versions before theorising about timing: `just env-start` warns when the cached WooCommerce is older than latest-stable, and `just env-update` refreshes it. The `lint` job's `apk upgrade` step exists for the image drift.
+- Two checkouts of different plugins share ports 8888/8889. Stop the other plugin's wp-env (`npm run env:stop` in its checkout) before starting this one; `just env-start` starts a stopped Podman machine itself.
 
 ## Done criterion
 
@@ -38,3 +40,9 @@ For user-visible changes, also run the full E2E suite. Run `composer hooks:check
 Run the full E2E suite with `npm run test:e2e:run`; it starts wp-env if needed, flushes OpCache, seeds, and runs Playwright. Pass Playwright options through the runner, e.g. `npm run test:e2e:run -- --retries 0`.
 Import `test`/`expect` from `tests/e2e/support/fixtures.ts`, `wpCli` from `tests/e2e/support/wp-cli.ts`, and `withOptions` from `tests/e2e/support/options.ts`. Use the options fixture or `withOptions()` when changing WordPress options; it restores present and absent values in `finally`, including after a thrown callback. Mutations made directly through WP-CLI must explicitly restore the previous state in `finally`.
 `wpCli()` returns WP-CLI's stdout verbatim minus the final newline; wp-env status lines and PHP notices go to stderr. Each call takes about 2 s, so put a test's bulk WP-CLI work into one `wp eval`.
+Log in with `loginAs( page )` from `tests/e2e/support/auth.ts` (administrator by default; `loginAs( page, 'customer1', 'password' )` for a customer). Specs never define their own `wpCli`, `execFileSync` or login helper; `scripts/check-test-seams.sh` rejects `execFileSync` in specs.
+Cover every upload and download flow through the real uploader (Media Library at `media-new.php`, the File block in the block editor) and the real download link. Attachments created with `wp eval` or `wp_insert_attachment` skip core's upload handlers, which is where protected-file bugs hid.
+
+## Diagnosing browser behaviour
+
+When something works through the REST API or WP-CLI but a browser flow hangs or shows the wrong thing, reproduce it in a throwaway spec `tests/e2e/zz-<topic>.spec.ts` (git-ignored) and delete it afterwards. Call `probe( page )` from `tests/e2e/support/probe.ts` first: it prints non-GET responses, failed requests, console errors and uncaught page errors with their stack. The first page error with a stack is usually the cause (the block editor upload that never finished was a `TypeError` in `onSelectFile`). Run it with `npx --no-install playwright test tests/e2e/zz-<topic>.spec.ts --retries 0`, after `just e2e` has seeded and flushed OpCache.

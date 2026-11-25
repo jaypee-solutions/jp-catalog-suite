@@ -66,7 +66,8 @@ test( 'a CAD file uploaded in the block editor File block completes and links to
 
 	try {
 		await page.goto( '/wp-admin/post-new.php' );
-		await page.waitForFunction( () => Reflect.get( window, 'wp' )?.data?.select( 'core/block-editor' ) );
+		// Blocks inserted before the editor finished loading its content are replaced by it.
+		await page.waitForFunction( () => Reflect.get( window, 'wp' )?.data?.select( 'core/editor' )?.__unstableIsEditorReady?.() === true );
 		await page.evaluate( () => {
 			const wp = Reflect.get( window, 'wp' );
 			wp.data.dispatch( 'core/block-editor' ).insertBlock( wp.blocks.createBlock( 'core/file' ) );

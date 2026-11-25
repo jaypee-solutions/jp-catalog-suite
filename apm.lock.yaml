@@ -1,5 +1,7 @@
-lockfile_version: '1'
-apm_version: 0.35.0
+lockfile_version: '4'
+apm_version: 0.37.0
+manifest_targets:
+- agent-skills
 dependencies:
 - repo_url: jaypee-solutions/apm-dev-workflow
   name: dev-workflow
@@ -42,7 +44,7 @@ dependencies:
     .agents/skills/worktrunk/SKILL.md: sha256:8f855882181174c286e6778fa935646ad8d7bae85d5ae7b5c7418f0e5fd6d51a
     .agents/skills/worktrunk/evals/evals.json: sha256:3568f986ad977c6644a9b092882bf48cf66753757a017e3de40595b4ee1fe84c
     .agents/skills/worktrunk/references/config-and-hooks.md: sha256:3d1a0b6a89340d49ef323982ec672abb1adaf40274ee7a8366e1fc2a90c3cf09
-  content_hash: sha256:0056e955ffaa34eab88ec08acdc1bcb18c94f349beae8baf23b0b8ca2027da52
+  content_hash: sha256:b870d4aadf7fc835fc67f146b4082b8b156a6ab39af49a9a0c3d52d6f81b8e08
   declared_license: UNLICENSED
 - repo_url: jaypee-solutions/apm-okf
   name: okf
@@ -81,7 +83,7 @@ dependencies:
     .agents/skills/okf/templates/concept.md: sha256:5d4927d848e9de056f2a71345919bb917403376e088c6b3b440d58a06ff069ec
     .agents/skills/okf/templates/index.md: sha256:fca29f13b7ac2b3c455cdce19edf518392bb5fed15b1b903e05c8a715c772880
     .agents/skills/okf/templates/log.md: sha256:6a8d88f72eded39f85b194320584ad78f281e1721fb89f588774e3eb3ad0b5ef
-  content_hash: sha256:1c80933e3d392a332957deeec4103b04b0f88ee3222a6fc566de3e9798475cd6
+  content_hash: sha256:17f747c63d068fea02eba5d291ed7f4771ee7caad4778ce8fa152496142f37a1
   declared_license: UNLICENSED
 - repo_url: jaypee-solutions/apm-wordpress
   name: wordpress
@@ -94,14 +96,14 @@ dependencies:
   - .agents/skills/wordpress-admin-menu-access-debugging/SKILL.md
   deployed_file_hashes:
     .agents/skills/wordpress-admin-menu-access-debugging/SKILL.md: sha256:6808e290fbb339062dd31815c5f28ef042f3b5954a68fc577ae66c3c61b50e6f
-  content_hash: sha256:7ade7aa06b496cc2ed3526c76109ddd58116c8812f1aa525f2abe92f8bd7af00
+  content_hash: sha256:f3a138e7bae9c76bc5213fb770477ee258fd8851cf7f69242b2e49919237b92c
   declared_license: UNLICENSED
 - repo_url: mattpocock/skills
   name: mattpocock-skills
   host: github.com
   resolved_commit: 4ae2317ddb22b046e26455e4f9c9b3aaaf62212d
   version: 1.3.2
-  package_type: apm_package
+  package_type: marketplace_plugin
   deployed_files:
   - .agents/skills/ask-matt
   - .agents/skills/ask-matt/PHASE-BOUNDARIES.md
@@ -289,7 +291,7 @@ dependencies:
     .agents/skills/writing-for-agents/SKILL-MECHANICS.md: sha256:c768e6307c7c10728c401c213f2c4ba71c542127eeb7ad2956aabd15a0fa0059
     .agents/skills/writing-for-agents/SKILL.md: sha256:551adca942227b44192edba88acd4e8db911f0121ce58ad16944ccf6a896a74a
     .agents/skills/writing-for-agents/agents/openai.yaml: sha256:eacb24b2a618cfb81dacb0416f4fdd75ddf3a8060f8ddb99aae1b1e301907e4b
-  content_hash: sha256:85e73a1b3ba5510c07ebd2d2ed51b5eb45f4f5612657d0f713f538fbb972664e
+  content_hash: sha256:fc8f260163930079f53a63f08c562bcf4167348a7bb6bff7d5bd78630f82917d
   declared_license: MIT
 deployments:
 - kind: project-relative
@@ -1041,6 +1043,24 @@ deployments:
   content_hash: sha256:5af65e43ab41a350436697b81e27b7f848d36782043b73c322bb2c9fa9cc55dc
 - kind: project-relative
   target: agent-skills
+  value: .agents/skills/release
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: agent-skills
+  value: .agents/skills/release/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:7a5422d5735f8da20b387804f6119b2e3f146a87b35114acfcb7bdb9ba7fe78a
+- kind: project-relative
+  target: agent-skills
   value: .agents/skills/research
   runtime: null
   scope: project
@@ -1579,3 +1599,8 @@ deployments:
   - mattpocock/skills
   active_owner: mattpocock/skills
   content_hash: sha256:eacb24b2a618cfb81dacb0416f4fdd75ddf3a8060f8ddb99aae1b1e301907e4b
+local_deployed_files:
+- .agents/skills/release
+- .agents/skills/release/SKILL.md
+local_deployed_file_hashes:
+  .agents/skills/release/SKILL.md: sha256:7a5422d5735f8da20b387804f6119b2e3f146a87b35114acfcb7bdb9ba7fe78a

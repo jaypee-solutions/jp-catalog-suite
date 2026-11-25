@@ -1,11 +1,5 @@
-import { execFileSync } from 'node:child_process';
 import { test, expect } from '@playwright/test';
-
-function wpCli( ...args: string[] ): string {
-	const output = execFileSync( 'npx', [ 'wp-env', 'run', 'cli', '--', 'wp', ...args ], { encoding: 'utf8', env: { ...process.env, WP_ENV_HOME: './.wp-env' } } );
-	const lines = output.split( /\r?\n/ ).map( ( line ) => line.trim() ).filter( ( line ) => line && ! line.startsWith( 'ℹ' ) && ! line.startsWith( '✔' ) && ! line.startsWith( 'Deprecated:' ) );
-	return lines.join( '\n' );
-}
+import { wpCli } from './support/wp-cli';
 
 test( 'Germanized keeps quote-mode product and checkout views price- and checkbox-clean', async ( { page } ) => {
 	const activePlugins = wpCli( 'plugin', 'list', '--status=active', '--field=name' ).split( /\r?\n/ );
