@@ -43,3 +43,6 @@
 
 ## 2026-11-24
 * **Length loop button**: Recorded ADR 0029: listing button keeps WooCommerce markup; only simple length products relabelled to Choose length, variable ones keep Select options.
+
+## 2026-11-25
+* **Address setting**: Recorded ADR 0030: Quote mode Address setting applies to billing fields only; the second address line is never required; Blocks checkout needs no shipping handling because quote mode disables shipping.
