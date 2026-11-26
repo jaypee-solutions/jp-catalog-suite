@@ -89,18 +89,22 @@ Plugin options, the `jp_catalog_suite_github_token` update credential, and the `
 ```bash
 composer install
 npm ci
-composer lint
-composer test
+
+composer lint          # PHPCS (WordPress Coding Standards) + repository checks
+composer test          # PHPUnit + guardrail fixtures
 composer hooks:check
-npm run env:start
+
+npm run env:start      # ports derive from the plugin slug; linked worktrees use isolated ports
 npm run test:integration
 npm run test:e2e:run -- --retries 0
 npm run env:stop
 ```
 
+`just` lists a recipe for each of these (`just lint`, `just e2e`, `just env-start`, ...) plus the release steps below.
 
-Linked git worktrees get their own deterministic wp-env ports (8900–8999); the main
-checkout keeps 8888/8889. `WP_ENV_PORT`, `WP_ENV_TESTS_PORT`, `WP_ENV_URL`,
+wp-env ports are deterministic: the main checkout derives an even pair from the plugin
+slug (8800–8899, never 8888/8889), linked git worktrees hash their path into 8900–8999.
+`WP_ENV_PORT`, `WP_ENV_TESTS_PORT`, `WP_ENV_URL`,
 `WP_ENV_TESTS_URL` and `WP_ENV_HOME` override them. wp-env, integration and E2E commands
 queue per plugin (`E2E_LOCK_DIR` moves the queue, `E2E_LOCK_DISABLE=1` turns it off);
 `npm run test:e2e:ui` leaves the queue once the site is ready. If a site that does not
@@ -116,12 +120,30 @@ changed option even when a test fails.
 third-party hooks go. The hook check reads the source from the wp-env cache and skips
 until `npm run env:start` has downloaded it; CI fetches it.
 
+`composer lint` also runs `scripts/check-test-seams.sh` (integration tests reach the plugin
+through WordPress: no static calls, no `new` on plugin classes; a trailing
+`// test-seam: <reason>` opts a line out), `scripts/check-ignored-sources.sh` (git must not
+ignore files in `includes/`, `src/`, `templates/` or `tests/`) and
+`scripts/check-code-rules.sh` (mechanical rules from `CODING_STANDARDS.md`). The reviewer's
+judgement calls live in `CODING_STANDARDS.md`; add plugin-specific ones under its
+"Project rules" heading. `docs/agents/` holds the testing notes, the brief for delegated
+implementation work and the WordPress facts agents should read first.
+
+`npm run test:integration` and `npm run test:e2e:run` compile `languages/*.po` to the
+gitignored `.mo` first (they need `msgfmt`), and the wp-env scripts install the core
+language packs listed in `scripts/test-locales.txt` (copier question `test_locales`,
+default `de_DE`), so translation tests see real core strings.
+
 `npm install` runs Husky, which points Git at `.husky/`; `composer hooks:check` verifies
 that. `.husky/pre-commit` runs `composer lint`; `.husky/pre-push` runs `composer test`.
 
 ## Release
 
-Build the installable archive with `npm run build:release`. Update the version in `jp-catalog-suite.php` and `readme.txt`, add a changelog entry, then tag and push the release.
+Releases go through two recipes with the merge of the release PR between them: `just release-start X.Y.Z` bumps the version in `jp-catalog-suite.php`, `package.json`, `readme.txt` and `CHANGELOG.md` (the Unreleased entries become the release section) and opens the PR; after the merge, `just release-publish X.Y.Z` waits for CI on the merge commit, tags `vX.Y.Z` and waits for the release workflow. `scripts/check-version.sh` (part of `composer lint`) keeps all version places in step. Build the installable archive locally with `npm run build:release`.
+
+`.github/workflows/release.yml` lints, tests, builds `build/jp-catalog-suite-vX.Y.Z.zip`, checks it with `scripts/verify-release-zip.sh` and publishes it as a GitHub release asset. `scripts/build-release.sh` installs the runtime dependencies with `--no-dev` and prefixes them with `php-scoper`, so this plugin cannot collide with another JayPee plugin bundling a different version of the same library on the same WordPress install.
+
+What ships is listed in `scripts/release-paths.txt`; what is tracked but does not ship in `scripts/release-dev-only.txt`. Add a new runtime directory or file to the first list and a new development file to the second. `verify-release-zip.sh` fails on any top-level path in neither list, on a listed path missing from the ZIP, on a `.po` without `.mo`, on a block source without its built `block.json`, and on a header version that differs from the checkout; CI runs it on every build.
 
 ## Installation and configuration
 

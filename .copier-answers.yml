@@ -1,5 +1,5 @@
 # Changes here will be overwritten by Copier
-_commit: v1.4.0
+_commit: v1.7.0
 _src_path: gh:jaypee-solutions/wp-plugin-template
 email: support@jaypee.solutions
 full_name: Jan-Peter Alten
@@ -11,5 +11,7 @@ plugin_description: JayPee Solutions Catalog Suite for WooCommerce is a WordPres
 plugin_name: JayPee Solutions Catalog Suite for WooCommerce
 plugin_slug: jp-catalog-suite
 puc_update_url: https://github.com/jaypee-solutions/jp-catalog-suite/
+test_locales: de_DE
 text_domain: jp-catalog-suite
+uses_blocks: false
 wc_dependent: true

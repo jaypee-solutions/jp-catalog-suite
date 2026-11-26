@@ -1,0 +1,4 @@
+# Core language packs the wp-env test environment installs (scripts/wp-env-ensure.sh
+# start and seed). One WordPress locale per line; blank lines and # comments are
+# ignored. Generated from the test_locales answer in .copier-answers.yml.
+de_DE

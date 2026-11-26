@@ -40,13 +40,13 @@ rm -rf "$BUILD_DIR"
 mkdir -p "$DIST_DIR" "$STAGE_DIR"
 
 # ── Production files ─────────────────────────────────────────────────────────
-cp "$ROOT_DIR/$SLUG.php" "$DIST_DIR/"
-
-for path in README.md readme.txt LICENSE uninstall.php wpml-config.xml includes assets blocks templates languages; do
+# scripts/release-paths.txt is the one list of what ships; verify-release-zip.sh
+# checks the finished ZIP against it.
+while IFS= read -r path; do
 	if [[ -e "$ROOT_DIR/$path" ]]; then
 		cp -R "$ROOT_DIR/$path" "$DIST_DIR/"
 	fi
-done
+done < <(sed -e 's/#.*//' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e '/^$/d' "$ROOT_DIR/scripts/release-paths.txt")
 
 # WordPress loads compiled .mo catalogs at runtime. Compile them in the staged
 # release directory only, so the working tree never receives build artifacts.

@@ -10,6 +10,9 @@ extracts it as the GitHub release notes and fails without it.
 
 ## [Unreleased]
 
+### Changed
+- Development tooling updated from wp-plugin-template v1.4.0 to v1.7.0 (`copier update`): `just` recipes and release scripts, `scripts/verify-release-zip.sh` with `scripts/release-paths.txt` / `scripts/release-dev-only.txt` (the release ZIP is checked against the checkout in CI and the release workflow), extended `scripts/check-version.sh`, two more lint checks (`check-ignored-sources.sh`, `check-code-rules.sh`), wp-env ports derived from the plugin slug (8800–8899; linked worktrees keep 8900–8999), core language packs for `de_DE` installed in wp-env, `loginAs()`/`probe()` E2E helpers, a weekly CI run, and the template's reviewer rules and agent docs. No runtime changes.
+
 ### Fixed
 - Quote mode: with the address field set to "required", the second address line (Adresszusatz) became mandatory too, blocking saving addresses in My Account and checkout. Only the first line, city, state and postcode are required now.
 - Quote mode: the Address setting also changed the shipping address in My Account and the classic checkout. It now applies to the billing address only; Blocks checkout still follows it for its address form.

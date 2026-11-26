@@ -8,6 +8,18 @@ jps_e2e_is_linked_worktree() {
 	[[ "$git_dir" != "$common_dir" ]]
 }
 
+# The package name, which every checkout of one plugin shares; the directory name
+# is the fallback. It names the run queue and seeds the main checkout's ports.
+jps_e2e_plugin_slug() {
+	local canonical="$1" slug
+	slug="$(node -e 'const p = require(process.argv[1]); process.stdout.write(p.name || String())' "$canonical/package.json" 2>/dev/null || true)"
+	[[ -n "$slug" ]] || slug="$(basename "$canonical")"
+	printf '%s' "$slug"
+}
+
+# Port pairs: linked worktrees hash their path into 8900-8998, a main checkout hashes
+# the plugin slug into 8800-8898 (even base, tests port +1), so the ranges never
+# overlap and two plugins' main checkouts rarely collide.
 jps_e2e_configure_worktree() {
 	local root="${1:-$PWD}" canonical hash base
 	canonical="$(cd "$root" && pwd -P)"
@@ -15,7 +27,8 @@ jps_e2e_configure_worktree() {
 		hash="$(printf '%s' "$canonical" | cksum | cut -d ' ' -f 1)"
 		base=$(( 8900 + (hash % 50) * 2 ))
 	else
-		base=8888
+		hash="$(printf '%s' "$(jps_e2e_plugin_slug "$canonical")" | cksum | cut -d ' ' -f 1)"
+		base=$(( 8800 + (hash % 50) * 2 ))
 	fi
 	: "${WP_ENV_PORT:=$base}"
 	: "${WP_ENV_TESTS_PORT:=$((WP_ENV_PORT + 1))}"
@@ -41,8 +54,7 @@ jps_e2e_acquire_lock() {
 	[[ "${E2E_LOCK_DISABLE:-0}" == 1 || "${E2E_LOCK_HELD:-}" == 1 ]] && return 0
 	local root="${1:-$PWD}" canonical lockdir ticket pid first holder owner_pid slug waited=0
 	canonical="$(cd "$root" && pwd -P)"
-	slug="$(node -e 'const p = require(process.argv[1]); process.stdout.write(p.name || String())' "$canonical/package.json" 2>/dev/null || true)"
-	[[ -n "$slug" ]] || slug="$(basename "$canonical")"
+	slug="$(jps_e2e_plugin_slug "$canonical")"
 	lockdir="${E2E_LOCK_DIR:-${TMPDIR:-/tmp}/${slug}-e2e.queue}"
 	mkdir -p "$lockdir"
 	owner_pid="${BASHPID:-$$}"

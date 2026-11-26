@@ -27,7 +27,7 @@ e2e *args:
 env-start:
     npm run env:start
 
-# Re-download WooCommerce and Germanized latest-stable, the versions CI installs
+# Re-download the latest-stable plugins (for example WooCommerce), the versions CI installs
 env-update:
     scripts/wp-env-ensure.sh update
 
@@ -57,7 +57,6 @@ adr-new title description tags:
 # Rewrite an ADR's OKF mirror body after editing docs/adr: just adr-sync 0031
 adr-sync number:
     scripts/adr.sh sync "$@"
-
 # Cache and encoding headers of a page, as a guest and optionally with a login cookie: just headers URL ["name=value; ..."]
 headers url cookie="":
     scripts/headers.sh "$@"

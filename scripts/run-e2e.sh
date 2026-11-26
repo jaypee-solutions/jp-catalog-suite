@@ -58,12 +58,15 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+# ── Translations ─────────────────────────────────────────────────────────────
+scripts/compile-translations.sh
+
 # ── wp-env: start only if not already running ────────────────────────────────
 PLUGIN_DIR_NAME="$(basename "$(pwd -P)")"
 WP_BASE_URL="${WP_ENV_URL:-http://localhost:${WP_ENV_PORT}}"
 
-# Linked worktrees of every plugin hash into 50 port pairs and every main
-# checkout uses 8888, so a site answering on our port may belong to another
+# Linked worktrees of every plugin hash into the same 50 port pairs, and plugin
+# slugs into another 50, so a site answering on our port may belong to another
 # plugin. wp-env mounts this checkout at /wp-content/plugins/<directory name>/;
 # fetch a static file from there and compare it with the local copy.
 # Prints: ours | down | foreign

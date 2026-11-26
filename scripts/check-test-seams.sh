@@ -31,10 +31,27 @@ if [ ! -d tests/integration ]; then
     exit 1
 fi
 
+# Names of the classes declared in includes/, for the instantiation check below.
+plugin_classes=
+if [ -d includes ]; then
+    plugin_classes=$(find includes -type f -name '*.php' -exec sed -n -E \
+        's/^[[:space:]]*(abstract[[:space:]]+|final[[:space:]]+)*class[[:space:]]+([A-Za-z_][A-Za-z0-9_]*).*/\2/p' {} + \
+        | sort -u | tr '\n' ' ')
+fi
+
 # Integration tests exercise the plugin through WordPress, not direct calls to
 # namespaced implementation methods. Constants such as ::OPTION and ::class stay valid.
 # Imported names (`use Ns\Class;` then `Class::method(`) are not detected.
-PHP_NAMESPACE=$php_namespace find tests/integration -type f -name '*.php' -exec awk '
+#
+# They also do not build their own instances: hooks bind to the instance that
+# Plugin::init() registered, so `new Mailer()` in a test exercises an object WordPress
+# never calls. Both `new \Ns\Class` and `new Class` for a class declared in includes/ are
+# flagged; a line that needs the real thing anyway says why with `// test-seam: <reason>`.
+PHP_NAMESPACE=$php_namespace PLUGIN_CLASSES=$plugin_classes find tests/integration -type f -name '*.php' -exec awk '
+    function code_of(text,    cut) {
+        cut = match(text, /[[:space:]]\/\//)
+        return cut > 0 ? substr(text, 1, cut - 1) : text
+    }
     {
         expected = ENVIRON["PHP_NAMESPACE"] "\\"
         line = $0
@@ -47,6 +64,39 @@ PHP_NAMESPACE=$php_namespace find tests/integration -type f -name '*.php' -exec 
                 break
             }
             line = remainder
+        }
+
+        if ($0 ~ /^[[:space:]]*(\/\/|\/\*|\*|#)/) {
+            next
+        }
+        reason_given = ($0 ~ /\/\/[[:space:]]*test-seam:[[:space:]]*[^[:space:]]/)
+        reason_missing = ($0 ~ /\/\/[[:space:]]*test-seam:[[:space:]]*$/)
+        rest = code_of($0)
+        while (match(rest, /(^|[^A-Za-z0-9_$>:])new[[:space:]]+/)) {
+            rest = substr(rest, RSTART + RLENGTH)
+            target = rest
+            sub(/^\\/, "", target)
+            qualified = (index(target, expected) == 1)
+            if (qualified) {
+                target = substr(target, length(expected) + 1)
+            }
+            if (qualified) {
+                found = match(target, /^[A-Za-z_][A-Za-z0-9_\\]*/)
+            } else {
+                found = match(target, /^[A-Za-z_][A-Za-z0-9_]*/)
+            }
+            if (!found) {
+                continue
+            }
+            name = substr(target, 1, RLENGTH)
+            namespaced_elsewhere = (substr(target, RLENGTH + 1, 1) == "\\")
+            if (!qualified && (namespaced_elsewhere || index(" " ENVIRON["PLUGIN_CLASSES"], " " name " ") == 0)) {
+                continue
+            }
+            if (!reason_given) {
+                printf "%s:%d: do not instantiate the plugin class %s in an integration test; reach it through WordPress (the instance Plugin::init() registers).%s\n", FILENAME, FNR, name, (reason_missing ? " A reason is required after // test-seam:." : " If a real instance is unavoidable, add // test-seam: <reason> to the line.") > "/dev/stderr"
+                failed = 1
+            }
         }
     }
     END { exit failed }
