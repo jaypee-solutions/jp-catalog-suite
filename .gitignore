@@ -1,20 +1,17 @@
 node_modules/
-vendor/
-build/
-playwright-report/
-test-results/
-.wp-env/
-.phpunit.cache/
+/vendor/
+/build/
+/playwright-report/
+/test-results/
+/.wp-env/
+/.phpunit.cache/
 .phpunit.result.cache
 languages/*.mo
 *.log
 .DS_Store
-.agents/
-
+/.agents/
+/tests/e2e/zz-*.spec.ts
 
 # APM dependencies
 apm_modules/
 HANDOFF.md
-
-# Throwaway diagnostic specs (docs/agents/testing.md, "Diagnosing browser behaviour")
-tests/e2e/zz-*.spec.ts

@@ -6,6 +6,10 @@ on:
   push:
     branches: [ '**' ]
   workflow_dispatch:
+  # Weekly run on the default branch: CI installs the latest composer image, WordPress plugins and
+  # Alpine packages, so drift in them shows up on main instead of on the next feature PR.
+  schedule:
+    - cron: '17 5 * * 1'
 
 jobs:
   lint:
@@ -63,6 +67,10 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress
 
+      - name: Install gettext
+        # compile-translations.sh builds languages/*.mo before integration and E2E runs.
+        run: sudo apt-get update && sudo apt-get install --yes gettext
+
       - name: Install Node dependencies
         run: npm ci
 
@@ -110,6 +118,9 @@ jobs:
 
       - name: Build release ZIP
         run: bash scripts/build-release.sh
+
+      - name: Verify the ZIP against the checkout
+        run: bash scripts/verify-release-zip.sh build/jp-catalog-suite-v*.zip
 
       - name: Verify bundled dependencies are prefixed
         run: |

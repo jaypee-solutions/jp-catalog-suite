@@ -30,7 +30,7 @@
         "sort-packages": true
     },
     "scripts": {
-        "lint": "phpcs && scripts/check-test-seams.sh && scripts/check-doc-lint.sh && scripts/check-i18n.sh && scripts/check-hook-names.sh && scripts/check-version.sh",
+        "lint": "phpcs && scripts/check-test-seams.sh && scripts/check-doc-lint.sh && scripts/check-i18n.sh && scripts/check-hook-names.sh && scripts/check-ignored-sources.sh && scripts/check-code-rules.sh && scripts/check-version.sh",
         "lint:fix": "phpcbf",
         "test": "phpunit && tests/scripts/check-guardrails.sh",
         "build": "scripts/build-release.sh",

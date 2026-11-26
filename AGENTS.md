@@ -6,6 +6,14 @@ Before starting wp-env or running integration/E2E tests, read `docs/agents/testi
 
 `just` lists the recipes for lint, tests, E2E, wp-env, releases (`release` skill) and ADR scaffolding; use them instead of retyping the underlying commands.
 
+## Delegating
+
+Before delegating implementation to another agent, give it `docs/agents/implementer.md`.
+
+## WordPress core
+
+Before writing code against WordPress core APIs (mail, admin-post, post types, the block editor, REST), read `docs/agents/wordpress-facts.md`.
+
 ## Deployed dev site
 
 For a report from the dev site (a cache serving the wrong page, a download header), read `docs/agents/dev-site.md`.

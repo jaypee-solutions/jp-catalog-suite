@@ -1,0 +1,37 @@
+# Top-level paths that are tracked in git but deliberately not shipped. One name
+# per line; blank lines and # comments are ignored.
+#
+# verify-release-zip.sh fails for any top-level path that is neither here nor in
+# release-paths.txt, so a new runtime file cannot be forgotten. Append your
+# plugin's own development paths. Paths that do not exist are fine.
+.agents
+.okf
+GLOSSARY.md
+JAYPEE_SOLUTIONS_CATALOG_SUITE_PLAN.md
+PROMPT.md
+apm.lock.yaml
+apm.yml
+.apm
+justfile
+.copier-answers.yml
+.editorconfig
+.github
+.gitignore
+.husky
+.wp-env.json
+AGENTS.md
+CHANGELOG.md
+CODING_STANDARDS.md
+composer.json
+composer.lock
+docs
+package-lock.json
+package.json
+phpcs.xml.dist
+phpunit-integration.xml.dist
+phpunit.xml.dist
+playwright.config.ts
+renovate.json
+scoper.inc.php
+scripts
+tests

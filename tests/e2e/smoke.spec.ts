@@ -1,33 +1,14 @@
-import { test, expect, type Page } from './support/fixtures';
-
-const ADMIN_USER = process.env.WP_ADMIN_USER ?? 'admin';
-const ADMIN_PASS = process.env.WP_ADMIN_PASS ?? 'password';
-
-async function login( page: Page ): Promise<void> {
-	await page.context().clearCookies();
-	await page.request.get( '/wp-login.php' );
-	const response = await page.request.post( '/wp-login.php', {
-		form: {
-			log: ADMIN_USER,
-			pwd: ADMIN_PASS,
-			'wp-submit': 'Log In',
-			redirect_to: '/wp-admin/',
-			testcookie: '1',
-		},
-		maxRedirects: 0,
-	} );
-	expect( response.status() ).toBe( 302 );
-	await page.goto( '/wp-admin/' );
-	await expect( page ).toHaveURL( /wp-admin/ );
-}
+import { test, expect } from './support/fixtures';
+import { login } from './support/auth';
 
 test.describe( 'JayPee Solutions Catalog Suite for WooCommerce — smoke', () => {
 	test( 'the plugin is active and its Updates page loads', async ( { page } ) => {
 		await login( page );
 
 		await page.goto( '/wp-admin/plugins.php' );
+		// `:not(.plugin-update-tr)`: an available update adds a second, also `.active` row.
 		await expect(
-			page.locator( 'tr.active', { hasText: 'JayPee Solutions Catalog Suite for WooCommerce' } )
+			page.locator( 'tr.active:not(.plugin-update-tr)', { hasText: 'JayPee Solutions Catalog Suite for WooCommerce' } )
 		).toBeVisible();
 
 		await page.goto( '/wp-admin/options-general.php?page=jp-catalog-suite-updates' );

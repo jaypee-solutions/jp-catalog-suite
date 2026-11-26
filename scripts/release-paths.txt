@@ -1,0 +1,20 @@
+# Paths copied into the release ZIP, relative to the plugin root. One name per
+# line, top level only; blank lines and # comments are ignored.
+#
+# build-release.sh copies exactly these paths and verify-release-zip.sh checks the
+# ZIP against them, so this file is the single source of truth. Paths that do not
+# exist in the checkout are skipped. Append your plugin's own runtime paths here
+# (for example public); every other top-level path of the repository belongs in
+# release-dev-only.txt.
+jp-catalog-suite.php
+README.md
+readme.txt
+LICENSE
+uninstall.php
+includes
+assets
+admin
+blocks
+languages
+templates
+wpml-config.xml

@@ -151,6 +151,23 @@ activate_required_plugins() {
 	activate_plugin "$environment" "$PLUGIN_DIR_NAME"
 }
 
+# Core language packs for the locales in scripts/test-locales.txt, in both
+# environments, so translation tests see real core strings. Idempotent.
+install_test_locales() {
+	local locales_file="$ROOT_DIR/scripts/test-locales.txt" locale environment
+
+	[[ -f "$locales_file" ]] || return 0
+
+	# wp_cli runs `docker exec`, which would read the rest of the locale list from stdin.
+	while read -r locale; do
+		for environment in cli tests-cli; do
+			if ! wp_cli "$environment" language core is-installed "$locale" </dev/null >/dev/null 2>&1; then
+				wp_cli "$environment" language core install "$locale" </dev/null
+			fi
+		done
+	done < <(sed -e 's/#.*//' -e 's/[[:space:]]*$//' -e '/^$/d' "$locales_file")
+}
+
 # A fresh wp-env install ships no .htaccess, so Apache 404s every pretty
 # permalink (pages and CPT archives alike). A hard flush writes the file.
 ensure_permalinks() {
@@ -352,6 +369,34 @@ start() {
 	if ! wait_for_dbs || ! ensure_sites || ! wait_for_http_sites; then
 		destroy_and_restart
 	fi
+
+	install_test_locales
+}
+
+# CI installs WooCommerce latest-stable, while wp-env keeps the version it first downloaded.
+# A CI-only failure after a WooCommerce release is usually this drift (WooCommerce 11.3 renamed
+# a mini-cart label that way), so say so. Never fails the start: no WooCommerce in the cache or no
+# network means no warning.
+warn_stale_woocommerce() {
+	local cached latest
+	cached="$(sed -n -E 's/^[[:space:]*]*Version:[[:space:]]*([0-9][^[:space:]]*).*/\1/p' "$WP_ENV_HOME"/wp-env-*/woocommerce.latest-stable/woocommerce.php 2>/dev/null | head -n1 || true)"
+	[[ -n "$cached" ]] || return 0
+	latest="$(curl -fsS --max-time 5 https://api.wordpress.org/plugins/info/1.0/woocommerce.json 2>/dev/null | sed -n -E 's/.*"version":"([0-9][^"]*)".*/\1/p' | head -n1 || true)"
+	if [[ -n "$latest" && "$cached" != "$latest" ]]; then
+		echo "wp-env: WooCommerce $cached is cached locally, CI installs $latest. Refresh with: just env-update" >&2
+	fi
+	return 0
+}
+
+# Re-downloads the plugin sources (latest-stable plugins) and brings the site back up.
+update_sources() {
+	wp_env start --update
+	_ensure_plugin_sources
+	_compose_up
+	if ! wait_for_dbs || ! ensure_sites || ! wait_for_http_sites; then
+		destroy_and_restart
+	fi
+	install_test_locales
 }
 
 # CI installs WooCommerce latest-stable, while wp-env keeps the version it first downloaded.
@@ -379,6 +424,7 @@ update_sources() {
 
 seed() {
 	ensure_sites || destroy_and_restart
+	install_test_locales
 
 	if [[ ! -f "$ROOT_DIR/tests/seed.php" ]]; then
 		echo "wp-env: no tests/seed.php — nothing to seed."

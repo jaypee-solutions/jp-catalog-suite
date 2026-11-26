@@ -70,6 +70,9 @@ jobs:
           echo "path=${zips[0]}" >> "$GITHUB_OUTPUT"
           echo "name=$(basename "${zips[0]}")" >> "$GITHUB_OUTPUT"
 
+      - name: Verify the ZIP against the checkout
+        run: bash scripts/verify-release-zip.sh "${{ steps.zip.outputs.path }}"
+
       - name: Extract changelog section
         run: |
           version="${GITHUB_REF_NAME#v}"
